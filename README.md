@@ -6,6 +6,10 @@ The visual design is an original dark occult interface. This project is not affi
 
 Route content and route-language concepts are derived from [HeartofPhos/exile-leveling](https://github.com/HeartofPhos/exile-leveling), used under its MIT license.
 
+![Compact Exile Route overlay](docs/screenshots/overlay-compact-v1.png)
+
+The compact panel stays out of the way while the expanded panel exposes nearby instructions. Both are click-through until interaction mode is explicitly enabled.
+
 ## Requirements
 
 - Apple Silicon Mac

@@ -53,6 +53,15 @@ actor RouteUpdateService {
                 try contents.write(to: data.appendingPathComponent("\(filename).json"), options: .atomic)
             }
 
+            let manifest = RouteSnapshotManifest(
+                schemaVersion: 1,
+                repository: "HeartofPhos/exile-leveling",
+                commit: sha,
+                generatedAt: ISO8601DateFormatter().string(from: Date())
+            )
+            let manifestData = try JSONEncoder().encode(manifest)
+            try manifestData.write(to: staging.appendingPathComponent("snapshot-manifest.json"), options: .atomic)
+
             let destination = cacheRoot.appendingPathComponent(sha, isDirectory: true)
             try fileManager.createDirectory(at: cacheRoot, withIntermediateDirectories: true)
             if fileManager.fileExists(atPath: destination.path) { try fileManager.removeItem(at: destination) }
@@ -76,4 +85,3 @@ actor RouteUpdateService {
         return data
     }
 }
-

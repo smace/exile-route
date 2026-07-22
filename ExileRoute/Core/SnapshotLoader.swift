@@ -38,10 +38,33 @@ struct SnapshotLoader: Sendable {
         return LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources)
     }
 
+    func loadDirectory(_ directory: URL) throws -> LoadedSnapshot {
+        let decoder = JSONDecoder()
+        let manifestURL = directory.appendingPathComponent("snapshot-manifest.json")
+        let manifest: RouteSnapshotManifest
+        if FileManager.default.fileExists(atPath: manifestURL.path) {
+            manifest = try decoder.decode(RouteSnapshotManifest.self, from: Data(contentsOf: manifestURL))
+        } else {
+            manifest = RouteSnapshotManifest(
+                schemaVersion: 1,
+                repository: "HeartofPhos/exile-leveling",
+                commit: directory.lastPathComponent,
+                generatedAt: ISO8601DateFormatter().string(from: Date())
+            )
+        }
+        let dataDirectory = directory.appendingPathComponent("Data")
+        let routesDirectory = directory.appendingPathComponent("Routes")
+        let areas = try decoder.decode([String: AreaRecord].self, from: Data(contentsOf: dataDirectory.appendingPathComponent("areas.json")))
+        let quests = try decoder.decode([String: QuestRecord].self, from: Data(contentsOf: dataDirectory.appendingPathComponent("quests.json")))
+        let sources = try (1...10).map { act in
+            ("Act \(act)", try String(contentsOf: routesDirectory.appendingPathComponent("act-\(act).txt"), encoding: .utf8))
+        }
+        return LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources)
+    }
+
     private func resourceURL(named: String, extension ext: String, subdirectory: String?, bundle: Bundle) throws -> URL {
         if let url = bundle.url(forResource: named, withExtension: ext, subdirectory: subdirectory) { return url }
         if let url = bundle.url(forResource: named, withExtension: ext) { return url }
         throw SnapshotLoaderError.missingResource("\(named).\(ext)")
     }
 }
-

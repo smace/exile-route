@@ -8,6 +8,23 @@ struct UserSettings: Codable, Equatable, Sendable {
     var isInteractionEnabled = false
     var isOCRActive = true
     var ocrCrop = NormalizedRect.defaultAreaTitle
+    var overlayFrames: [String: WindowGeometry] = [:]
+}
+
+struct WindowGeometry: Codable, Equatable, Sendable {
+    var x: Double
+    var y: Double
+    var width: Double
+    var height: Double
+
+    init(_ rect: CGRect) {
+        x = rect.origin.x
+        y = rect.origin.y
+        width = rect.width
+        height = rect.height
+    }
+
+    var rect: CGRect { CGRect(x: x, y: y, width: width, height: height) }
 }
 
 struct NormalizedRect: Codable, Equatable, Sendable {
@@ -22,6 +39,7 @@ struct NormalizedRect: Codable, Equatable, Sendable {
 struct StoredApplicationState: Codable, Equatable, Sendable {
     var settings = UserSettings()
     var progress = ProgressState()
+    var customRouteSource: String?
 }
 
 struct PersistenceStore {
