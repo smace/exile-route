@@ -1,0 +1,11 @@
+.DS_Store
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+.build/
+ExileRoute.app
+ExileRoute-*.zip
+*.sha256
+

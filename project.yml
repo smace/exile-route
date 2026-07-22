@@ -1,0 +1,72 @@
+name: ExileRoute
+options:
+  bundleIdPrefix: com.swannmace
+  deploymentTarget:
+    macOS: "15.0"
+  xcodeVersion: "26.0"
+  generateEmptyDirectories: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ARCHS: arm64
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 1.0.0
+    ENABLE_HARDENED_RUNTIME: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+targets:
+  ExileRoute:
+    type: application
+    platform: macOS
+    sources:
+      - path: ExileRoute
+        excludes:
+          - Resources/Fonts/OFL.txt
+          - Resources/UPSTREAM_LICENSE.txt
+    resources:
+      - path: ExileRoute/Resources
+    info:
+      path: ExileRoute/Info.plist
+      properties:
+        CFBundleDisplayName: Exile Route
+        CFBundleName: Exile Route
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSApplicationCategoryType: public.app-category.utilities
+        LSMinimumSystemVersion: "15.0"
+        LSUIElement: true
+        NSHighResolutionCapable: true
+        ATSApplicationFonts:
+          - Cinzel-VariableFont_wght.ttf
+        NSScreenCaptureUsageDescription: Exile Route lit localement le nom de la zone dans la fenêtre GeForce NOW afin d’avancer le guide de campagne. Aucune image n’est enregistrée ni transmise.
+        NSHumanReadableCopyright: Copyright © 2026 Swann Mace. MIT License.
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.swannmace.ExileRoute
+        PRODUCT_NAME: ExileRoute
+  ExileRouteTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: ExileRouteTests
+    dependencies:
+      - target: ExileRoute
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.swannmace.ExileRouteTests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  ExileRoute:
+    build:
+      targets:
+        ExileRoute: all
+        ExileRouteTests: [test]
+    test:
+      gatherCoverageData: true
+      targets:
+        - ExileRouteTests
+    archive:
+      config: Release

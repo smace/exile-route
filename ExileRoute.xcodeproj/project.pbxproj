@@ -1,0 +1,518 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2159428629C5EB5061216A08 /* Cinzel-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */; };
+		21D062B4D4B589D8860CCB1F /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4636E50F0E4570C0A330AE4C /* AppModel.swift */; };
+		4089DA0F91132DDCF0A069E6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DFFE2E166145DD0A5A6103 /* SettingsView.swift */; };
+		5CD057D3EE50ACE8266AF9C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC49B056A4392A4306C828A9 /* AppDelegate.swift */; };
+		781544046908BAED56B330BF /* BootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */; };
+		C3473E8DF3C32A9E60F64B87 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F1BFF692552AC8E88C6303 /* Theme.swift */; };
+		FD0F35F97A876BF8DD0E5D41 /* ExileRouteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FA7090680200ED7A035FBA38 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 35C7F1E9F89327D5601298DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3924AC41172125CDB551FBD9;
+			remoteInfo = ExileRoute;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cinzel-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExileRouteApp.swift; sourceTree = "<group>"; };
+		4636E50F0E4570C0A330AE4C /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		7300D5DE3C42F848285D08EC /* ExileRouteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExileRouteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B42F7D36D93EE136088161E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapTests.swift; sourceTree = "<group>"; };
+		AA32EA53128F2C0B376F371B /* ExileRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExileRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4DFFE2E166145DD0A5A6103 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C1F1BFF692552AC8E88C6303 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		DC49B056A4392A4306C828A9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0888A6BABF7348261A42ED7E = {
+			isa = PBXGroup;
+			children = (
+				706FB02D33C87A05D134F349 /* ExileRoute */,
+				92B3AE1DFB3FFFFA2538FDF4 /* ExileRouteTests */,
+				49434DE188042042294E899C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		185136D3C82C218798B4D5D0 /* Overlay */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Overlay;
+			sourceTree = "<group>";
+		};
+		3816C8F85656B91285ECEF5F /* Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		3FD51F80C9BAB80E518055E6 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		49434DE188042042294E899C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA32EA53128F2C0B376F371B /* ExileRoute.app */,
+				7300D5DE3C42F848285D08EC /* ExileRouteTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6FBA34B2EACC098FD4C4FD9C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				DC49B056A4392A4306C828A9 /* AppDelegate.swift */,
+				4636E50F0E4570C0A330AE4C /* AppModel.swift */,
+				14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */,
+				B4DFFE2E166145DD0A5A6103 /* SettingsView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		706FB02D33C87A05D134F349 /* ExileRoute */ = {
+			isa = PBXGroup;
+			children = (
+				7B42F7D36D93EE136088161E /* Info.plist */,
+				6FBA34B2EACC098FD4C4FD9C /* App */,
+				3FD51F80C9BAB80E518055E6 /* Core */,
+				AEB2268E25CD5DC7D00B4070 /* Design */,
+				F4ACD2CFD8FF45AC99404437 /* OCR */,
+				185136D3C82C218798B4D5D0 /* Overlay */,
+				CE5EB0DEB1BB90F09CB339C6 /* Resources */,
+				CB132C555FA513F7A46852AB /* Services */,
+			);
+			path = ExileRoute;
+			sourceTree = "<group>";
+		};
+		795276587F06A74080A11BE7 /* Routes */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Routes;
+			sourceTree = "<group>";
+		};
+		92B3AE1DFB3FFFFA2538FDF4 /* ExileRouteTests */ = {
+			isa = PBXGroup;
+			children = (
+				A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */,
+			);
+			path = ExileRouteTests;
+			sourceTree = "<group>";
+		};
+		AEB2268E25CD5DC7D00B4070 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				C1F1BFF692552AC8E88C6303 /* Theme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		CB132C555FA513F7A46852AB /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		CE5EB0DEB1BB90F09CB339C6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3816C8F85656B91285ECEF5F /* Data */,
+				FDD3A7BDECB6BD41E8B6B2D3 /* Fonts */,
+				795276587F06A74080A11BE7 /* Routes */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F4ACD2CFD8FF45AC99404437 /* OCR */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = OCR;
+			sourceTree = "<group>";
+		};
+		FDD3A7BDECB6BD41E8B6B2D3 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3924AC41172125CDB551FBD9 /* ExileRoute */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FDAD100E2C09946ED4570080 /* Build configuration list for PBXNativeTarget "ExileRoute" */;
+			buildPhases = (
+				95EC647C51F6FA06160B197E /* Sources */,
+				1C6D146400BF25396F556489 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ExileRoute;
+			packageProductDependencies = (
+			);
+			productName = ExileRoute;
+			productReference = AA32EA53128F2C0B376F371B /* ExileRoute.app */;
+			productType = "com.apple.product-type.application";
+		};
+		89682078446AF94CA21BECBD /* ExileRouteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E74395B9708D00E4DA3EA10 /* Build configuration list for PBXNativeTarget "ExileRouteTests" */;
+			buildPhases = (
+				CC6AB999A0A1BAC9D49B203A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				967E1B07F85F0493047327A8 /* PBXTargetDependency */,
+			);
+			name = ExileRouteTests;
+			packageProductDependencies = (
+			);
+			productName = ExileRouteTests;
+			productReference = 7300D5DE3C42F848285D08EC /* ExileRouteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		35C7F1E9F89327D5601298DC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					3924AC41172125CDB551FBD9 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Manual;
+					};
+					89682078446AF94CA21BECBD = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = C70F07C86B7D5E9AFAD7E491 /* Build configuration list for PBXProject "ExileRoute" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 0888A6BABF7348261A42ED7E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 49434DE188042042294E899C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3924AC41172125CDB551FBD9 /* ExileRoute */,
+				89682078446AF94CA21BECBD /* ExileRouteTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1C6D146400BF25396F556489 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2159428629C5EB5061216A08 /* Cinzel-VariableFont_wght.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		95EC647C51F6FA06160B197E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5CD057D3EE50ACE8266AF9C4 /* AppDelegate.swift in Sources */,
+				21D062B4D4B589D8860CCB1F /* AppModel.swift in Sources */,
+				FD0F35F97A876BF8DD0E5D41 /* ExileRouteApp.swift in Sources */,
+				4089DA0F91132DDCF0A069E6 /* SettingsView.swift in Sources */,
+				C3473E8DF3C32A9E60F64B87 /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CC6AB999A0A1BAC9D49B203A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				781544046908BAED56B330BF /* BootstrapTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		967E1B07F85F0493047327A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3924AC41172125CDB551FBD9 /* ExileRoute */;
+			targetProxy = FA7090680200ED7A035FBA38 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		5AD3B5D5B58939D4C05FB249 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swannmace.ExileRouteTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ExileRoute.app/Contents/MacOS/ExileRoute";
+			};
+			name = Debug;
+		};
+		61872CA04C854C0DF719B6E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ExileRoute/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swannmace.ExileRoute;
+				PRODUCT_NAME = ExileRoute;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		999154AFF989B9639548F663 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		9A4795706BACF6B7FC8EA253 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swannmace.ExileRouteTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ExileRoute.app/Contents/MacOS/ExileRoute";
+			};
+			name = Release;
+		};
+		AC86F6871D20F7538F01301B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		EE51860C39648C5427D47B76 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ExileRoute/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.swannmace.ExileRoute;
+				PRODUCT_NAME = ExileRoute;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0E74395B9708D00E4DA3EA10 /* Build configuration list for PBXNativeTarget "ExileRouteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AD3B5D5B58939D4C05FB249 /* Debug */,
+				9A4795706BACF6B7FC8EA253 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C70F07C86B7D5E9AFAD7E491 /* Build configuration list for PBXProject "ExileRoute" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC86F6871D20F7538F01301B /* Debug */,
+				999154AFF989B9639548F663 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FDAD100E2C09946ED4570080 /* Build configuration list for PBXNativeTarget "ExileRoute" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE51860C39648C5427D47B76 /* Debug */,
+				61872CA04C854C0DF719B6E7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 35C7F1E9F89327D5601298DC /* Project object */;
+}
