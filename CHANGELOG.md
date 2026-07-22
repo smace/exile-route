@@ -1,0 +1,22 @@
+# Changelog
+
+All notable changes to Exile Route are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2026-07-22
+
+### Added
+
+- Native non-activating SwiftUI/AppKit overlay for GeForce NOW on macOS 15 and Apple Silicon.
+- Original dark occult visual system, procedural ornaments, Cinzel titles, compact and expanded layouts, and application icon.
+- Complete offline ten-act route snapshot pinned to HeartofPhos commit `bbcc7163bdc6f03e0d2276f2dd8bf32e68db6b16`.
+- Typed route DSL parser with route conditions, sections, fragments, hints, areas, quests, and manual progression.
+- Local ScreenCaptureKit and Vision area recognition with coherent-detection gating, nearby-area constraints, and no automatic regression.
+- Configurable global shortcuts, menu-bar controls, interaction mode, opacity, text scaling, and OCR calibration.
+- Custom route import from text, clipboard, file, HTTPS, and Pastebin, plus file and clipboard export.
+- Validated atomic upstream updates with rollback to the last valid cached snapshot.
+- Persistent settings, active route, campaign progress, shortcuts, OCR crop, and per-display overlay geometry.
+- CI, parser and progression tests, OCR fixtures, updater rollback tests, persistence tests, and visual snapshot tests.
+
+[1.0.0]: https://github.com/smace/exile-route/releases/tag/v1.0.0
