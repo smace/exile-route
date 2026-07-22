@@ -139,6 +139,56 @@ struct RouteGlyph: View {
     }
 }
 
+struct ObjectiveStateGlyph: View {
+    let objective: RouteObjective
+
+    var body: some View {
+        RouteGlyph(step: objective.step)
+            .opacity(objective.state == .completed ? 0.46 : objective.state == .pending ? 0.72 : 1)
+            .overlay {
+                switch objective.state {
+                case .completed:
+                    ObjectiveCheckmark()
+                        .stroke(Theme.waypointCyan, style: StrokeStyle(lineWidth: 1.6, lineCap: .round, lineJoin: .round))
+                        .padding(5)
+                case .skipped:
+                    ObjectiveCross()
+                        .stroke(Theme.ember, style: StrokeStyle(lineWidth: 1.4, lineCap: .round))
+                        .padding(6)
+                case .active, .pending:
+                    EmptyView()
+                }
+            }
+            .shadow(
+                color: objective.state == .active ? Theme.ember.opacity(0.55) : .clear,
+                radius: objective.state == .active ? 5 : 0
+            )
+            .animation(.easeInOut(duration: 0.18), value: objective.state)
+            .accessibilityHidden(true)
+    }
+}
+
+private struct ObjectiveCheckmark: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.38, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        return path
+    }
+}
+
+private struct ObjectiveCross: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.move(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        return path
+    }
+}
+
 private struct Diamond: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()

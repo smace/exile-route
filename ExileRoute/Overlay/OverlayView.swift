@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OverlayView: View {
     @EnvironmentObject private var model: AppModel
+    @Environment(\.isSnapshotRendering) private var isSnapshotRendering
 
     var body: some View {
         ZStack {
@@ -9,10 +10,13 @@ struct OverlayView: View {
             VStack(spacing: 0) {
                 header
                 OrnamentalDivider().padding(.vertical, 10)
-                if let step = model.currentStep {
-                    current(step)
-                    if model.isExpanded { expandedRoute }
-                    else if let next = model.nextStep { nextStep(next) }
+                if let visit = model.currentVisit {
+                    if let notice = model.transitionNotice {
+                        transitionNotice(notice)
+                            .transition(.opacity)
+                            .padding(.bottom, 8)
+                    }
+                    objectiveContent(currentVisit: visit)
                 } else {
                     unavailable
                 }
@@ -20,13 +24,16 @@ struct OverlayView: View {
             }
             .padding(16)
         }
-        .frame(width: model.isExpanded ? 460 : 390, height: model.isExpanded ? 560 : nil)
-        .fixedSize(horizontal: false, vertical: !model.isExpanded)
+        .frame(
+            width: model.isExpanded ? 460 : 390,
+            height: model.isExpanded ? 560 : model.compactOverlayHeight
+        )
         .environment(\.sizeCategory, sizeCategory)
         .animation(.easeInOut(duration: 0.18), value: model.stepIndex)
         .animation(.easeInOut(duration: 0.18), value: model.isExpanded)
+        .animation(.easeInOut(duration: 0.18), value: model.transitionNotice)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Exile Route, Act \(model.currentAct)")
+        .accessibilityLabel("Exile Route, Act \(model.currentAct), \(model.currentAreaName)")
     }
 
     private var sizeCategory: ContentSizeCategory {
@@ -40,7 +47,7 @@ struct OverlayView: View {
                     .font(Theme.titleFont(size: 14 * model.textScale))
                     .tracking(2.2)
                     .foregroundStyle(Theme.agedGold)
-                Text(zoneTitle)
+                Text(model.currentAreaName.uppercased())
                     .font(.system(size: 11 * model.textScale, weight: .semibold, design: .rounded))
                     .foregroundStyle(Theme.muted)
                     .lineLimit(1)
@@ -50,84 +57,166 @@ struct OverlayView: View {
         }
     }
 
-    private var zoneTitle: String {
-        model.currentAreaName.uppercased()
+    @ViewBuilder
+    private func objectiveContent(currentVisit: RouteVisit) -> some View {
+        if model.isExpanded {
+            if isSnapshotRendering {
+                expandedChecklist(currentVisit: currentVisit)
+            } else {
+                ScrollView {
+                    expandedChecklist(currentVisit: currentVisit)
+                }
+                .scrollIndicators(.hidden)
+            }
+        } else if isSnapshotRendering {
+            compactChecklist
+        } else {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    compactChecklist
+                }
+                .scrollIndicators(.hidden)
+                .onChange(of: model.stepIndex) { _, _ in
+                    if let active = model.currentZoneObjectives.first(where: { $0.state == .active }) {
+                        withAnimation(.easeInOut(duration: 0.18)) {
+                            proxy.scrollTo(active.id, anchor: .center)
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private func current(_ step: RouteStep) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            RouteGlyph(step: step).padding(.top, 2)
-            VStack(alignment: .leading, spacing: 8) {
-                Text(step.displayText)
-                    .font(.system(size: 16 * model.textScale, weight: .semibold))
-                    .foregroundStyle(Theme.ivory)
-                    .fixedSize(horizontal: false, vertical: true)
-                ForEach(Array(step.hints.prefix(model.isExpanded ? 6 : 2).enumerated()), id: \.offset) { _, hint in
-                    HStack(alignment: .top, spacing: 7) {
-                        Circle().fill(Theme.brass.opacity(0.75)).frame(width: 3, height: 3).padding(.top, 6)
-                        Text(hint)
-                            .font(.system(size: 12 * model.textScale, weight: .regular))
-                            .foregroundStyle(Theme.muted)
+    private func expandedChecklist(currentVisit: RouteVisit) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            visitSection(
+                title: "CURRENT OBJECTIVES",
+                areaName: model.areaName(for: currentVisit.areaID),
+                objectives: model.objectives(in: currentVisit),
+                isCurrent: true,
+                showAllHints: true
+            )
+
+            ForEach(Array(model.upcomingVisits.enumerated()), id: \.element.id) { offset, visit in
+                OrnamentalDivider().opacity(0.5)
+                visitSection(
+                    title: offset == 0 ? "NEXT AREA" : "THEN",
+                    areaName: model.areaName(for: visit.areaID),
+                    objectives: model.objectives(in: visit),
+                    isCurrent: false,
+                    showAllHints: true
+                )
+            }
+        }
+    }
+
+    private var compactChecklist: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ForEach(model.currentZoneObjectives) { objective in
+                objectiveRow(objective, showHints: objective.state == .active)
+                    .id(objective.id)
+            }
+        }
+    }
+
+    private func visitSection(
+        title: String,
+        areaName: String,
+        objectives: [RouteObjective],
+        isCurrent: Bool,
+        showAllHints: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            HStack(spacing: 8) {
+                Text(title)
+                    .font(Theme.titleFont(size: 9 * model.textScale))
+                    .tracking(1.2)
+                    .foregroundStyle(isCurrent ? Theme.agedGold : Theme.brass.opacity(0.72))
+                Text(areaName.uppercased())
+                    .font(.system(size: 9 * model.textScale, weight: .medium, design: .rounded))
+                    .foregroundStyle(Theme.muted)
+                    .lineLimit(1)
+                Spacer(minLength: 0)
+            }
+
+            ForEach(objectives) { objective in
+                objectiveRow(objective, showHints: showAllHints)
+            }
+        }
+    }
+
+    private func objectiveRow(_ objective: RouteObjective, showHints: Bool) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            ObjectiveStateGlyph(objective: objective)
+                .padding(.top, 1)
+            VStack(alignment: .leading, spacing: 5) {
+                HStack(alignment: .firstTextBaseline, spacing: 7) {
+                    Text(objective.step.displayText)
+                        .font(.system(
+                            size: 12.5 * model.textScale,
+                            weight: objective.state == .active ? .semibold : .regular
+                        ))
+                        .foregroundStyle(objectiveColor(objective.state))
+                        .fixedSize(horizontal: false, vertical: true)
+                    if objective.state == .skipped {
+                        Text("SKIPPED")
+                            .font(.system(size: 7.5 * model.textScale, weight: .bold, design: .monospaced))
+                            .foregroundStyle(Theme.ember)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Theme.ember.opacity(0.12), in: Capsule())
+                    }
+                }
+
+                if showHints {
+                    ForEach(Array(objective.step.hints.enumerated()), id: \.offset) { _, hint in
+                        HStack(alignment: .top, spacing: 6) {
+                            Circle()
+                                .fill(Theme.brass.opacity(0.72))
+                                .frame(width: 3, height: 3)
+                                .padding(.top, 6)
+                            Text(hint)
+                                .font(.system(size: 10.5 * model.textScale))
+                                .foregroundStyle(Theme.muted)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
                 }
             }
             Spacer(minLength: 0)
         }
-        .id(step.id)
-        .transition(.opacity.combined(with: .move(edge: .bottom)))
-    }
-
-    private func nextStep(_ step: RouteStep) -> some View {
-        VStack(spacing: 9) {
-            OrnamentalDivider().opacity(0.65).padding(.top, 12)
-            HStack(alignment: .top, spacing: 10) {
-                Text("NEXT")
-                    .font(Theme.titleFont(size: 9 * model.textScale))
-                    .tracking(1.2)
-                    .foregroundStyle(Theme.brass.opacity(0.8))
-                    .padding(.top, 2)
-                Text(step.displayText)
-                    .font(.system(size: 12 * model.textScale))
-                    .foregroundStyle(Theme.ivory.opacity(0.66))
-                    .lineLimit(2)
-                Spacer(minLength: 0)
-            }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 7)
+        .background {
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                .fill(objective.state == .active ? Theme.brass.opacity(0.12) : .clear)
         }
-    }
-
-    private var expandedRoute: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 7) {
-                    ForEach(visibleSteps) { step in
-                        HStack(alignment: .top, spacing: 9) {
-                            RouteGlyph(step: step).scaleEffect(0.72)
-                            Text(step.displayText)
-                                .font(.system(size: 12 * model.textScale, weight: step.id == model.currentStep?.id ? .semibold : .regular))
-                                .foregroundStyle(step.id == model.currentStep?.id ? Theme.ivory : Theme.muted)
-                            Spacer(minLength: 0)
-                        }
-                        .padding(.vertical, 4)
-                        .padding(.horizontal, 6)
-                        .background(step.id == model.currentStep?.id ? Theme.brass.opacity(0.12) : .clear)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .id(step.id)
-                    }
-                }
-            }
-            .scrollIndicators(.hidden)
-            .padding(.top, 14)
-            .onChange(of: model.stepIndex) { _, _ in
-                if let id = model.currentStep?.id { withAnimation { proxy.scrollTo(id, anchor: .center) } }
-            }
+        .overlay {
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                .strokeBorder(
+                    objective.state == .active ? Theme.agedGold.opacity(0.42) : .clear,
+                    lineWidth: 0.8
+                )
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(stateLabel(objective.state)): \(objective.step.displayText)")
     }
 
-    private var visibleSteps: [RouteStep] {
-        guard let steps = model.route?.steps, !steps.isEmpty else { return [] }
-        let lower = max(0, model.stepIndex - 3)
-        let upper = min(steps.count, model.stepIndex + 10)
-        return Array(steps[lower..<upper])
+    private func transitionNotice(_ notice: ZoneTransitionNotice) -> some View {
+        HStack(spacing: 7) {
+            ObjectiveCrossIndicator()
+                .stroke(Theme.ember, style: StrokeStyle(lineWidth: 1.3, lineCap: .round))
+                .frame(width: 10, height: 10)
+            Text("\(notice.skippedCount) \(notice.skippedCount == 1 ? "OBJECTIVE" : "OBJECTIVES") SKIPPED")
+            Spacer(minLength: 4)
+            Text("\(model.hotKeys[.previous]?.display ?? "") TO RETURN")
+        }
+        .font(.system(size: 8.5 * model.textScale, weight: .bold, design: .monospaced))
+        .foregroundStyle(Theme.ember)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 7)
+        .background(Theme.ember.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+        .accessibilityLabel("\(notice.skippedCount) objectives skipped in \(notice.previousAreaName). Use Previous to return.")
     }
 
     private var unavailable: some View {
@@ -139,7 +228,7 @@ struct OverlayView: View {
                 .font(.system(size: 12))
                 .foregroundStyle(Theme.muted)
         }
-        .padding(.vertical, 20)
+        .frame(maxHeight: .infinity)
     }
 
     private var footer: some View {
@@ -152,22 +241,54 @@ struct OverlayView: View {
                 }
             }
             .frame(height: 2)
-            HStack {
-                Text("\(model.stepIndex + 1) / \(max(model.totalSteps, 1))")
-                Spacer()
-                if model.isInteractionEnabled { Label("INTERACT", systemImage: "hand.point.up.left") }
-                else {
+            HStack(spacing: 6) {
+                Text("\(model.zoneObjectivePosition) / \(max(model.currentZoneObjectives.count, 1)) OBJECTIVES")
+                Text("•")
+                Text("\(model.stepIndex + 1) / \(max(model.totalSteps, 1)) ROUTE")
+                Spacer(minLength: 4)
+                if model.isInteractionEnabled {
+                    Label("INTERACT", systemImage: "hand.point.up.left")
+                } else {
                     Text("\(model.hotKeys[.previous]?.display ?? "")  \(model.hotKeys[.next]?.display ?? "")")
                 }
             }
-            .font(.system(size: 9, weight: .medium, design: .monospaced))
+            .font(.system(size: 8.5, weight: .medium, design: .monospaced))
             .foregroundStyle(Theme.muted.opacity(0.78))
         }
-        .padding(.top, 12)
+        .padding(.top, 10)
+    }
+
+    private func objectiveColor(_ state: RouteObjectiveState) -> Color {
+        switch state {
+        case .active: Theme.ivory
+        case .pending: Theme.ivory.opacity(0.68)
+        case .completed: Theme.muted.opacity(0.62)
+        case .skipped: Theme.ember.opacity(0.92)
+        }
+    }
+
+    private func stateLabel(_ state: RouteObjectiveState) -> String {
+        switch state {
+        case .active: "Active"
+        case .pending: "Upcoming"
+        case .completed: "Completed"
+        case .skipped: "Skipped"
+        }
     }
 
     private func roman(_ value: Int) -> String {
         ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"][safe: value] ?? "\(value)"
+    }
+}
+
+private struct ObjectiveCrossIndicator: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.move(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        return path
     }
 }
 
@@ -202,6 +323,17 @@ private struct OCRStatusPill: View {
 
 private extension Collection {
     subscript(safe index: Index) -> Element? { indices.contains(index) ? self[index] : nil }
+}
+
+private struct SnapshotRenderingKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var isSnapshotRendering: Bool {
+        get { self[SnapshotRenderingKey.self] }
+        set { self[SnapshotRenderingKey.self] = newValue }
+    }
 }
 
 #if DEBUG

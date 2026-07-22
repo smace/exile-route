@@ -6,6 +6,7 @@ struct SettingsView: View {
     @EnvironmentObject private var model: AppModel
     @State private var selectedSection: Section = .overlay
     @State private var customRouteInput = ""
+    private let buildIdentity = BuildIdentity()
 
     enum Section: String, CaseIterable, Identifiable {
         case overlay = "Overlay"
@@ -65,9 +66,10 @@ struct SettingsView: View {
                 .buttonStyle(.plain)
             }
             Spacer()
-            Text(String(model.snapshotCommit.prefix(8)))
+            Text(buildIdentity.compactDescription)
                 .font(.system(size: 9, design: .monospaced))
                 .foregroundStyle(Theme.muted.opacity(0.7))
+                .help(buildIdentity.accessibleDescription)
         }
         .padding(20)
         .frame(width: 158)
@@ -230,7 +232,11 @@ struct SettingsView: View {
     }
 
     private var about: some View {
-        SettingsCard(title: "Exile Route 1.0.0") {
+        SettingsCard(title: "Exile Route \(buildIdentity.version)") {
+            Text(buildIdentity.compactDescription)
+                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .foregroundStyle(Theme.agedGold)
+                .textSelection(.enabled)
             Text("A native campaign companion for Path of Exile on GeForce NOW.")
                 .foregroundStyle(Theme.ivory)
             Text("Original interface and icons by the Exile Route project. Route data derived from HeartofPhos/exile-leveling under the MIT license. Not affiliated with Grinding Gear Games.")

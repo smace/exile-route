@@ -1,16 +1,16 @@
 # Exile Route
 
-Exile Route is a native macOS campaign overlay for Path of Exile played through GeForce NOW. It keeps the current instruction visible, advances from locally recognized area names, and always remains usable with manual shortcuts.
+Exile Route is a native macOS campaign overlay for Path of Exile played through GeForce NOW. It shows every objective for the current zone, advances between zones from locally recognized area names, and always remains usable with manual shortcuts.
 
 The visual identity is an original dark occult interface made with SwiftUI shapes and a procedurally textured smoked-glass panel. No Path of Exile logo, font, texture, map, or icon is distributed by this project. Exile Route is not affiliated with or endorsed by Grinding Gear Games.
 
 Route content and route-language concepts are derived from [HeartofPhos/exile-leveling](https://github.com/HeartofPhos/exile-leveling), used under its MIT license. The bundled offline snapshot is pinned to commit `bbcc7163bdc6f03e0d2276f2dd8bf32e68db6b16`.
 
-![Compact Exile Route overlay](docs/screenshots/overlay-compact-v1.png)
+![Compact Exile Route zone checklist](docs/screenshots/overlay-compact-zone-checklist.png)
 
-The compact panel stays out of the way while the expanded panel exposes nearby instructions.
+The compact panel keeps the complete checklist for the current zone visible. The expanded panel adds every hint and previews the next two zone visits.
 
-![Expanded Exile Route overlay](docs/screenshots/overlay-expanded-v1.png)
+![Expanded Exile Route zone checklist](docs/screenshots/overlay-expanded-zone-checklist.png)
 
 ## Requirements
 
@@ -35,13 +35,15 @@ Default global shortcuts:
 
 | Action | Shortcut |
 | --- | --- |
-| Previous instruction | `⌃⌥←` |
-| Next instruction | `⌃⌥→` |
+| Reopen previous objective | `⌃⌥←` |
+| Complete current objective | `⌃⌥→` |
 | Compact / expanded | `⌃⌥Space` |
 | Show / hide preview | `⌃⌥O` |
 | Interaction / click-through | `⌃⌥I` |
 
 Shortcuts are configurable in Settings. Interaction mode allows the panel to be moved; Settings also controls opacity, text size, route options, and OCR calibration.
+
+Each zone visit has its own checklist, including its exit as the final objective. Completed objectives are checked, the current objective is highlighted, and upcoming objectives remain visible. If OCR confirms a new zone before every objective is checked, Exile Route marks the unfinished objectives as skipped and displays a four-second warning. Press Previous once to return to the first skipped objective; OCR will not immediately bounce the checklist back to the newer zone.
 
 The menu-bar item provides manual navigation, forced visibility, OCR pause/resume, route updates, settings, and progress reset.
 
@@ -59,7 +61,7 @@ The complete ten-act campaign snapshot is embedded for offline use. Exile Route 
 
 ScreenCaptureKit filters capture to the largest on-screen window owned by `com.nvidia.gfnpc.mall`. Vision reads only the calibrated upper-right region and uses the bundled area names as custom vocabulary.
 
-Frames are processed in memory on the Mac. They are never saved or uploaded. Automatic progression requires two coherent detections, only advances to a nearby expected area, and never regresses. A distant match is presented as a manual suggestion. Previous and next shortcuts remain available at all times.
+Frames are processed in memory on the Mac. They are never saved or uploaded. Automatic progression requires two coherent detections, only selects a nearby expected zone visit, and never regresses. OCR does not attempt to recognize quest items, bosses, or NPC interactions; those objectives remain manual. A distant match is presented as a manual suggestion. Previous and next shortcuts remain available at all times.
 
 ## Build and test
 

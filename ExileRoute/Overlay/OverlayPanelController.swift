@@ -46,10 +46,11 @@ final class OverlayPanelController {
             .sink { [weak self] active, forced in self?.setVisible(active || forced) }
             .store(in: &cancellables)
 
-        model.$isExpanded
-            .removeDuplicates()
+        Publishers.CombineLatest(model.$isExpanded.removeDuplicates(), model.$compactOverlayHeight.removeDuplicates())
             .receive(on: RunLoop.main)
-            .sink { [weak self] expanded in self?.resize(expanded: expanded) }
+            .sink { [weak self] expanded, compactHeight in
+                self?.resize(expanded: expanded, compactHeight: compactHeight)
+            }
             .store(in: &cancellables)
 
         model.$isInteractionEnabled
@@ -64,9 +65,9 @@ final class OverlayPanelController {
             .store(in: &cancellables)
     }
 
-    private func resize(expanded: Bool) {
+    private func resize(expanded: Bool, compactHeight: CGFloat) {
         let oldFrame = panel.frame
-        let size = expanded ? NSSize(width: 460, height: 560) : NSSize(width: 390, height: 210)
+        let size = expanded ? NSSize(width: 460, height: 560) : NSSize(width: 390, height: compactHeight)
         let proposed = NSPoint(x: oldFrame.maxX - size.width, y: oldFrame.maxY - size.height)
         let origin = constrainedOrigin(proposed, size: size, screen: panel.screen ?? NSScreen.main)
         panel.setFrame(NSRect(origin: origin, size: size), display: true, animate: true)

@@ -86,7 +86,28 @@ struct RouteStep: Identifiable, Codable, Hashable, Sendable {
     let displayText: String
     let fragments: [RouteFragment]
     var hints: [String]
+    let contextAreaID: String
     let expectedAreaID: String?
+}
+
+struct RouteVisit: Identifiable, Hashable, Sendable {
+    let id: String
+    let areaID: String
+    let stepRange: Range<Int>
+}
+
+enum RouteObjectiveState: String, Hashable, Sendable {
+    case completed
+    case active
+    case pending
+    case skipped
+}
+
+struct RouteObjective: Identifiable, Hashable, Sendable {
+    var id: String { step.id }
+    let stepIndex: Int
+    let step: RouteStep
+    let state: RouteObjectiveState
 }
 
 struct RouteSection: Identifiable, Codable, Hashable, Sendable {
@@ -102,13 +123,73 @@ struct CampaignRoute: Codable, Hashable, Sendable {
 
     var steps: [RouteStep] { sections.flatMap(\.steps) }
     var expectedAreaIDs: [String] { steps.compactMap(\.expectedAreaID) }
+
+    var visits: [RouteVisit] {
+        let allSteps = steps
+        guard let first = allSteps.first else { return [] }
+
+        var result: [RouteVisit] = []
+        var start = 0
+        var areaID = first.contextAreaID
+
+        for index in 1..<allSteps.count where allSteps[index].contextAreaID != areaID {
+            result.append(RouteVisit(
+                id: "\(allSteps[start].id)-visit",
+                areaID: areaID,
+                stepRange: start..<index
+            ))
+            start = index
+            areaID = allSteps[index].contextAreaID
+        }
+
+        result.append(RouteVisit(
+            id: "\(allSteps[start].id)-visit",
+            areaID: areaID,
+            stepRange: start..<allSteps.count
+        ))
+        return result
+    }
+
+    func visit(containing stepIndex: Int) -> RouteVisit? {
+        visits.first { $0.stepRange.contains(stepIndex) }
+    }
 }
 
 struct ProgressState: Codable, Equatable, Sendable {
-    var stepIndex = 0
+    var stepIndex: Int
     var currentAreaID: String?
-    var completedStepIDs: Set<String> = []
-    var updatedAt = Date()
+    var completedStepIDs: Set<String>
+    var skippedStepIDs: Set<String>
+    var updatedAt: Date
+
+    init(
+        stepIndex: Int = 0,
+        currentAreaID: String? = nil,
+        completedStepIDs: Set<String> = [],
+        skippedStepIDs: Set<String> = [],
+        updatedAt: Date = Date()
+    ) {
+        self.stepIndex = stepIndex
+        self.currentAreaID = currentAreaID
+        self.completedStepIDs = completedStepIDs
+        self.skippedStepIDs = skippedStepIDs
+        self.updatedAt = updatedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        stepIndex = try container.decodeIfPresent(Int.self, forKey: .stepIndex) ?? 0
+        currentAreaID = try container.decodeIfPresent(String.self, forKey: .currentAreaID)
+        completedStepIDs = try container.decodeIfPresent(Set<String>.self, forKey: .completedStepIDs) ?? []
+        skippedStepIDs = try container.decodeIfPresent(Set<String>.self, forKey: .skippedStepIDs) ?? []
+        updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt) ?? Date()
+    }
+}
+
+struct AreaProgressionResult: Equatable, Sendable {
+    let previousAreaID: String?
+    let areaID: String
+    let skippedStepIDs: [String]
 }
 
 struct AreaDetection: Equatable, Sendable {
@@ -127,4 +208,3 @@ enum OCRStatus: Equatable, Sendable {
     case lowConfidence
     case failed(String)
 }
-
