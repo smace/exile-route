@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Request Screen Recording permission at most once per application launch while continuing to detect a permission granted from System Settings.
+- Accept repeated nearby area identifiers without crashing when OCR starts.
+
 All notable changes to Exile Route are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

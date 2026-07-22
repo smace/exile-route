@@ -4,6 +4,32 @@ import CoreVideo
 import Foundation
 @preconcurrency import ScreenCaptureKit
 
+@MainActor
+final class ScreenCapturePermissionGate {
+    private let preflight: () -> Bool
+    private let request: () -> Bool
+    private var hasRequestedAccess = false
+
+    init(
+        preflight: @escaping () -> Bool = CGPreflightScreenCaptureAccess,
+        request: @escaping () -> Bool = CGRequestScreenCaptureAccess
+    ) {
+        self.preflight = preflight
+        self.request = request
+    }
+
+    func ensureAccess() -> Bool {
+        if preflight() {
+            return true
+        }
+        guard !hasRequestedAccess else {
+            return false
+        }
+        hasRequestedAccess = true
+        return request()
+    }
+}
+
 private final class CaptureOutput: NSObject, SCStreamOutput, @unchecked Sendable {
     private let lock = NSLock()
     private var matcher: AreaMatcher
@@ -78,6 +104,7 @@ final class GeForceCaptureService {
 
     private let output: CaptureOutput
     private let onStatus: @MainActor @Sendable (OCRStatus) -> Void
+    private let permissionGate: ScreenCapturePermissionGate
     private let sampleQueue = DispatchQueue(label: "com.swannmace.ExileRoute.ocr", qos: .userInitiated)
     private var stream: SCStream?
     private var isStarting = false
@@ -86,9 +113,11 @@ final class GeForceCaptureService {
         areas: [String: AreaRecord],
         crop: NormalizedRect,
         onDetection: @escaping @MainActor @Sendable (AreaDetection) -> Void,
-        onStatus: @escaping @MainActor @Sendable (OCRStatus) -> Void
+        onStatus: @escaping @MainActor @Sendable (OCRStatus) -> Void,
+        permissionGate: ScreenCapturePermissionGate = ScreenCapturePermissionGate()
     ) {
         self.onStatus = onStatus
+        self.permissionGate = permissionGate
         output = CaptureOutput(areas: areas, crop: crop, onDetection: onDetection, onStatus: onStatus)
     }
 
@@ -101,7 +130,7 @@ final class GeForceCaptureService {
         isStarting = true
         defer { isStarting = false }
 
-        guard CGPreflightScreenCaptureAccess() || CGRequestScreenCaptureAccess() else {
+        guard permissionGate.ensureAccess() else {
             onStatus(.permissionRequired)
             return
         }

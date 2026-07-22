@@ -41,6 +41,14 @@ final class AreaMatcherTests: XCTestCase {
         XCTAssertEqual(result?.areaID, "coast-late")
     }
 
+    func testDuplicateExpectedAreaIDsKeepNearestRank() {
+        let result = AreaMatcher(areas: areas).match(
+            [OCRCandidate(text: "The Coast", confidence: 0.92)],
+            expectedAreaIDs: ["coast", "coast", "passage"]
+        )
+        XCTAssertEqual(result?.areaID, "coast")
+    }
+
     func testRejectsHUDLabelsAndQuestSentences() {
         let matcher = AreaMatcher(areas: areas)
         XCTAssertNil(matcher.match([OCRCandidate(text: "WAYPOINT SHOP MENU", confidence: 1)]))
