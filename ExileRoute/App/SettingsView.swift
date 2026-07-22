@@ -116,11 +116,9 @@ struct SettingsView: View {
                 ), range: 0.8...1.35)
             }
             SettingsCard(title: "Global shortcuts") {
-                shortcut("Previous step", "⌃⌥←")
-                shortcut("Next step", "⌃⌥→")
-                shortcut("Compact / expanded", "⌃⌥Space")
-                shortcut("Overlay visibility", "⌃⌥O")
-                shortcut("Interaction mode", "⌃⌥I")
+                ForEach(HotKeyAction.allCases, id: \.self) { action in
+                    hotKeyRow(action)
+                }
             }
         }
     }
@@ -187,7 +185,7 @@ struct SettingsView: View {
                 }
             }
             SettingsCard(title: "Calibration") {
-                Text("The rectangle uses normalized window coordinates, so one calibration remains valid across resolutions. It targets only the upper-center area title.")
+                Text("The rectangle uses normalized window coordinates, so one calibration remains valid across resolutions. It targets Path of Exile's persistent area label in the upper-right corner.")
                     .font(.system(size: 11))
                     .foregroundStyle(Theme.muted)
                 OCRCalibrationPreview(rect: model.ocrCrop)
@@ -197,7 +195,7 @@ struct SettingsView: View {
                         model.setOCRCrop(.defaultAreaTitle)
                     }
                     ActionButton("16:10 / windowed", icon: "macwindow") {
-                        model.setOCRCrop(NormalizedRect(x: 0.21, y: 0.62, width: 0.58, height: 0.32))
+                        model.setOCRCrop(NormalizedRect(x: 0.68, y: 0.84, width: 0.31, height: 0.15))
                     }
                 }
                 calibrationSlider("Horizontal", keyPath: \.x, range: 0...0.8)
@@ -257,9 +255,37 @@ struct SettingsView: View {
         ), range: range)
     }
 
-    private func shortcut(_ name: String, _ keys: String) -> some View {
-        HStack { Text(name); Spacer(); Text(keys).foregroundStyle(Theme.agedGold) }
-            .font(.system(size: 11, design: .rounded))
+    private func hotKeyRow(_ action: HotKeyAction) -> some View {
+        let definition = model.hotKeys[action] ?? HotKeyDefinition.defaults[action]!
+        return HStack {
+            Text(action.title)
+            Spacer()
+            Picker("Modifiers", selection: Binding(
+                get: { definition.modifiers },
+                set: { modifiers in
+                    var changed = model.hotKeys[action] ?? definition
+                    changed.modifiers = modifiers
+                    model.setHotKey(changed, for: action)
+                }
+            )) {
+                ForEach(HotKeyModifierPreset.allCases, id: \.self) { Text($0.display).tag($0) }
+            }
+            .labelsHidden()
+            .frame(width: 66)
+            Picker("Key", selection: Binding(
+                get: { definition.keyCode },
+                set: { keyCode in
+                    var changed = model.hotKeys[action] ?? definition
+                    changed.keyCode = keyCode
+                    model.setHotKey(changed, for: action)
+                }
+            )) {
+                ForEach(HotKeyDefinition.keyOptions, id: \.code) { Text($0.label).tag($0.code) }
+            }
+            .labelsHidden()
+            .frame(width: 78)
+        }
+        .font(.system(size: 11, design: .rounded))
     }
 
     private func importClipboard() {

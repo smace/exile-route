@@ -9,6 +9,27 @@ struct UserSettings: Codable, Equatable, Sendable {
     var isOCRActive = true
     var ocrCrop = NormalizedRect.defaultAreaTitle
     var overlayFrames: [String: WindowGeometry] = [:]
+    var hotKeys = HotKeyDefinition.defaults
+    var ocrCalibrationVersion = 2
+
+    init() {}
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        routeConfiguration = try container.decodeIfPresent(RouteConfiguration.self, forKey: .routeConfiguration) ?? RouteConfiguration()
+        overlayOpacity = try container.decodeIfPresent(Double.self, forKey: .overlayOpacity) ?? 0.94
+        textScale = try container.decodeIfPresent(Double.self, forKey: .textScale) ?? 1
+        isExpanded = try container.decodeIfPresent(Bool.self, forKey: .isExpanded) ?? false
+        isInteractionEnabled = try container.decodeIfPresent(Bool.self, forKey: .isInteractionEnabled) ?? false
+        isOCRActive = try container.decodeIfPresent(Bool.self, forKey: .isOCRActive) ?? true
+        overlayFrames = try container.decodeIfPresent([String: WindowGeometry].self, forKey: .overlayFrames) ?? [:]
+        hotKeys = try container.decodeIfPresent([HotKeyAction: HotKeyDefinition].self, forKey: .hotKeys) ?? HotKeyDefinition.defaults
+        let storedCalibrationVersion = try container.decodeIfPresent(Int.self, forKey: .ocrCalibrationVersion) ?? 1
+        ocrCrop = storedCalibrationVersion >= 2
+            ? (try container.decodeIfPresent(NormalizedRect.self, forKey: .ocrCrop) ?? .defaultAreaTitle)
+            : .defaultAreaTitle
+        ocrCalibrationVersion = 2
+    }
 }
 
 struct WindowGeometry: Codable, Equatable, Sendable {
@@ -33,7 +54,7 @@ struct NormalizedRect: Codable, Equatable, Sendable {
     var width: Double
     var height: Double
 
-    static let defaultAreaTitle = NormalizedRect(x: 0.25, y: 0.66, width: 0.5, height: 0.28)
+    static let defaultAreaTitle = NormalizedRect(x: 0.72, y: 0.86, width: 0.27, height: 0.13)
 }
 
 struct StoredApplicationState: Codable, Equatable, Sendable {

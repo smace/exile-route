@@ -24,6 +24,7 @@ final class AppModel: ObservableObject {
     @Published var isGeForceNowActive = false
     @Published var forceVisible = false
     @Published var routeConfiguration = RouteConfiguration()
+    @Published var hotKeys = HotKeyDefinition.defaults
 
     private var snapshot: LoadedSnapshot?
     private var progression: ProgressionEngine?
@@ -85,6 +86,11 @@ final class AppModel: ObservableObject {
     }
 
     func toggleOverlay() { forceVisible.toggle() }
+
+    func setHotKey(_ definition: HotKeyDefinition, for action: HotKeyAction) {
+        hotKeys[action] = definition
+        saveSettings()
+    }
 
     func overlayFrame(for screenID: String) -> CGRect? {
         storedState.settings.overlayFrames[screenID]?.rect
@@ -266,6 +272,7 @@ final class AppModel: ObservableObject {
         isInteractionEnabled = settings.isInteractionEnabled
         isOCRActive = settings.isOCRActive
         ocrCrop = settings.ocrCrop
+        hotKeys = settings.hotKeys
     }
 
     private func saveSettings() {
@@ -276,6 +283,7 @@ final class AppModel: ObservableObject {
         storedState.settings.isInteractionEnabled = isInteractionEnabled
         storedState.settings.isOCRActive = isOCRActive
         storedState.settings.ocrCrop = ocrCrop
+        storedState.settings.hotKeys = hotKeys
         try? persist()
     }
 

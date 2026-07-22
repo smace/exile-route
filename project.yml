@@ -47,6 +47,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.swannmace.ExileRoute
         PRODUCT_NAME: ExileRoute
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
   ExileRouteTests:
     type: bundle.unit-test
     platform: macOS

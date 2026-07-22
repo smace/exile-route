@@ -1,37 +1,39 @@
 import Carbon
+import Combine
 import Foundation
 
 @MainActor
 final class GlobalHotKeyManager {
-    enum Action: UInt32, CaseIterable {
-        case previous = 1
-        case next = 2
-        case expand = 3
-        case overlay = 4
-        case interact = 5
-    }
-
     private let model: AppModel
     private var references: [EventHotKeyRef?] = []
     private var handler: EventHandlerRef?
+    private var cancellables: Set<AnyCancellable> = []
 
     init(model: AppModel) {
         self.model = model
         installHandler()
-        register(.previous, keyCode: UInt32(kVK_LeftArrow))
-        register(.next, keyCode: UInt32(kVK_RightArrow))
-        register(.expand, keyCode: UInt32(kVK_Space))
-        register(.overlay, keyCode: UInt32(kVK_ANSI_O))
-        register(.interact, keyCode: UInt32(kVK_ANSI_I))
+        registerAll(model.hotKeys)
+        model.$hotKeys.dropFirst().sink { [weak self] definitions in
+            self?.registerAll(definitions)
+        }.store(in: &cancellables)
     }
 
-    private func register(_ action: Action, keyCode: UInt32) {
+    private func registerAll(_ definitions: [HotKeyAction: HotKeyDefinition]) {
+        references.compactMap { $0 }.forEach { UnregisterEventHotKey($0) }
+        references.removeAll()
+        for action in HotKeyAction.allCases {
+            guard let definition = definitions[action] else { continue }
+            register(action, definition: definition)
+        }
+    }
+
+    private func register(_ action: HotKeyAction, definition: HotKeyDefinition) {
         let signature = OSType(0x45585254) // EXRT
         var reference: EventHotKeyRef?
         RegisterEventHotKey(
-            keyCode,
-            UInt32(controlKey | optionKey),
-            EventHotKeyID(signature: signature, id: action.rawValue),
+            definition.keyCode,
+            definition.modifiers.carbonValue,
+            EventHotKeyID(signature: signature, id: action.identifier),
             GetApplicationEventTarget(),
             0,
             &reference
@@ -57,7 +59,7 @@ final class GlobalHotKeyManager {
                     &hotKey
                 )
                 let manager = Unmanaged<GlobalHotKeyManager>.fromOpaque(userData).takeUnretainedValue()
-                Task { @MainActor in manager.perform(Action(rawValue: hotKey.id)) }
+                Task { @MainActor in manager.perform(HotKeyAction.from(identifier: hotKey.id)) }
                 return noErr
             },
             1,
@@ -67,7 +69,7 @@ final class GlobalHotKeyManager {
         )
     }
 
-    private func perform(_ action: Action?) {
+    private func perform(_ action: HotKeyAction?) {
         switch action {
         case .previous: model.movePrevious()
         case .next: model.moveNext()

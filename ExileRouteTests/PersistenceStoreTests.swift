@@ -13,4 +13,34 @@ final class PersistenceStoreTests: XCTestCase {
         try store.save(state)
         XCTAssertEqual(store.load(), state)
     }
+
+    func testLegacySettingsMigrateToCurrentOCRCalibrationAndHotKeys() throws {
+        let legacyJSON = """
+        {
+          "routeConfiguration" : {
+            "bandit" : "Kill All",
+            "includeLibrary" : false,
+            "leagueStart" : true
+          },
+          "overlayOpacity" : 0.82,
+          "textScale" : 1,
+          "isExpanded" : false,
+          "isInteractionEnabled" : false,
+          "isOCRActive" : true,
+          "ocrCrop" : {
+            "x" : 0.25,
+            "y" : 0.66,
+            "width" : 0.5,
+            "height" : 0.28
+          },
+          "overlayFrames" : {}
+        }
+        """
+
+        let settings = try JSONDecoder().decode(UserSettings.self, from: Data(legacyJSON.utf8))
+
+        XCTAssertEqual(settings.ocrCrop, .defaultAreaTitle)
+        XCTAssertEqual(settings.ocrCalibrationVersion, 2)
+        XCTAssertEqual(settings.hotKeys, HotKeyDefinition.defaults)
+    }
 }

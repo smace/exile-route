@@ -156,7 +156,9 @@ struct OverlayView: View {
                 Text("\(model.stepIndex + 1) / \(max(model.totalSteps, 1))")
                 Spacer()
                 if model.isInteractionEnabled { Label("INTERACT", systemImage: "hand.point.up.left") }
-                else { Text("⌃⌥ ←  →") }
+                else {
+                    Text("\(model.hotKeys[.previous]?.display ?? "")  \(model.hotKeys[.next]?.display ?? "")")
+                }
             }
             .font(.system(size: 9, weight: .medium, design: .monospaced))
             .foregroundStyle(Theme.muted.opacity(0.78))

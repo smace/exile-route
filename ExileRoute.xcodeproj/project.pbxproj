@@ -37,7 +37,9 @@
 		A929F477D6177130D3DBB85C /* OverlaySnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B471C018B222BDC89EE721BB /* OverlaySnapshotTests.swift */; };
 		AE5EC64DF352041DF09511C3 /* GeForceFocusMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1ECF0D84F94BFE670C032B /* GeForceFocusMonitor.swift */; };
 		AE9E521574CCF5A8CA9EDBEA /* quests.json in Resources */ = {isa = PBXBuildFile; fileRef = 68F14A261244D9DE2016E00B /* quests.json */; };
+		B0B176FF20FD9119A1A3E898 /* HotKeyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A65F48BEFEEB935F0B77F3 /* HotKeyModels.swift */; };
 		B22D81BE6DF535C9D915BEA1 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6597EDCF5E65784A4EE407 /* OverlayView.swift */; };
+		B3B50685D7B826CB5123FF5F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BA1CE4FBC3ACB0D6886059B /* Assets.xcassets */; };
 		B533E9F42B0865C3B8D42F52 /* AreaMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */; };
 		B8334A3D879296846677FE78 /* act-9.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */; };
 		BF6DA72A844BE1D7D1C88C0A /* AreaMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A5AC59DB8EF7DCB9320598 /* AreaMatcherTests.swift */; };
@@ -76,6 +78,7 @@
 		20B63D13F76286B7E6A1E982 /* act-2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-2.txt"; sourceTree = "<group>"; };
 		25C9889B5BE7391EF121191E /* act-10.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-10.txt"; sourceTree = "<group>"; };
 		287582EAA32640B393F8014F /* GeForceCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeForceCaptureService.swift; sourceTree = "<group>"; };
+		2BA1CE4FBC3ACB0D6886059B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		37674D32B38E2A9A44980E7A /* SnapshotLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotLoader.swift; sourceTree = "<group>"; };
 		3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngineTests.swift; sourceTree = "<group>"; };
 		4636E50F0E4570C0A330AE4C /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
@@ -105,6 +108,7 @@
 		B7A271BBAC4401F041113890 /* VisionTextRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionTextRecognizer.swift; sourceTree = "<group>"; };
 		C081A0147FDA70064D923AAB /* areas.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = areas.json; sourceTree = "<group>"; };
 		C1F1BFF692552AC8E88C6303 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		C3A65F48BEFEEB935F0B77F3 /* HotKeyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyModels.swift; sourceTree = "<group>"; };
 		C63E273738B44F053BF903C9 /* RouteModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteModels.swift; sourceTree = "<group>"; };
 		C8FA100CB4C9D37F749B5300 /* act-8.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-8.txt"; sourceTree = "<group>"; };
 		D48F352004392C73B71C0633 /* RouteImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteImportService.swift; sourceTree = "<group>"; };
@@ -146,6 +150,7 @@
 		3FD51F80C9BAB80E518055E6 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				C3A65F48BEFEEB935F0B77F3 /* HotKeyModels.swift */,
 				9A375E3BD9165529105C6148 /* ProgressionEngine.swift */,
 				C63E273738B44F053BF903C9 /* RouteModels.swift */,
 				50ADA137C8C7694C7EB2268C /* RouteParser.swift */,
@@ -188,6 +193,7 @@
 		706FB02D33C87A05D134F349 /* ExileRoute */ = {
 			isa = PBXGroup;
 			children = (
+				2BA1CE4FBC3ACB0D6886059B /* Assets.xcassets */,
 				7B42F7D36D93EE136088161E /* Info.plist */,
 				6FBA34B2EACC098FD4C4FD9C /* App */,
 				3FD51F80C9BAB80E518055E6 /* Core */,
@@ -366,6 +372,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3B50685D7B826CB5123FF5F /* Assets.xcassets in Resources */,
 				2159428629C5EB5061216A08 /* Cinzel-VariableFont_wght.ttf in Resources */,
 				EB4DC99ADD977AF324BD8C5A /* act-1.txt in Resources */,
 				749F518BDA5EC6D02F2D857E /* act-10.txt in Resources */,
@@ -405,6 +412,7 @@
 				94E292B0F4B274DC2F41BF04 /* GeForceCaptureService.swift in Sources */,
 				AE5EC64DF352041DF09511C3 /* GeForceFocusMonitor.swift in Sources */,
 				978266701530084BE6B655A2 /* GlobalHotKeyManager.swift in Sources */,
+				B0B176FF20FD9119A1A3E898 /* HotKeyModels.swift in Sources */,
 				F6DBE02ED14A156F9633E95E /* OCRCoordinator.swift in Sources */,
 				E5E76C0FE7C522A698A5FAB2 /* OccultComponents.swift in Sources */,
 				7F1B1D8AC646ADC3A29AFC93 /* OverlayPanelController.swift in Sources */,

@@ -16,6 +16,7 @@ final class StatusBarController: NSObject {
         item.button?.toolTip = "Exile Route"
         rebuildMenu()
         model.$statusText.sink { [weak self] _ in self?.rebuildMenu() }.store(in: &cancellables)
+        model.$hotKeys.dropFirst().sink { [weak self] _ in self?.rebuildMenu() }.store(in: &cancellables)
     }
 
     private func rebuildMenu() {
@@ -24,11 +25,11 @@ final class StatusBarController: NSObject {
         status.isEnabled = false
         menu.addItem(status)
         menu.addItem(.separator())
-        add("Previous step", action: #selector(previous), shortcut: "⌃⌥←", to: menu)
-        add("Next step", action: #selector(next), shortcut: "⌃⌥→", to: menu)
-        add(model.isExpanded ? "Compact overlay" : "Expand route", action: #selector(expand), shortcut: "⌃⌥Space", to: menu)
-        add(model.forceVisible ? "Use automatic visibility" : "Show overlay preview", action: #selector(toggleOverlay), shortcut: "⌃⌥O", to: menu)
-        add(model.isInteractionEnabled ? "Enable click-through" : "Interaction mode", action: #selector(interact), shortcut: "⌃⌥I", to: menu)
+        add("Previous step", action: #selector(previous), shortcut: shortcut(.previous), to: menu)
+        add("Next step", action: #selector(next), shortcut: shortcut(.next), to: menu)
+        add(model.isExpanded ? "Compact overlay" : "Expand route", action: #selector(expand), shortcut: shortcut(.expand), to: menu)
+        add(model.forceVisible ? "Use automatic visibility" : "Show overlay preview", action: #selector(toggleOverlay), shortcut: shortcut(.overlay), to: menu)
+        add(model.isInteractionEnabled ? "Enable click-through" : "Interaction mode", action: #selector(interact), shortcut: shortcut(.interact), to: menu)
         menu.addItem(.separator())
         add("Settings…", action: #selector(openSettings), shortcut: "", to: menu)
         add("Check route updates", action: #selector(updateRoutes), shortcut: "", to: menu)
@@ -45,6 +46,10 @@ final class StatusBarController: NSObject {
         menu.addItem(entry)
     }
 
+    private func shortcut(_ action: HotKeyAction) -> String {
+        model.hotKeys[action]?.display ?? ""
+    }
+
     @objc private func previous() { model.movePrevious() }
     @objc private func next() { model.moveNext() }
     @objc private func expand() { model.toggleExpanded(); rebuildMenu() }
@@ -58,4 +63,3 @@ final class StatusBarController: NSObject {
     }
     @objc private func quit() { NSApp.terminate(nil) }
 }
-
