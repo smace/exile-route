@@ -5,6 +5,7 @@ import Combine
 final class StatusBarController: NSObject {
     private let model: AppModel
     private let item: NSStatusItem
+    private let buildIdentity = BuildIdentity()
     private var cancellables: Set<AnyCancellable> = []
 
     init(model: AppModel) {
@@ -37,6 +38,10 @@ final class StatusBarController: NSObject {
         add("Check route updates", action: #selector(updateRoutes), shortcut: "", to: menu)
         add("Reset progress", action: #selector(reset), shortcut: "", to: menu)
         menu.addItem(.separator())
+        let version = NSMenuItem(title: buildIdentity.compactDescription, action: nil, keyEquivalent: "")
+        version.isEnabled = false
+        version.toolTip = buildIdentity.accessibleDescription
+        menu.addItem(version)
         add("Quit Exile Route", action: #selector(quit), shortcut: "⌘Q", to: menu)
         item.menu = menu
     }

@@ -7,6 +7,7 @@
 - Display every objective of the current zone visit as a compact checklist, with completed, active, upcoming, and skipped states.
 - Preview the next two zone visits in expanded mode and expose all hints there.
 - Warn for four seconds when a zone transition skips unfinished objectives, with one-key recovery through Previous.
+- Show the application version, build number, and exact Git revision in the menu bar and About settings.
 
 ### Changed
 

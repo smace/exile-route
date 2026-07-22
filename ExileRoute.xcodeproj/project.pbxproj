@@ -11,6 +11,7 @@
 		02C7AD9515D01D6713986320 /* PersistenceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5373E9B2423DA2434444016E /* PersistenceStoreTests.swift */; };
 		03C8B58982768B30DE81155B /* ocr-cases.json in Resources */ = {isa = PBXBuildFile; fileRef = 5024E361BE8A8371643DD609 /* ocr-cases.json */; };
 		09DDBC455276DC4325A83933 /* ProgressionEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */; };
+		1A90E1807DC0554CFA1F23D3 /* BuildIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E63C95995BC4D225BA4823E /* BuildIdentity.swift */; };
 		1BEF2A479CA08BF96390C8CB /* RouteImportServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11C1B2BB9C6CCA274A1CD0E /* RouteImportServiceTests.swift */; };
 		1E18A8B50678FBF24BC4753F /* act-8.txt in Resources */ = {isa = PBXBuildFile; fileRef = C8FA100CB4C9D37F749B5300 /* act-8.txt */; };
 		2159428629C5EB5061216A08 /* Cinzel-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */; };
@@ -18,6 +19,7 @@
 		2ECBF7D81A51887F177BEA81 /* RouteModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63E273738B44F053BF903C9 /* RouteModels.swift */; };
 		3FFDB80FE59DB3B25CD43E6D /* areas.json in Resources */ = {isa = PBXBuildFile; fileRef = C081A0147FDA70064D923AAB /* areas.json */; };
 		4089DA0F91132DDCF0A069E6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DFFE2E166145DD0A5A6103 /* SettingsView.swift */; };
+		4FC464C707F81DCCFDC53CF1 /* BuildIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4794166D318020F38266DAF1 /* BuildIdentityTests.swift */; };
 		551A9A65DC8E98DAC73D9DA9 /* ProgressionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A375E3BD9165529105C6148 /* ProgressionEngine.swift */; };
 		5CD057D3EE50ACE8266AF9C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC49B056A4392A4306C828A9 /* AppDelegate.swift */; };
 		64CAD7084FC2B2D08166C348 /* snapshot-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 61CB359F2248E1E03747BF57 /* snapshot-manifest.json */; };
@@ -82,6 +84,7 @@
 		37674D32B38E2A9A44980E7A /* SnapshotLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotLoader.swift; sourceTree = "<group>"; };
 		3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngineTests.swift; sourceTree = "<group>"; };
 		4636E50F0E4570C0A330AE4C /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		4794166D318020F38266DAF1 /* BuildIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildIdentityTests.swift; sourceTree = "<group>"; };
 		4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-9.txt"; sourceTree = "<group>"; };
 		4B82C5322B3069491DB59541 /* OccultComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OccultComponents.swift; sourceTree = "<group>"; };
 		4B9408EEBA8DD715578C1C59 /* act-4.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-4.txt"; sourceTree = "<group>"; };
@@ -97,6 +100,7 @@
 		7DB95752AA137C85F80E04F7 /* OverlayPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayPanelController.swift; sourceTree = "<group>"; };
 		820911039C2921F74A474B6D /* RouteUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteUpdateService.swift; sourceTree = "<group>"; };
 		88FBA05AE396FA4D9397C21A /* PersistenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceStore.swift; sourceTree = "<group>"; };
+		8E63C95995BC4D225BA4823E /* BuildIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildIdentity.swift; sourceTree = "<group>"; };
 		8F018473E49E8C0B9EB7E302 /* GlobalHotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotKeyManager.swift; sourceTree = "<group>"; };
 		983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaMatcher.swift; sourceTree = "<group>"; };
 		9A375E3BD9165529105C6148 /* ProgressionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngine.swift; sourceTree = "<group>"; };
@@ -173,6 +177,7 @@
 			children = (
 				DC49B056A4392A4306C828A9 /* AppDelegate.swift */,
 				4636E50F0E4570C0A330AE4C /* AppModel.swift */,
+				8E63C95995BC4D225BA4823E /* BuildIdentity.swift */,
 				14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */,
 				DE1ECF0D84F94BFE670C032B /* GeForceFocusMonitor.swift */,
 				8F018473E49E8C0B9EB7E302 /* GlobalHotKeyManager.swift */,
@@ -228,6 +233,7 @@
 			children = (
 				D7A5AC59DB8EF7DCB9320598 /* AreaMatcherTests.swift */,
 				A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */,
+				4794166D318020F38266DAF1 /* BuildIdentityTests.swift */,
 				B471C018B222BDC89EE721BB /* OverlaySnapshotTests.swift */,
 				5373E9B2423DA2434444016E /* PersistenceStoreTests.swift */,
 				3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */,
@@ -297,6 +303,7 @@
 			buildPhases = (
 				95EC647C51F6FA06160B197E /* Sources */,
 				1C6D146400BF25396F556489 /* Resources */,
+				84EC0D39276865AA3FA7E5D3 /* Stamp Git revision */,
 			);
 			buildRules = (
 			);
@@ -400,6 +407,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		84EC0D39276865AA3FA7E5D3 /* Stamp Git revision */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Stamp Git revision";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "revision=$(/usr/bin/git -C \"$SRCROOT\" rev-parse --short=8 HEAD 2>/dev/null || /usr/bin/printf unknown)\nif ! /usr/bin/git -C \"$SRCROOT\" diff --quiet --ignore-submodules HEAD 2>/dev/null; then\n  revision=\"${revision}-dirty\"\nfi\nresource_directory=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\n/bin/mkdir -p \"$resource_directory\"\n/usr/bin/printf \"%s\\n\" \"$revision\" > \"$resource_directory/build-revision.txt\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		95EC647C51F6FA06160B197E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -408,6 +437,7 @@
 				5CD057D3EE50ACE8266AF9C4 /* AppDelegate.swift in Sources */,
 				21D062B4D4B589D8860CCB1F /* AppModel.swift in Sources */,
 				B533E9F42B0865C3B8D42F52 /* AreaMatcher.swift in Sources */,
+				1A90E1807DC0554CFA1F23D3 /* BuildIdentity.swift in Sources */,
 				FD0F35F97A876BF8DD0E5D41 /* ExileRouteApp.swift in Sources */,
 				94E292B0F4B274DC2F41BF04 /* GeForceCaptureService.swift in Sources */,
 				AE5EC64DF352041DF09511C3 /* GeForceFocusMonitor.swift in Sources */,
@@ -437,6 +467,7 @@
 			files = (
 				BF6DA72A844BE1D7D1C88C0A /* AreaMatcherTests.swift in Sources */,
 				781544046908BAED56B330BF /* BootstrapTests.swift in Sources */,
+				4FC464C707F81DCCFDC53CF1 /* BuildIdentityTests.swift in Sources */,
 				A929F477D6177130D3DBB85C /* OverlaySnapshotTests.swift in Sources */,
 				02C7AD9515D01D6713986320 /* PersistenceStoreTests.swift in Sources */,
 				09DDBC455276DC4325A83933 /* ProgressionEngineTests.swift in Sources */,
@@ -479,6 +510,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = ExileRoute/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -647,6 +679,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = ExileRoute/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
