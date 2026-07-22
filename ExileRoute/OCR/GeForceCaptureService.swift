@@ -2,7 +2,7 @@ import CoreGraphics
 import CoreMedia
 import CoreVideo
 import Foundation
-import ScreenCaptureKit
+@preconcurrency import ScreenCaptureKit
 
 private final class CaptureOutput: NSObject, SCStreamOutput, @unchecked Sendable {
     private let lock = NSLock()
