@@ -24,8 +24,36 @@ final class RouteParserTests: XCTestCase {
         )
         XCTAssertEqual(route.steps.count, 3)
         XCTAssertEqual(route.steps[1].displayText, "→ Lioneye's Watch")
+        XCTAssertEqual(route.steps[1].contextAreaID, "1_1_1")
         XCTAssertEqual(route.steps[2].expectedAreaID, "1_1_2")
+        XCTAssertEqual(route.steps[2].contextAreaID, "1_1_town")
         XCTAssertEqual(route.steps[2].hints, ["Follow the shore"])
+    }
+
+    func testBuildsDistinctVisitsAcrossWaypointLogoutAndPortalReturn() throws {
+        let source = """
+        Find start
+        ➞ {enter|1_1_town}
+        Hand in reward
+        {waypoint|1_1_2}
+        Find item
+        {portal|set}
+        {logout}
+        Hand in town
+        Take {portal|use}
+        Find returned item
+        """
+        let route = try RouteParser(areas: areas, quests: [:]).parse(
+            sources: [("Act 1", source)],
+            configuration: RouteConfiguration()
+        )
+
+        XCTAssertEqual(route.visits.map(\.areaID), [
+            "1_1_1", "1_1_town", "1_1_2", "1_1_town", "1_1_2"
+        ])
+        XCTAssertEqual(route.visits.map { $0.stepRange.count }, [2, 2, 3, 2, 1])
+        XCTAssertEqual(route.steps[6].expectedAreaID, "1_1_town")
+        XCTAssertEqual(route.steps[8].expectedAreaID, "1_1_2")
     }
 
     func testExcludesDisabledConditional() throws {
@@ -41,6 +69,50 @@ final class RouteParserTests: XCTestCase {
             configuration: RouteConfiguration(leagueStart: false)
         )
         XCTAssertEqual(route.steps.map(\.displayText), ["Find start"])
+    }
+
+    func testLeagueLibraryBanditAndArenaConditionsKeepZoneContext() throws {
+        let source = """
+        Always
+        #ifdef LEAGUE_START
+        League objective
+        #endif
+        #ifdef LIBRARY
+        Library objective
+        #endif
+        #ifdef BANDIT_KILL
+        Kill all bandits
+        #endif
+        #ifdef BANDIT_ALIRA
+        Help Alira
+        #endif
+        #ifdef BANDIT_KRAITYN
+        Help Kraityn
+        #endif
+        #ifdef BANDIT_OAK
+        Help Oak
+        #endif
+        Enter {arena|The Arena}, kill {kill|Arena Boss}
+        """
+
+        let configurations: [(RouteConfiguration, String)] = [
+            (RouteConfiguration(leagueStart: true, includeLibrary: true, bandit: .killAll), "Kill all bandits"),
+            (RouteConfiguration(leagueStart: false, includeLibrary: false, bandit: .alira), "Help Alira"),
+            (RouteConfiguration(leagueStart: false, includeLibrary: false, bandit: .kraityn), "Help Kraityn"),
+            (RouteConfiguration(leagueStart: false, includeLibrary: false, bandit: .oak), "Help Oak")
+        ]
+
+        for (configuration, expectedBandit) in configurations {
+            let route = try RouteParser(areas: areas, quests: [:]).parse(
+                sources: [("Act 1", source)],
+                configuration: configuration
+            )
+            XCTAssertTrue(route.steps.contains(where: { $0.displayText == expectedBandit }))
+            XCTAssertEqual(route.steps.last?.fragments.first?.kind, .arena)
+            XCTAssertEqual(route.steps.last?.contextAreaID, "1_1_1")
+            XCTAssertNil(route.steps.last?.expectedAreaID)
+            XCTAssertEqual(route.visits.count, 1)
+        }
     }
 
     func testRejectsUnbalancedCondition() {
@@ -76,5 +148,7 @@ final class RouteParserTests: XCTestCase {
         XCTAssertEqual(route.sections.count, 10)
         XCTAssertGreaterThan(route.steps.count, 350)
         XCTAssertGreaterThan(route.expectedAreaIDs.count, 150)
+        XCTAssertGreaterThan(route.visits.count, 200)
+        XCTAssertTrue(route.visits.allSatisfy { !$0.stepRange.isEmpty })
     }
 }

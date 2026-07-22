@@ -72,6 +72,7 @@ struct RouteParser: Sendable {
                 }
 
                 let rendered = render(line)
+                let contextAreaID = currentAreaID
                 var expectedAreaID: String?
 
                 for fragment in rendered.fragments {
@@ -88,9 +89,9 @@ struct RouteParser: Sendable {
                         lastTownAreaID = destination
                         expectedAreaID = destination
                     case .portal:
-                        if fragment.value == "set" {
+                        if fragment.parameters.first == "set" {
                             portalAreaID = currentAreaID
-                        } else if fragment.value == "use", let destination = portalAreaID {
+                        } else if fragment.parameters.first == "use", let destination = portalAreaID {
                             currentAreaID = destination
                             expectedAreaID = destination
                         }
@@ -108,6 +109,7 @@ struct RouteParser: Sendable {
                     displayText: rendered.text,
                     fragments: rendered.fragments,
                     hints: [],
+                    contextAreaID: contextAreaID,
                     expectedAreaID: expectedAreaID
                 ))
             }
@@ -180,4 +182,3 @@ struct RouteParser: Sendable {
         }
     }
 }
-

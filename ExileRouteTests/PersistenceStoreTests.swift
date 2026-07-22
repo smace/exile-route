@@ -43,4 +43,22 @@ final class PersistenceStoreTests: XCTestCase {
         XCTAssertEqual(settings.ocrCalibrationVersion, 2)
         XCTAssertEqual(settings.hotKeys, HotKeyDefinition.defaults)
     }
+
+    func testLegacyProgressWithoutSkippedObjectivesDecodes() throws {
+        let legacyJSON = """
+        {
+          "stepIndex" : 7,
+          "currentAreaID" : "1_1_2",
+          "completedStepIDs" : ["one", "two"],
+          "updatedAt" : 12345
+        }
+        """
+
+        let progress = try JSONDecoder().decode(ProgressState.self, from: Data(legacyJSON.utf8))
+
+        XCTAssertEqual(progress.stepIndex, 7)
+        XCTAssertEqual(progress.currentAreaID, "1_1_2")
+        XCTAssertEqual(progress.completedStepIDs, ["one", "two"])
+        XCTAssertEqual(progress.skippedStepIDs, [])
+    }
 }

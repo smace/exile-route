@@ -3,6 +3,11 @@ import Combine
 import Foundation
 import SwiftUI
 
+struct ZoneTransitionNotice: Equatable, Sendable {
+    let skippedCount: Int
+    let previousAreaName: String
+}
+
 @MainActor
 final class AppModel: ObservableObject {
     @Published private(set) var route: CampaignRoute?
@@ -25,6 +30,8 @@ final class AppModel: ObservableObject {
     @Published var forceVisible = false
     @Published var routeConfiguration = RouteConfiguration()
     @Published var hotKeys = HotKeyDefinition.defaults
+    @Published private(set) var transitionNotice: ZoneTransitionNotice?
+    @Published private(set) var compactOverlayHeight: CGFloat = 210
 
     private var snapshot: LoadedSnapshot?
     private var progression: ProgressionEngine?
@@ -33,6 +40,7 @@ final class AppModel: ObservableObject {
     private let updateService = RouteUpdateService()
     private var remoteDetectionID: String?
     private var remoteDetectionCount = 0
+    private var noticeTask: Task<Void, Never>?
 
     init(persistence: PersistenceStore = PersistenceStore()) {
         self.persistence = persistence
@@ -52,17 +60,35 @@ final class AppModel: ObservableObject {
         return Array(route.steps[stepIndex..<end].compactMap(\.expectedAreaID))
     }
     var currentAct: Int { currentStep?.act ?? 1 }
+    var currentVisit: RouteVisit? { progression?.currentVisit }
+    var currentZoneObjectives: [RouteObjective] { progression?.currentObjectives ?? [] }
+    var upcomingVisits: [RouteVisit] {
+        guard let route, let currentVisit,
+              let currentIndex = route.visits.firstIndex(where: { $0.id == currentVisit.id }) else { return [] }
+        let start = currentIndex + 1
+        let end = min(route.visits.count, start + 2)
+        guard start < end else { return [] }
+        return Array(route.visits[start..<end])
+    }
+    var zoneObjectivePosition: Int {
+        guard let active = currentZoneObjectives.firstIndex(where: { $0.state == .active }) else {
+            return currentZoneObjectives.count
+        }
+        return active + 1
+    }
     var progressFraction: Double {
         guard totalSteps > 1 else { return 0 }
         return Double(stepIndex) / Double(totalSteps - 1)
     }
 
     func moveNext() {
+        clearTransitionNotice()
         progression?.moveNext()
         synchronizeFromEngine(announce: true)
     }
 
     func movePrevious() {
+        clearTransitionNotice()
         progression?.movePrevious()
         synchronizeFromEngine(announce: false)
     }
@@ -108,6 +134,7 @@ final class AppModel: ObservableObject {
 
     func setTextScale(_ value: Double) {
         textScale = min(max(value, 0.8), 1.35)
+        updateCompactOverlayHeight()
         saveSettings()
     }
 
@@ -127,8 +154,9 @@ final class AppModel: ObservableObject {
 
     func acceptSuggestedAreaJump() {
         guard let areaID = suggestedAreaDetection?.areaID,
-              progression?.jumpForward(toAreaID: areaID) == true else { return }
+              let result = progression?.jumpForward(toAreaID: areaID) else { return }
         suggestedAreaDetection = nil
+        presentTransitionNotice(for: result)
         synchronizeFromEngine(announce: true)
     }
 
@@ -190,15 +218,17 @@ final class AppModel: ObservableObject {
 
     func consumeDetection(_ detection: AreaDetection) {
         ocrStatus = detection.confidence >= 0.55 ? .recognized(detection.text) : .lowConfidence
-        if progression?.consume(detection) == true {
+        if let result = progression?.consume(detection) {
             suggestedAreaDetection = nil
             remoteDetectionID = nil
             remoteDetectionCount = 0
+            presentTransitionNotice(for: result)
             synchronizeFromEngine(announce: true)
             return
         }
 
         guard detection.confidence >= 0.7, let areaID = detection.areaID,
+              progression?.suppressesJump(to: areaID) == false,
               let route, let futureIndex = route.steps[stepIndex...].firstIndex(where: { $0.expectedAreaID == areaID }),
               futureIndex > stepIndex + 6 else { return }
         if remoteDetectionID == areaID { remoteDetectionCount += 1 }
@@ -256,13 +286,61 @@ final class AppModel: ObservableObject {
         totalSteps = progression.route.steps.count
         currentStep = progression.currentStep
         nextStep = progression.nextStep
-        if let areaID = progression.currentStep?.expectedAreaID,
+        if let areaID = progression.progress.currentAreaID ?? progression.currentStep?.contextAreaID,
            let areaName = snapshot?.areas[areaID]?.name {
             currentAreaName = areaName
         }
         storedState.progress = progression.progress
         try? persist()
+        updateCompactOverlayHeight()
         if announce, let step = progression.currentStep { statusText = step.displayText }
+    }
+
+    func areaName(for areaID: String) -> String {
+        snapshot?.areas[areaID]?.name ?? areaID
+    }
+
+    func objectives(in visit: RouteVisit) -> [RouteObjective] {
+        progression?.objectives(in: visit) ?? []
+    }
+
+    private func presentTransitionNotice(for result: AreaProgressionResult) {
+        guard !result.skippedStepIDs.isEmpty else {
+            clearTransitionNotice()
+            return
+        }
+        let previousName = result.previousAreaID.map(areaName(for:)) ?? "Previous area"
+        transitionNotice = ZoneTransitionNotice(
+            skippedCount: result.skippedStepIDs.count,
+            previousAreaName: previousName
+        )
+        noticeTask?.cancel()
+        noticeTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(4))
+            guard !Task.isCancelled else { return }
+            self?.transitionNotice = nil
+            self?.updateCompactOverlayHeight()
+        }
+        updateCompactOverlayHeight()
+    }
+
+    private func clearTransitionNotice() {
+        noticeTask?.cancel()
+        noticeTask = nil
+        transitionNotice = nil
+        updateCompactOverlayHeight()
+    }
+
+    private func updateCompactOverlayHeight() {
+        let charactersPerLine = max(24, Int(42 / textScale))
+        let rowHeight = currentZoneObjectives.reduce(CGFloat.zero) { partial, objective in
+            let lines = max(1, Int(ceil(Double(objective.step.displayText.count) / Double(charactersPerLine))))
+            return partial + CGFloat(lines) * 18 * textScale + 12
+        }
+        let activeHints = currentZoneObjectives.first(where: { $0.state == .active })?.step.hints ?? []
+        let hintHeight = CGFloat(activeHints.prefix(3).count) * 22 * textScale
+        let noticeHeight: CGFloat = transitionNotice == nil ? 0 : 34
+        compactOverlayHeight = min(520, max(210, 116 + rowHeight + hintHeight + noticeHeight))
     }
 
     private func apply(_ settings: UserSettings) {
