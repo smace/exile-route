@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		02178CD92903D0F2545B0571 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4C6F22A96D7E43AB94F4D0 /* StatusBarController.swift */; };
 		02C7AD9515D01D6713986320 /* PersistenceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5373E9B2423DA2434444016E /* PersistenceStoreTests.swift */; };
+		03C8B58982768B30DE81155B /* ocr-cases.json in Resources */ = {isa = PBXBuildFile; fileRef = 5024E361BE8A8371643DD609 /* ocr-cases.json */; };
 		09DDBC455276DC4325A83933 /* ProgressionEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */; };
 		1E18A8B50678FBF24BC4753F /* act-8.txt in Resources */ = {isa = PBXBuildFile; fileRef = C8FA100CB4C9D37F749B5300 /* act-8.txt */; };
 		2159428629C5EB5061216A08 /* Cinzel-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */; };
@@ -27,6 +28,7 @@
 		7F1B1D8AC646ADC3A29AFC93 /* OverlayPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB95752AA137C85F80E04F7 /* OverlayPanelController.swift */; };
 		8A261A0872CCD3B857A61B04 /* RouteUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820911039C2921F74A474B6D /* RouteUpdateService.swift */; };
 		8B0260AFD54251D986F57C6C /* RouteParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FB073B03C05C7A451BB266 /* RouteParserTests.swift */; };
+		94E292B0F4B274DC2F41BF04 /* GeForceCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287582EAA32640B393F8014F /* GeForceCaptureService.swift */; };
 		95785E9CD2866E1833DF4C57 /* act-6.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC403E9E9FB26E5A0E7693DA /* act-6.txt */; };
 		95BDFA1CAC7DA717BDD686CD /* act-4.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4B9408EEBA8DD715578C1C59 /* act-4.txt */; };
 		978266701530084BE6B655A2 /* GlobalHotKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F018473E49E8C0B9EB7E302 /* GlobalHotKeyManager.swift */; };
@@ -34,11 +36,15 @@
 		AE5EC64DF352041DF09511C3 /* GeForceFocusMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1ECF0D84F94BFE670C032B /* GeForceFocusMonitor.swift */; };
 		AE9E521574CCF5A8CA9EDBEA /* quests.json in Resources */ = {isa = PBXBuildFile; fileRef = 68F14A261244D9DE2016E00B /* quests.json */; };
 		B22D81BE6DF535C9D915BEA1 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D6597EDCF5E65784A4EE407 /* OverlayView.swift */; };
+		B533E9F42B0865C3B8D42F52 /* AreaMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */; };
 		B8334A3D879296846677FE78 /* act-9.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */; };
+		BF6DA72A844BE1D7D1C88C0A /* AreaMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A5AC59DB8EF7DCB9320598 /* AreaMatcherTests.swift */; };
 		C3473E8DF3C32A9E60F64B87 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F1BFF692552AC8E88C6303 /* Theme.swift */; };
 		DF792B7E954F605E6868D229 /* act-5.txt in Resources */ = {isa = PBXBuildFile; fileRef = 03B4E9D31656F27AFAE97558 /* act-5.txt */; };
 		E5E76C0FE7C522A698A5FAB2 /* OccultComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B82C5322B3069491DB59541 /* OccultComponents.swift */; };
 		EB4DC99ADD977AF324BD8C5A /* act-1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5B1725BA02480B51D68F99C3 /* act-1.txt */; };
+		EBF4ACF9BFC51C19B70E0692 /* VisionTextRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A271BBAC4401F041113890 /* VisionTextRecognizer.swift */; };
+		F6DBE02ED14A156F9633E95E /* OCRCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECFDAC36928DF67FA358AA2 /* OCRCoordinator.swift */; };
 		F754413F57174B14D009A1B6 /* PersistenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FBA05AE396FA4D9397C21A /* PersistenceStore.swift */; };
 		FB6BB8B1A4E3EA1F1F346014 /* act-2.txt in Resources */ = {isa = PBXBuildFile; fileRef = 20B63D13F76286B7E6A1E982 /* act-2.txt */; };
 		FD0F35F97A876BF8DD0E5D41 /* ExileRouteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */; };
@@ -65,12 +71,14 @@
 		1C4C6F22A96D7E43AB94F4D0 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		20B63D13F76286B7E6A1E982 /* act-2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-2.txt"; sourceTree = "<group>"; };
 		25C9889B5BE7391EF121191E /* act-10.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-10.txt"; sourceTree = "<group>"; };
+		287582EAA32640B393F8014F /* GeForceCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeForceCaptureService.swift; sourceTree = "<group>"; };
 		37674D32B38E2A9A44980E7A /* SnapshotLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotLoader.swift; sourceTree = "<group>"; };
 		3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngineTests.swift; sourceTree = "<group>"; };
 		4636E50F0E4570C0A330AE4C /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-9.txt"; sourceTree = "<group>"; };
 		4B82C5322B3069491DB59541 /* OccultComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OccultComponents.swift; sourceTree = "<group>"; };
 		4B9408EEBA8DD715578C1C59 /* act-4.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-4.txt"; sourceTree = "<group>"; };
+		5024E361BE8A8371643DD609 /* ocr-cases.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ocr-cases.json"; sourceTree = "<group>"; };
 		50ADA137C8C7694C7EB2268C /* RouteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteParser.swift; sourceTree = "<group>"; };
 		5373E9B2423DA2434444016E /* PersistenceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceStoreTests.swift; sourceTree = "<group>"; };
 		5B1725BA02480B51D68F99C3 /* act-1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-1.txt"; sourceTree = "<group>"; };
@@ -83,15 +91,19 @@
 		820911039C2921F74A474B6D /* RouteUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteUpdateService.swift; sourceTree = "<group>"; };
 		88FBA05AE396FA4D9397C21A /* PersistenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceStore.swift; sourceTree = "<group>"; };
 		8F018473E49E8C0B9EB7E302 /* GlobalHotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotKeyManager.swift; sourceTree = "<group>"; };
+		983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaMatcher.swift; sourceTree = "<group>"; };
 		9A375E3BD9165529105C6148 /* ProgressionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngine.swift; sourceTree = "<group>"; };
 		A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapTests.swift; sourceTree = "<group>"; };
 		AA32EA53128F2C0B376F371B /* ExileRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExileRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AECFDAC36928DF67FA358AA2 /* OCRCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRCoordinator.swift; sourceTree = "<group>"; };
 		B4DFFE2E166145DD0A5A6103 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B7A271BBAC4401F041113890 /* VisionTextRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionTextRecognizer.swift; sourceTree = "<group>"; };
 		C081A0147FDA70064D923AAB /* areas.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = areas.json; sourceTree = "<group>"; };
 		C1F1BFF692552AC8E88C6303 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		C63E273738B44F053BF903C9 /* RouteModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteModels.swift; sourceTree = "<group>"; };
 		C8FA100CB4C9D37F749B5300 /* act-8.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-8.txt"; sourceTree = "<group>"; };
 		D48F352004392C73B71C0633 /* RouteImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteImportService.swift; sourceTree = "<group>"; };
+		D7A5AC59DB8EF7DCB9320598 /* AreaMatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaMatcherTests.swift; sourceTree = "<group>"; };
 		DC49B056A4392A4306C828A9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DE1ECF0D84F94BFE670C032B /* GeForceFocusMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeForceFocusMonitor.swift; sourceTree = "<group>"; };
 		FC403E9E9FB26E5A0E7693DA /* act-6.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-6.txt"; sourceTree = "<group>"; };
@@ -159,6 +171,14 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		70096872A79A922AD486F6F0 /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				5024E361BE8A8371643DD609 /* ocr-cases.json */,
+			);
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
 		706FB02D33C87A05D134F349 /* ExileRoute */ = {
 			isa = PBXGroup;
 			children = (
@@ -194,10 +214,12 @@
 		92B3AE1DFB3FFFFA2538FDF4 /* ExileRouteTests */ = {
 			isa = PBXGroup;
 			children = (
+				D7A5AC59DB8EF7DCB9320598 /* AreaMatcherTests.swift */,
 				A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */,
 				5373E9B2423DA2434444016E /* PersistenceStoreTests.swift */,
 				3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */,
 				18FB073B03C05C7A451BB266 /* RouteParserTests.swift */,
+				70096872A79A922AD486F6F0 /* Fixtures */,
 			);
 			path = ExileRouteTests;
 			sourceTree = "<group>";
@@ -235,6 +257,10 @@
 		F4ACD2CFD8FF45AC99404437 /* OCR */ = {
 			isa = PBXGroup;
 			children = (
+				983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */,
+				287582EAA32640B393F8014F /* GeForceCaptureService.swift */,
+				AECFDAC36928DF67FA358AA2 /* OCRCoordinator.swift */,
+				B7A271BBAC4401F041113890 /* VisionTextRecognizer.swift */,
 			);
 			path = OCR;
 			sourceTree = "<group>";
@@ -273,6 +299,7 @@
 			buildConfigurationList = 0E74395B9708D00E4DA3EA10 /* Build configuration list for PBXNativeTarget "ExileRouteTests" */;
 			buildPhases = (
 				CC6AB999A0A1BAC9D49B203A /* Sources */,
+				41F07B7B7EFCEEA3A9B4F330 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -347,6 +374,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		41F07B7B7EFCEEA3A9B4F330 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03C8B58982768B30DE81155B /* ocr-cases.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -356,9 +391,12 @@
 			files = (
 				5CD057D3EE50ACE8266AF9C4 /* AppDelegate.swift in Sources */,
 				21D062B4D4B589D8860CCB1F /* AppModel.swift in Sources */,
+				B533E9F42B0865C3B8D42F52 /* AreaMatcher.swift in Sources */,
 				FD0F35F97A876BF8DD0E5D41 /* ExileRouteApp.swift in Sources */,
+				94E292B0F4B274DC2F41BF04 /* GeForceCaptureService.swift in Sources */,
 				AE5EC64DF352041DF09511C3 /* GeForceFocusMonitor.swift in Sources */,
 				978266701530084BE6B655A2 /* GlobalHotKeyManager.swift in Sources */,
+				F6DBE02ED14A156F9633E95E /* OCRCoordinator.swift in Sources */,
 				E5E76C0FE7C522A698A5FAB2 /* OccultComponents.swift in Sources */,
 				7F1B1D8AC646ADC3A29AFC93 /* OverlayPanelController.swift in Sources */,
 				B22D81BE6DF535C9D915BEA1 /* OverlayView.swift in Sources */,
@@ -372,6 +410,7 @@
 				FF2BFE1E01A6129F2317EF90 /* SnapshotLoader.swift in Sources */,
 				02178CD92903D0F2545B0571 /* StatusBarController.swift in Sources */,
 				C3473E8DF3C32A9E60F64B87 /* Theme.swift in Sources */,
+				EBF4ACF9BFC51C19B70E0692 /* VisionTextRecognizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,6 +418,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF6DA72A844BE1D7D1C88C0A /* AreaMatcherTests.swift in Sources */,
 				781544046908BAED56B330BF /* BootstrapTests.swift in Sources */,
 				02C7AD9515D01D6713986320 /* PersistenceStoreTests.swift in Sources */,
 				09DDBC455276DC4325A83933 /* ProgressionEngineTests.swift in Sources */,

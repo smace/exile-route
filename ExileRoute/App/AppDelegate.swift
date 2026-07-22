@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarController: StatusBarController?
     private var focusMonitor: GeForceFocusMonitor?
     private var hotKeyManager: GlobalHotKeyManager?
+    private var ocrCoordinator: OCRCoordinator?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -14,5 +15,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarController = StatusBarController(model: model)
         focusMonitor = GeForceFocusMonitor(model: model)
         hotKeyManager = GlobalHotKeyManager(model: model)
+        ocrCoordinator = OCRCoordinator(model: model)
     }
 }

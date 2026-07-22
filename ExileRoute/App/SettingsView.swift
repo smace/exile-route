@@ -175,14 +175,36 @@ struct SettingsView: View {
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(Theme.ivory)
                 }
+                if let suggestion = model.suggestedAreaDetection {
+                    Divider().overlay(Theme.brass.opacity(0.3))
+                    Text("A distant area was recognized: \(suggestion.text). Exile Route will never jump there automatically.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.ember)
+                    HStack {
+                        ActionButton("Jump to area", icon: "arrow.forward.to.line") { model.acceptSuggestedAreaJump() }
+                        ActionButton("Dismiss", icon: "xmark") { model.dismissSuggestedAreaJump() }
+                    }
+                }
             }
             SettingsCard(title: "Calibration") {
-                Text("The default capture region targets the upper-center area title. Use calibration while Path of Exile is visible if your stream layout differs.")
+                Text("The rectangle uses normalized window coordinates, so one calibration remains valid across resolutions. It targets only the upper-center area title.")
                     .font(.system(size: 11))
                     .foregroundStyle(Theme.muted)
-                ActionButton("Calibrate capture region", icon: "viewfinder") {
-                    model.statusText = "Calibration opens when GeForce NOW is active"
+                OCRCalibrationPreview(rect: model.ocrCrop)
+                    .frame(height: 150)
+                HStack {
+                    ActionButton("16:9 fullscreen", icon: "rectangle.ratio.16.to.9") {
+                        model.setOCRCrop(.defaultAreaTitle)
+                    }
+                    ActionButton("16:10 / windowed", icon: "macwindow") {
+                        model.setOCRCrop(NormalizedRect(x: 0.21, y: 0.62, width: 0.58, height: 0.32))
+                    }
                 }
+                calibrationSlider("Horizontal", keyPath: \.x, range: 0...0.8)
+                calibrationSlider("Vertical", keyPath: \.y, range: 0...0.9)
+                calibrationSlider("Width", keyPath: \.width, range: 0.15...0.8)
+                calibrationSlider("Height", keyPath: \.height, range: 0.08...0.45)
+                ActionButton("Reset calibration", icon: "arrow.counterclockwise") { model.resetOCRCrop() }
             }
         }
     }
@@ -218,6 +240,21 @@ struct SettingsView: View {
                 model.applyRouteConfiguration(config)
             }
         )
+    }
+
+    private func calibrationSlider(
+        _ title: String,
+        keyPath: WritableKeyPath<NormalizedRect, Double>,
+        range: ClosedRange<Double>
+    ) -> some View {
+        LabeledSlider(title: title, value: Binding(
+            get: { model.ocrCrop[keyPath: keyPath] },
+            set: { value in
+                var crop = model.ocrCrop
+                crop[keyPath: keyPath] = value
+                model.setOCRCrop(crop)
+            }
+        ), range: range)
     }
 
     private func shortcut(_ name: String, _ keys: String) -> some View {
@@ -269,6 +306,54 @@ struct SettingsView: View {
         case .permissionRequired, .failed: Theme.danger
         case .lowConfidence: Theme.ember
         default: Theme.muted
+        }
+    }
+}
+
+private struct OCRCalibrationPreview: View {
+    let rect: NormalizedRect
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                LinearGradient(
+                    colors: [Theme.smokedSurface, Theme.obsidian],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                VStack(spacing: 5) {
+                    Text("GEFORCE NOW WINDOW")
+                        .font(.system(size: 8, weight: .medium, design: .monospaced))
+                        .foregroundStyle(Theme.muted.opacity(0.55))
+                    Spacer()
+                }
+                .padding(8)
+                Path { path in
+                    let width = geometry.size.width * rect.width
+                    let height = geometry.size.height * rect.height
+                    let x = geometry.size.width * rect.x
+                    let y = geometry.size.height * (1 - rect.y - rect.height)
+                    path.addRoundedRect(in: CGRect(x: x, y: y, width: width, height: height), cornerSize: CGSize(width: 5, height: 5))
+                }
+                .fill(Theme.waypointCyan.opacity(0.12))
+                Path { path in
+                    let width = geometry.size.width * rect.width
+                    let height = geometry.size.height * rect.height
+                    let x = geometry.size.width * rect.x
+                    let y = geometry.size.height * (1 - rect.y - rect.height)
+                    path.addRoundedRect(in: CGRect(x: x, y: y, width: width, height: height), cornerSize: CGSize(width: 5, height: 5))
+                }
+                .stroke(Theme.waypointCyan, style: StrokeStyle(lineWidth: 1, dash: [5, 4]))
+                Text("AREA TITLE")
+                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                    .foregroundStyle(Theme.waypointCyan)
+                    .position(
+                        x: geometry.size.width * (rect.x + rect.width / 2),
+                        y: geometry.size.height * (1 - rect.y - rect.height / 2)
+                    )
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 7))
+            .overlay(RoundedRectangle(cornerRadius: 7).stroke(Theme.brass.opacity(0.25)))
         }
     }
 }

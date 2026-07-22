@@ -37,5 +37,23 @@ final class ProgressionEngineTests: XCTestCase {
         engine.moveNext()
         XCTAssertEqual(engine.progress.stepIndex, 2)
     }
-}
 
+    func testDistantJumpRequiresExplicitCommand() {
+        let distantRoute = CampaignRoute(source: "fixture", sections: [
+            RouteSection(name: "Act 1", act: 1, steps: (0..<12).map { index in
+                RouteStep(
+                    id: "\(index)", act: 1, line: index + 1, rawText: "step",
+                    displayText: "Step \(index)", fragments: [], hints: [],
+                    expectedAreaID: index == 10 ? "far" : nil
+                )
+            })
+        ])
+        var engine = ProgressionEngine(route: distantRoute)
+        let detection = AreaDetection(text: "Far", areaID: "far", confidence: 0.95, timestamp: Date())
+        XCTAssertFalse(engine.consume(detection, forwardWindow: 6))
+        XCTAssertFalse(engine.consume(detection, forwardWindow: 6))
+        XCTAssertEqual(engine.progress.stepIndex, 0)
+        XCTAssertTrue(engine.jumpForward(toAreaID: "far"))
+        XCTAssertEqual(engine.progress.stepIndex, 10)
+    }
+}

@@ -29,6 +29,19 @@ struct ProgressionEngine: Sendable {
         progress.updatedAt = Date()
     }
 
+    @discardableResult
+    mutating func jumpForward(toAreaID areaID: String) -> Bool {
+        guard let match = route.steps[progress.stepIndex...].firstIndex(where: { $0.expectedAreaID == areaID }),
+              match >= progress.stepIndex else { return false }
+        for index in progress.stepIndex..<match { progress.completedStepIDs.insert(route.steps[index].id) }
+        progress.stepIndex = match
+        progress.currentAreaID = areaID
+        progress.updatedAt = Date()
+        pendingAreaID = nil
+        pendingCount = 0
+        return true
+    }
+
     mutating func consume(_ detection: AreaDetection, confirmationCount: Int = 2, forwardWindow: Int = 6) -> Bool {
         guard detection.confidence >= 0.55, let areaID = detection.areaID else {
             pendingAreaID = nil
@@ -62,4 +75,3 @@ private extension Collection {
         indices.contains(index) ? self[index] : nil
     }
 }
-

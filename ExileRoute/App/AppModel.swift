@@ -19,6 +19,8 @@ final class AppModel: ObservableObject {
     @Published var overlayOpacity = 0.94
     @Published var textScale = 1.0
     @Published var isOCRActive = true
+    @Published var ocrCrop = NormalizedRect.defaultAreaTitle
+    @Published private(set) var suggestedAreaDetection: AreaDetection?
     @Published var isGeForceNowActive = false
     @Published var forceVisible = false
     @Published var routeConfiguration = RouteConfiguration()
@@ -28,6 +30,8 @@ final class AppModel: ObservableObject {
     private var storedState: StoredApplicationState
     private let persistence: PersistenceStore
     private let updateService = RouteUpdateService()
+    private var remoteDetectionID: String?
+    private var remoteDetectionCount = 0
 
     init(persistence: PersistenceStore = PersistenceStore()) {
         self.persistence = persistence
@@ -39,6 +43,13 @@ final class AppModel: ObservableObject {
     }
 
     var shouldShowOverlay: Bool { forceVisible || isGeForceNowActive }
+    var areaRecords: [String: AreaRecord] { snapshot?.areas ?? [:] }
+    var nearbyExpectedAreaIDs: [String] {
+        guard let route else { return [] }
+        let end = min(route.steps.count, stepIndex + 8)
+        guard stepIndex < end else { return [] }
+        return Array(route.steps[stepIndex..<end].compactMap(\.expectedAreaID))
+    }
     var currentAct: Int { currentStep?.act ?? 1 }
     var progressFraction: Double {
         guard totalSteps > 1 else { return 0 }
@@ -100,6 +111,26 @@ final class AppModel: ObservableObject {
         saveSettings()
     }
 
+    func setOCRCrop(_ crop: NormalizedRect) {
+        ocrCrop = crop.clamped
+        saveSettings()
+    }
+
+    func resetOCRCrop() { setOCRCrop(.defaultAreaTitle) }
+
+    func acceptSuggestedAreaJump() {
+        guard let areaID = suggestedAreaDetection?.areaID,
+              progression?.jumpForward(toAreaID: areaID) == true else { return }
+        suggestedAreaDetection = nil
+        synchronizeFromEngine(announce: true)
+    }
+
+    func dismissSuggestedAreaJump() {
+        suggestedAreaDetection = nil
+        remoteDetectionID = nil
+        remoteDetectionCount = 0
+    }
+
     func applyRouteConfiguration(_ configuration: RouteConfiguration) {
         routeConfiguration = configuration
         rebuildRoute(reset: true)
@@ -149,9 +180,21 @@ final class AppModel: ObservableObject {
     }
 
     func consumeDetection(_ detection: AreaDetection) {
-        guard progression?.consume(detection) == true else { return }
-        ocrStatus = .recognized(detection.text)
-        synchronizeFromEngine(announce: true)
+        ocrStatus = detection.confidence >= 0.55 ? .recognized(detection.text) : .lowConfidence
+        if progression?.consume(detection) == true {
+            suggestedAreaDetection = nil
+            remoteDetectionID = nil
+            remoteDetectionCount = 0
+            synchronizeFromEngine(announce: true)
+            return
+        }
+
+        guard detection.confidence >= 0.7, let areaID = detection.areaID,
+              let route, let futureIndex = route.steps[stepIndex...].firstIndex(where: { $0.expectedAreaID == areaID }),
+              futureIndex > stepIndex + 6 else { return }
+        if remoteDetectionID == areaID { remoteDetectionCount += 1 }
+        else { remoteDetectionID = areaID; remoteDetectionCount = 1 }
+        if remoteDetectionCount >= 2 { suggestedAreaDetection = detection }
     }
 
     private func loadBundledRoute() {
@@ -210,6 +253,7 @@ final class AppModel: ObservableObject {
         isExpanded = settings.isExpanded
         isInteractionEnabled = settings.isInteractionEnabled
         isOCRActive = settings.isOCRActive
+        ocrCrop = settings.ocrCrop
     }
 
     private func saveSettings() {
@@ -219,8 +263,22 @@ final class AppModel: ObservableObject {
         storedState.settings.isExpanded = isExpanded
         storedState.settings.isInteractionEnabled = isInteractionEnabled
         storedState.settings.isOCRActive = isOCRActive
+        storedState.settings.ocrCrop = ocrCrop
         try? persist()
     }
 
     private func persist() throws { try persistence.save(storedState) }
+}
+
+private extension NormalizedRect {
+    var clamped: NormalizedRect {
+        let clampedX = min(max(x, 0), 0.95)
+        let clampedY = min(max(y, 0), 0.95)
+        return NormalizedRect(
+            x: clampedX,
+            y: clampedY,
+            width: min(max(width, 0.05), 1 - clampedX),
+            height: min(max(height, 0.05), 1 - clampedY)
+        )
+    }
 }

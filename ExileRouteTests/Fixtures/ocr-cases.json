@@ -1,0 +1,23 @@
+[
+  {
+    "name": "retina-16-9-dark",
+    "resolution": "2560x1440",
+    "text": "THE COAST",
+    "confidence": 0.94,
+    "expectedAreaID": "coast"
+  },
+  {
+    "name": "windowed-16-10-light",
+    "resolution": "1920x1200",
+    "text": "Lioneye's Watch",
+    "confidence": 0.86,
+    "expectedAreaID": "town"
+  },
+  {
+    "name": "compressed-stream-glyph-noise",
+    "resolution": "1440x900",
+    "text": "The Subrnerged Passage",
+    "confidence": 0.78,
+    "expectedAreaID": "passage"
+  }
+]
