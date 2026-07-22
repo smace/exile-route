@@ -17,6 +17,7 @@ final class StatusBarController: NSObject {
         rebuildMenu()
         model.$statusText.sink { [weak self] _ in self?.rebuildMenu() }.store(in: &cancellables)
         model.$hotKeys.dropFirst().sink { [weak self] _ in self?.rebuildMenu() }.store(in: &cancellables)
+        model.$isOCRActive.dropFirst().sink { [weak self] _ in self?.rebuildMenu() }.store(in: &cancellables)
     }
 
     private func rebuildMenu() {
@@ -30,6 +31,7 @@ final class StatusBarController: NSObject {
         add(model.isExpanded ? "Compact overlay" : "Expand route", action: #selector(expand), shortcut: shortcut(.expand), to: menu)
         add(model.forceVisible ? "Use automatic visibility" : "Show overlay preview", action: #selector(toggleOverlay), shortcut: shortcut(.overlay), to: menu)
         add(model.isInteractionEnabled ? "Enable click-through" : "Interaction mode", action: #selector(interact), shortcut: shortcut(.interact), to: menu)
+        add(model.isOCRActive ? "Pause area recognition" : "Resume area recognition", action: #selector(toggleOCR), shortcut: "", to: menu)
         menu.addItem(.separator())
         add("Settings…", action: #selector(openSettings), shortcut: "", to: menu)
         add("Check route updates", action: #selector(updateRoutes), shortcut: "", to: menu)
@@ -55,6 +57,7 @@ final class StatusBarController: NSObject {
     @objc private func expand() { model.toggleExpanded(); rebuildMenu() }
     @objc private func toggleOverlay() { model.toggleOverlay(); rebuildMenu() }
     @objc private func interact() { model.toggleInteraction(); rebuildMenu() }
+    @objc private func toggleOCR() { model.setOCRActive(!model.isOCRActive); rebuildMenu() }
     @objc private func reset() { model.resetProgress() }
     @objc private func updateRoutes() { Task { await model.updateRoutes() } }
     @objc private func openSettings() {

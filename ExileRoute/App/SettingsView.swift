@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 struct SettingsView: View {
     @EnvironmentObject private var model: AppModel
     @State private var selectedSection: Section = .overlay
+    @State private var customRouteInput = ""
 
     enum Section: String, CaseIterable, Identifiable {
         case overlay = "Overlay"
@@ -136,9 +137,30 @@ struct SettingsView: View {
                 }
             }
             SettingsCard(title: "Custom route") {
+                TextEditor(text: $customRouteInput)
+                    .font(.system(size: 11, design: .monospaced))
+                    .scrollContentBackground(.hidden)
+                    .frame(minHeight: 78)
+                    .padding(7)
+                    .background(Theme.obsidian.opacity(0.58))
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Theme.brass.opacity(0.22)))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                Text("Paste route text, an HTTPS URL, or a Pastebin URL.")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Theme.muted)
                 HStack {
+                    ActionButton("Import text / URL", icon: "text.badge.plus") {
+                        guard !customRouteInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                            model.statusText = "Enter route text or an HTTPS URL"
+                            return
+                        }
+                        Task { await model.importRoute(customRouteInput) }
+                    }
                     ActionButton("Import file", icon: "doc.badge.plus", action: importFile)
+                }
+                HStack {
                     ActionButton("Import clipboard", icon: "clipboard", action: importClipboard)
+                    ActionButton("Export clipboard", icon: "doc.on.clipboard", action: exportClipboard)
                 }
                 HStack {
                     ActionButton("Export…", icon: "square.and.arrow.up", action: exportRoute)
@@ -312,6 +334,13 @@ struct SettingsView: View {
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do { try model.exportRoute(to: url); model.statusText = "Route exported" }
         catch { model.statusText = error.localizedDescription }
+    }
+
+    private func exportClipboard() {
+        guard let source = model.route?.source else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(source, forType: .string)
+        model.statusText = "Route copied to clipboard"
     }
 
     private var ocrDescription: String {

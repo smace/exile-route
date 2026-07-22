@@ -113,7 +113,8 @@ final class AppModel: ObservableObject {
 
     func setOCRActive(_ active: Bool) {
         isOCRActive = active
-        if !active { ocrStatus = .disabled }
+        ocrStatus = active ? .waitingForGeForceNow : .disabled
+        statusText = active ? "Area recognition resumed" : "Area recognition paused"
         saveSettings()
     }
 
