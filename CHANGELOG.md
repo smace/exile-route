@@ -2,8 +2,20 @@
 
 ## Unreleased
 
+### Added
+
+- Display every objective of the current zone visit as a compact checklist, with completed, active, upcoming, and skipped states.
+- Preview the next two zone visits in expanded mode and expose all hints there.
+- Warn for four seconds when a zone transition skips unfinished objectives, with one-key recovery through Previous.
+
+### Changed
+
+- Make Previous and Next navigate individual objectives while OCR remains responsible only for confirmed zone changes.
+- Treat each repeated passage through an area as a distinct route visit and include its exit as the final objective.
+
 ### Fixed
 
+- Preserve the source-zone context for transitions and correctly distinguish portal creation from portal use.
 - Request Screen Recording permission at most once per application launch while continuing to detect a permission granted from System Settings.
 - Accept repeated nearby area identifiers without crashing when OCR starts.
 
