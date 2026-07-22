@@ -7,13 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02C7AD9515D01D6713986320 /* PersistenceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5373E9B2423DA2434444016E /* PersistenceStoreTests.swift */; };
+		09DDBC455276DC4325A83933 /* ProgressionEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */; };
+		1E18A8B50678FBF24BC4753F /* act-8.txt in Resources */ = {isa = PBXBuildFile; fileRef = C8FA100CB4C9D37F749B5300 /* act-8.txt */; };
 		2159428629C5EB5061216A08 /* Cinzel-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */; };
 		21D062B4D4B589D8860CCB1F /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4636E50F0E4570C0A330AE4C /* AppModel.swift */; };
+		2ECBF7D81A51887F177BEA81 /* RouteModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63E273738B44F053BF903C9 /* RouteModels.swift */; };
+		3FFDB80FE59DB3B25CD43E6D /* areas.json in Resources */ = {isa = PBXBuildFile; fileRef = C081A0147FDA70064D923AAB /* areas.json */; };
 		4089DA0F91132DDCF0A069E6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4DFFE2E166145DD0A5A6103 /* SettingsView.swift */; };
+		551A9A65DC8E98DAC73D9DA9 /* ProgressionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A375E3BD9165529105C6148 /* ProgressionEngine.swift */; };
 		5CD057D3EE50ACE8266AF9C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC49B056A4392A4306C828A9 /* AppDelegate.swift */; };
+		64CAD7084FC2B2D08166C348 /* snapshot-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 61CB359F2248E1E03747BF57 /* snapshot-manifest.json */; };
+		674297E862D03D071F58E358 /* RouteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ADA137C8C7694C7EB2268C /* RouteParser.swift */; };
+		749F518BDA5EC6D02F2D857E /* act-10.txt in Resources */ = {isa = PBXBuildFile; fileRef = 25C9889B5BE7391EF121191E /* act-10.txt */; };
 		781544046908BAED56B330BF /* BootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */; };
+		79509EE0D2D3F8DDA2B6C334 /* act-3.txt in Resources */ = {isa = PBXBuildFile; fileRef = 71F35C1923493C1995C9E8C4 /* act-3.txt */; };
+		7ACD4E9701271CCF3C6BEC88 /* act-7.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0EE617D75BCAFA60DAD3DA4E /* act-7.txt */; };
+		8A261A0872CCD3B857A61B04 /* RouteUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820911039C2921F74A474B6D /* RouteUpdateService.swift */; };
+		8B0260AFD54251D986F57C6C /* RouteParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FB073B03C05C7A451BB266 /* RouteParserTests.swift */; };
+		95785E9CD2866E1833DF4C57 /* act-6.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC403E9E9FB26E5A0E7693DA /* act-6.txt */; };
+		95BDFA1CAC7DA717BDD686CD /* act-4.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4B9408EEBA8DD715578C1C59 /* act-4.txt */; };
+		98B4B523827C0745B8DA8B7B /* RouteImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48F352004392C73B71C0633 /* RouteImportService.swift */; };
+		AE9E521574CCF5A8CA9EDBEA /* quests.json in Resources */ = {isa = PBXBuildFile; fileRef = 68F14A261244D9DE2016E00B /* quests.json */; };
+		B8334A3D879296846677FE78 /* act-9.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */; };
 		C3473E8DF3C32A9E60F64B87 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F1BFF692552AC8E88C6303 /* Theme.swift */; };
+		DF792B7E954F605E6868D229 /* act-5.txt in Resources */ = {isa = PBXBuildFile; fileRef = 03B4E9D31656F27AFAE97558 /* act-5.txt */; };
+		EB4DC99ADD977AF324BD8C5A /* act-1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5B1725BA02480B51D68F99C3 /* act-1.txt */; };
+		F754413F57174B14D009A1B6 /* PersistenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FBA05AE396FA4D9397C21A /* PersistenceStore.swift */; };
+		FB6BB8B1A4E3EA1F1F346014 /* act-2.txt in Resources */ = {isa = PBXBuildFile; fileRef = 20B63D13F76286B7E6A1E982 /* act-2.txt */; };
 		FD0F35F97A876BF8DD0E5D41 /* ExileRouteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */; };
+		FF2BFE1E01A6129F2317EF90 /* SnapshotLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37674D32B38E2A9A44980E7A /* SnapshotLoader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,16 +50,39 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03B4E9D31656F27AFAE97558 /* act-5.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-5.txt"; sourceTree = "<group>"; };
 		0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cinzel-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		0EE617D75BCAFA60DAD3DA4E /* act-7.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-7.txt"; sourceTree = "<group>"; };
 		14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExileRouteApp.swift; sourceTree = "<group>"; };
+		18FB073B03C05C7A451BB266 /* RouteParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteParserTests.swift; sourceTree = "<group>"; };
+		20B63D13F76286B7E6A1E982 /* act-2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-2.txt"; sourceTree = "<group>"; };
+		25C9889B5BE7391EF121191E /* act-10.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-10.txt"; sourceTree = "<group>"; };
+		37674D32B38E2A9A44980E7A /* SnapshotLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotLoader.swift; sourceTree = "<group>"; };
+		3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngineTests.swift; sourceTree = "<group>"; };
 		4636E50F0E4570C0A330AE4C /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-9.txt"; sourceTree = "<group>"; };
+		4B9408EEBA8DD715578C1C59 /* act-4.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-4.txt"; sourceTree = "<group>"; };
+		50ADA137C8C7694C7EB2268C /* RouteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteParser.swift; sourceTree = "<group>"; };
+		5373E9B2423DA2434444016E /* PersistenceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceStoreTests.swift; sourceTree = "<group>"; };
+		5B1725BA02480B51D68F99C3 /* act-1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-1.txt"; sourceTree = "<group>"; };
+		61CB359F2248E1E03747BF57 /* snapshot-manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "snapshot-manifest.json"; sourceTree = "<group>"; };
+		68F14A261244D9DE2016E00B /* quests.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = quests.json; sourceTree = "<group>"; };
+		71F35C1923493C1995C9E8C4 /* act-3.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-3.txt"; sourceTree = "<group>"; };
 		7300D5DE3C42F848285D08EC /* ExileRouteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExileRouteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B42F7D36D93EE136088161E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		820911039C2921F74A474B6D /* RouteUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteUpdateService.swift; sourceTree = "<group>"; };
+		88FBA05AE396FA4D9397C21A /* PersistenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceStore.swift; sourceTree = "<group>"; };
+		9A375E3BD9165529105C6148 /* ProgressionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngine.swift; sourceTree = "<group>"; };
 		A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapTests.swift; sourceTree = "<group>"; };
 		AA32EA53128F2C0B376F371B /* ExileRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExileRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4DFFE2E166145DD0A5A6103 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C081A0147FDA70064D923AAB /* areas.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = areas.json; sourceTree = "<group>"; };
 		C1F1BFF692552AC8E88C6303 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		C63E273738B44F053BF903C9 /* RouteModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteModels.swift; sourceTree = "<group>"; };
+		C8FA100CB4C9D37F749B5300 /* act-8.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-8.txt"; sourceTree = "<group>"; };
+		D48F352004392C73B71C0633 /* RouteImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteImportService.swift; sourceTree = "<group>"; };
 		DC49B056A4392A4306C828A9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		FC403E9E9FB26E5A0E7693DA /* act-6.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-6.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -59,6 +105,8 @@
 		3816C8F85656B91285ECEF5F /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				C081A0147FDA70064D923AAB /* areas.json */,
+				68F14A261244D9DE2016E00B /* quests.json */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -66,6 +114,10 @@
 		3FD51F80C9BAB80E518055E6 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				9A375E3BD9165529105C6148 /* ProgressionEngine.swift */,
+				C63E273738B44F053BF903C9 /* RouteModels.swift */,
+				50ADA137C8C7694C7EB2268C /* RouteParser.swift */,
+				37674D32B38E2A9A44980E7A /* SnapshotLoader.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -108,6 +160,16 @@
 		795276587F06A74080A11BE7 /* Routes */ = {
 			isa = PBXGroup;
 			children = (
+				5B1725BA02480B51D68F99C3 /* act-1.txt */,
+				20B63D13F76286B7E6A1E982 /* act-2.txt */,
+				71F35C1923493C1995C9E8C4 /* act-3.txt */,
+				4B9408EEBA8DD715578C1C59 /* act-4.txt */,
+				03B4E9D31656F27AFAE97558 /* act-5.txt */,
+				FC403E9E9FB26E5A0E7693DA /* act-6.txt */,
+				0EE617D75BCAFA60DAD3DA4E /* act-7.txt */,
+				C8FA100CB4C9D37F749B5300 /* act-8.txt */,
+				4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */,
+				25C9889B5BE7391EF121191E /* act-10.txt */,
 			);
 			path = Routes;
 			sourceTree = "<group>";
@@ -116,6 +178,9 @@
 			isa = PBXGroup;
 			children = (
 				A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */,
+				5373E9B2423DA2434444016E /* PersistenceStoreTests.swift */,
+				3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */,
+				18FB073B03C05C7A451BB266 /* RouteParserTests.swift */,
 			);
 			path = ExileRouteTests;
 			sourceTree = "<group>";
@@ -131,6 +196,9 @@
 		CB132C555FA513F7A46852AB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				88FBA05AE396FA4D9397C21A /* PersistenceStore.swift */,
+				D48F352004392C73B71C0633 /* RouteImportService.swift */,
+				820911039C2921F74A474B6D /* RouteUpdateService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -138,6 +206,7 @@
 		CE5EB0DEB1BB90F09CB339C6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				61CB359F2248E1E03747BF57 /* snapshot-manifest.json */,
 				3816C8F85656B91285ECEF5F /* Data */,
 				FDD3A7BDECB6BD41E8B6B2D3 /* Fonts */,
 				795276587F06A74080A11BE7 /* Routes */,
@@ -244,6 +313,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				2159428629C5EB5061216A08 /* Cinzel-VariableFont_wght.ttf in Resources */,
+				EB4DC99ADD977AF324BD8C5A /* act-1.txt in Resources */,
+				749F518BDA5EC6D02F2D857E /* act-10.txt in Resources */,
+				FB6BB8B1A4E3EA1F1F346014 /* act-2.txt in Resources */,
+				79509EE0D2D3F8DDA2B6C334 /* act-3.txt in Resources */,
+				95BDFA1CAC7DA717BDD686CD /* act-4.txt in Resources */,
+				DF792B7E954F605E6868D229 /* act-5.txt in Resources */,
+				95785E9CD2866E1833DF4C57 /* act-6.txt in Resources */,
+				7ACD4E9701271CCF3C6BEC88 /* act-7.txt in Resources */,
+				1E18A8B50678FBF24BC4753F /* act-8.txt in Resources */,
+				B8334A3D879296846677FE78 /* act-9.txt in Resources */,
+				3FFDB80FE59DB3B25CD43E6D /* areas.json in Resources */,
+				AE9E521574CCF5A8CA9EDBEA /* quests.json in Resources */,
+				64CAD7084FC2B2D08166C348 /* snapshot-manifest.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +339,14 @@
 				5CD057D3EE50ACE8266AF9C4 /* AppDelegate.swift in Sources */,
 				21D062B4D4B589D8860CCB1F /* AppModel.swift in Sources */,
 				FD0F35F97A876BF8DD0E5D41 /* ExileRouteApp.swift in Sources */,
+				F754413F57174B14D009A1B6 /* PersistenceStore.swift in Sources */,
+				551A9A65DC8E98DAC73D9DA9 /* ProgressionEngine.swift in Sources */,
+				98B4B523827C0745B8DA8B7B /* RouteImportService.swift in Sources */,
+				2ECBF7D81A51887F177BEA81 /* RouteModels.swift in Sources */,
+				674297E862D03D071F58E358 /* RouteParser.swift in Sources */,
+				8A261A0872CCD3B857A61B04 /* RouteUpdateService.swift in Sources */,
 				4089DA0F91132DDCF0A069E6 /* SettingsView.swift in Sources */,
+				FF2BFE1E01A6129F2317EF90 /* SnapshotLoader.swift in Sources */,
 				C3473E8DF3C32A9E60F64B87 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -267,6 +356,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				781544046908BAED56B330BF /* BootstrapTests.swift in Sources */,
+				02C7AD9515D01D6713986320 /* PersistenceStoreTests.swift in Sources */,
+				09DDBC455276DC4325A83933 /* ProgressionEngineTests.swift in Sources */,
+				8B0260AFD54251D986F57C6C /* RouteParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

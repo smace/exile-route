@@ -18,11 +18,13 @@ jobs:
         run: brew install xcodegen
       - name: Generate project
         run: xcodegen generate
+      - name: Validate bundled route snapshot
+        run: ./scripts/validate-snapshot.sh
       - name: Build and test
         run: >-
           xcodebuild test
           -project ExileRoute.xcodeproj
           -scheme ExileRoute
           -destination 'platform=macOS,arch=arm64'
+          -derivedDataPath DerivedData
           CODE_SIGNING_ALLOWED=NO
-

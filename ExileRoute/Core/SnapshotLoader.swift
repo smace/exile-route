@@ -1,0 +1,47 @@
+import Foundation
+
+struct LoadedSnapshot: Sendable {
+    let manifest: RouteSnapshotManifest
+    let areas: [String: AreaRecord]
+    let quests: [String: QuestRecord]
+    let routeSources: [(name: String, contents: String)]
+}
+
+enum SnapshotLoaderError: LocalizedError {
+    case missingResource(String)
+    case invalidManifest
+
+    var errorDescription: String? {
+        switch self {
+        case .missingResource(let name): "Missing bundled resource: \(name)."
+        case .invalidManifest: "The bundled route manifest is invalid."
+        }
+    }
+}
+
+struct SnapshotLoader: Sendable {
+    func loadBundled(bundle: Bundle = .main) throws -> LoadedSnapshot {
+        let decoder = JSONDecoder()
+        let manifestURL = try resourceURL(named: "snapshot-manifest", extension: "json", subdirectory: nil, bundle: bundle)
+        let manifest = try decoder.decode(RouteSnapshotManifest.self, from: Data(contentsOf: manifestURL))
+        guard manifest.schemaVersion == 1, manifest.commit.count == 40 else { throw SnapshotLoaderError.invalidManifest }
+
+        let areasURL = try resourceURL(named: "areas", extension: "json", subdirectory: "Data", bundle: bundle)
+        let questsURL = try resourceURL(named: "quests", extension: "json", subdirectory: "Data", bundle: bundle)
+        let areas = try decoder.decode([String: AreaRecord].self, from: Data(contentsOf: areasURL))
+        let quests = try decoder.decode([String: QuestRecord].self, from: Data(contentsOf: questsURL))
+        var sources: [(name: String, contents: String)] = []
+        for act in 1...10 {
+            let url = try resourceURL(named: "act-\(act)", extension: "txt", subdirectory: "Routes", bundle: bundle)
+            sources.append(("Act \(act)", try String(contentsOf: url, encoding: .utf8)))
+        }
+        return LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources)
+    }
+
+    private func resourceURL(named: String, extension ext: String, subdirectory: String?, bundle: Bundle) throws -> URL {
+        if let url = bundle.url(forResource: named, withExtension: ext, subdirectory: subdirectory) { return url }
+        if let url = bundle.url(forResource: named, withExtension: ext) { return url }
+        throw SnapshotLoaderError.missingResource("\(named).\(ext)")
+    }
+}
+
