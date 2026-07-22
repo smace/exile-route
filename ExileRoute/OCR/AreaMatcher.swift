@@ -26,7 +26,10 @@ struct AreaMatcher: Sendable {
     }
 
     func match(_ candidates: [OCRCandidate], expectedAreaIDs: [String] = [], timestamp: Date = Date()) -> AreaDetection? {
-        let expectedRanks = Dictionary(uniqueKeysWithValues: expectedAreaIDs.enumerated().map { ($0.element, $0.offset) })
+        var expectedRanks: [String: Int] = [:]
+        for (offset, areaID) in expectedAreaIDs.enumerated() where expectedRanks[areaID] == nil {
+            expectedRanks[areaID] = offset
+        }
         var best: (entry: Entry, text: String, score: Float, expectedRank: Int?)?
 
         for candidate in candidates where !candidate.text.isEmpty {
