@@ -15,7 +15,13 @@ enum RouteImportError: LocalizedError {
 }
 
 struct RouteImportService: Sendable {
-    let maximumBytes = 1_000_000
+    let maximumBytes: Int
+    let session: URLSession
+
+    init(maximumBytes: Int = 1_000_000, session: URLSession = .shared) {
+        self.maximumBytes = maximumBytes
+        self.session = session
+    }
 
     func source(from input: String) async throws -> String {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -27,11 +33,10 @@ struct RouteImportService: Sendable {
         } else {
             resolvedURL = url
         }
-        let (data, response) = try await URLSession.shared.data(from: resolvedURL)
+        let (data, response) = try await session.data(from: resolvedURL)
         guard let http = response as? HTTPURLResponse, 200..<300 ~= http.statusCode else { throw RouteImportError.badResponse }
         guard data.count <= maximumBytes else { throw RouteImportError.responseTooLarge }
         guard let source = String(data: data, encoding: .utf8) else { throw RouteImportError.badResponse }
         return source
     }
 }
-

@@ -39,7 +39,7 @@ final class AppModel: ObservableObject {
         apply(storedState.settings)
         if ProcessInfo.processInfo.environment["EXILE_ROUTE_PREVIEW"] == "1" { forceVisible = true }
         if ProcessInfo.processInfo.environment["EXILE_ROUTE_EXPANDED_PREVIEW"] == "1" { isExpanded = true }
-        loadBundledRoute()
+        loadInitialRoute()
     }
 
     var shouldShowOverlay: Bool { forceVisible || isGeForceNowActive }
@@ -172,7 +172,9 @@ final class AppModel: ObservableObject {
             snapshot = loaded
             snapshotCommit = String(loaded.manifest.commit.prefix(8))
             storedState.customRouteSource = nil
+            storedState.activeSnapshotCommit = loaded.manifest.commit
             rebuildRoute(reset: false)
+            try persist()
             statusText = "Route updated to \(snapshotCommit)"
         } catch {
             statusText = "Update failed — using last valid route"
@@ -197,9 +199,19 @@ final class AppModel: ObservableObject {
         if remoteDetectionCount >= 2 { suggestedAreaDetection = detection }
     }
 
-    private func loadBundledRoute() {
+    private func loadInitialRoute() {
         do {
-            let loaded = try SnapshotLoader().loadBundled()
+            let loader = SnapshotLoader()
+            let loaded: LoadedSnapshot
+            if let commit = storedState.activeSnapshotCommit {
+                do { loaded = try loader.loadDirectory(loader.cachedDirectory(for: commit)) }
+                catch {
+                    storedState.activeSnapshotCommit = nil
+                    loaded = try loader.loadBundled()
+                }
+            } else {
+                loaded = try loader.loadBundled()
+            }
             snapshot = loaded
             snapshotCommit = String(loaded.manifest.commit.prefix(8))
             rebuildRoute(reset: false)

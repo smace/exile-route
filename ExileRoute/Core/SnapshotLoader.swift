@@ -10,11 +10,13 @@ struct LoadedSnapshot: Sendable {
 enum SnapshotLoaderError: LocalizedError {
     case missingResource(String)
     case invalidManifest
+    case invalidContent(String)
 
     var errorDescription: String? {
         switch self {
         case .missingResource(let name): "Missing bundled resource: \(name)."
         case .invalidManifest: "The bundled route manifest is invalid."
+        case .invalidContent(let message): "The route snapshot is invalid: \(message)."
         }
     }
 }
@@ -35,7 +37,7 @@ struct SnapshotLoader: Sendable {
             let url = try resourceURL(named: "act-\(act)", extension: "txt", subdirectory: "Routes", bundle: bundle)
             sources.append(("Act \(act)", try String(contentsOf: url, encoding: .utf8)))
         }
-        return LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources)
+        return try validate(LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources))
     }
 
     func loadDirectory(_ directory: URL) throws -> LoadedSnapshot {
@@ -59,7 +61,30 @@ struct SnapshotLoader: Sendable {
         let sources = try (1...10).map { act in
             ("Act \(act)", try String(contentsOf: routesDirectory.appendingPathComponent("act-\(act).txt"), encoding: .utf8))
         }
-        return LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources)
+        return try validate(LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources))
+    }
+
+    func cachedDirectory(for commit: String, fileManager: FileManager = .default) -> URL {
+        fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("Exile Route/RouteCache", isDirectory: true)
+            .appendingPathComponent(commit, isDirectory: true)
+    }
+
+    private func validate(_ snapshot: LoadedSnapshot) throws -> LoadedSnapshot {
+        guard snapshot.manifest.schemaVersion == 1,
+              snapshot.manifest.commit.count == 40,
+              snapshot.manifest.commit.allSatisfy(\.isHexDigit) else {
+            throw SnapshotLoaderError.invalidManifest
+        }
+        guard snapshot.areas.count > 100, !snapshot.quests.isEmpty, snapshot.routeSources.count == 10 else {
+            throw SnapshotLoaderError.invalidContent("missing campaign data")
+        }
+        let route = try RouteParser(areas: snapshot.areas, quests: snapshot.quests)
+            .parse(sources: snapshot.routeSources, configuration: RouteConfiguration())
+        guard Set(route.steps.map(\.act)) == Set(1...10), route.steps.count > 300 else {
+            throw SnapshotLoaderError.invalidContent("campaign parse is incomplete")
+        }
+        return snapshot
     }
 
     private func resourceURL(named: String, extension ext: String, subdirectory: String?, bundle: Bundle) throws -> URL {

@@ -62,9 +62,14 @@ actor RouteUpdateService {
             let manifestData = try JSONEncoder().encode(manifest)
             try manifestData.write(to: staging.appendingPathComponent("snapshot-manifest.json"), options: .atomic)
 
+            _ = try SnapshotLoader().loadDirectory(staging)
+
             let destination = cacheRoot.appendingPathComponent(sha, isDirectory: true)
             try fileManager.createDirectory(at: cacheRoot, withIntermediateDirectories: true)
-            if fileManager.fileExists(atPath: destination.path) { try fileManager.removeItem(at: destination) }
+            if fileManager.fileExists(atPath: destination.path) {
+                try fileManager.removeItem(at: staging)
+                return destination
+            }
             try fileManager.moveItem(at: staging, to: destination)
             return destination
         } catch {
