@@ -335,10 +335,10 @@ final class AppModel: ObservableObject {
         let charactersPerLine = max(24, Int(42 / textScale))
         let rowHeight = currentZoneObjectives.reduce(CGFloat.zero) { partial, objective in
             let lines = max(1, Int(ceil(Double(objective.step.displayText.count) / Double(charactersPerLine))))
-            return partial + CGFloat(lines) * 18 * textScale + 12
+            return partial + CGFloat(lines) * CGFloat(18) * CGFloat(textScale) + CGFloat(12)
         }
         let activeHints = currentZoneObjectives.first(where: { $0.state == .active })?.step.hints ?? []
-        let hintHeight = CGFloat(activeHints.prefix(3).count) * 22 * textScale
+        let hintHeight = CGFloat(activeHints.prefix(3).count) * CGFloat(22) * CGFloat(textScale)
         let noticeHeight: CGFloat = transitionNotice == nil ? 0 : 34
         compactOverlayHeight = min(520, max(210, 116 + rowHeight + hintHeight + noticeHeight))
     }
