@@ -12,7 +12,7 @@ The v1 captures remain the baseline. The new captures were made from a neutral l
 ## Automated validation
 
 - [x] Bundled snapshot validation.
-- [x] Full macOS test suite: 32 tests, 0 failures.
+- [x] Full macOS test suite: 33 tests, 0 failures.
 - [x] Parser coverage for zone context, waypoint, logout, portal return, repeated visits, and bundled routes.
 - [x] Progression coverage for manual completion, skipped recovery, coherent OCR confirmation, duplicate areas, distant jumps, and no regression.
 - [x] Backward-compatible restoration without `skippedStepIDs`.

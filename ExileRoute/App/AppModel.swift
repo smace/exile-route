@@ -53,12 +53,7 @@ final class AppModel: ObservableObject {
 
     var shouldShowOverlay: Bool { forceVisible || isGeForceNowActive }
     var areaRecords: [String: AreaRecord] { snapshot?.areas ?? [:] }
-    var nearbyExpectedAreaIDs: [String] {
-        guard let route else { return [] }
-        let end = min(route.steps.count, stepIndex + 8)
-        guard stepIndex < end else { return [] }
-        return Array(route.steps[stepIndex..<end].compactMap(\.expectedAreaID))
-    }
+    var nearbyExpectedAreaIDs: [String] { progression?.currentVisitExpectedAreaIDs ?? [] }
     var currentAct: Int { currentStep?.act ?? 1 }
     var currentVisit: RouteVisit? { progression?.currentVisit }
     var currentZoneObjectives: [RouteObjective] { progression?.currentObjectives ?? [] }
@@ -230,7 +225,7 @@ final class AppModel: ObservableObject {
         guard detection.confidence >= 0.7, let areaID = detection.areaID,
               progression?.suppressesJump(to: areaID) == false,
               let route, let futureIndex = route.steps[stepIndex...].firstIndex(where: { $0.expectedAreaID == areaID }),
-              futureIndex > stepIndex + 6 else { return }
+              progression?.currentVisit?.stepRange.contains(futureIndex) == false else { return }
         if remoteDetectionID == areaID { remoteDetectionCount += 1 }
         else { remoteDetectionID = areaID; remoteDetectionCount = 1 }
         if remoteDetectionCount >= 2 { suggestedAreaDetection = detection }

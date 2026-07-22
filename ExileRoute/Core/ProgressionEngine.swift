@@ -24,6 +24,13 @@ struct ProgressionEngine: Sendable {
         return objectives(in: currentVisit)
     }
 
+    var currentVisitExpectedAreaIDs: [String] {
+        guard let currentVisit else { return [] }
+        let lowerBound = max(progress.stepIndex, currentVisit.stepRange.lowerBound)
+        guard lowerBound < currentVisit.stepRange.upperBound else { return [] }
+        return route.steps[lowerBound..<currentVisit.stepRange.upperBound].compactMap(\.expectedAreaID)
+    }
+
     func objectives(in visit: RouteVisit) -> [RouteObjective] {
         visit.stepRange.compactMap { index in
             guard let step = route.steps[safe: index] else { return nil }
@@ -112,13 +119,20 @@ struct ProgressionEngine: Sendable {
             return nil
         }
 
+        guard currentVisitExpectedAreaIDs.contains(areaID) else {
+            pendingAreaID = nil
+            pendingCount = 0
+            return nil
+        }
+
         if pendingAreaID == areaID { pendingCount += 1 } else {
             pendingAreaID = areaID
             pendingCount = 1
         }
         guard pendingCount >= confirmationCount else { return nil }
 
-        let end = min(route.steps.count, progress.stepIndex + forwardWindow + 1)
+        let visitEnd = currentVisit?.stepRange.upperBound ?? route.steps.count
+        let end = min(visitEnd, progress.stepIndex + forwardWindow + 1)
         guard progress.stepIndex < end,
               let match = route.steps[progress.stepIndex..<end].firstIndex(where: { $0.expectedAreaID == areaID }),
               match >= progress.stepIndex else { return nil }

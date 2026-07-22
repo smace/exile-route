@@ -70,6 +70,38 @@ final class ProgressionEngineTests: XCTestCase {
         XCTAssertEqual(engine.progress.stepIndex, 1)
     }
 
+    func testOCRCannotSkipObjectivesAndVisitsToReachTidalIsland() {
+        let campaignStart = CampaignRoute(source: "fixture", sections: [
+            RouteSection(name: "Act 1", act: 1, steps: [
+                step("0", context: "coast", text: "Get waypoint"),
+                step("1", context: "coast", expected: "mud-flats", text: "Enter The Mud Flats"),
+                step("2", context: "mud-flats", text: "Find 3 Rhoa Glyphs"),
+                step("3", context: "mud-flats", expected: "passage", text: "Enter The Submerged Passage"),
+                step("4", context: "passage", expected: "coast", text: "Waypoint to The Coast"),
+                step("5", context: "coast", expected: "tidal-island", text: "Enter The Tidal Island"),
+                step("6", context: "tidal-island", text: "Kill Hailrake")
+            ])
+        ])
+        var engine = ProgressionEngine(
+            route: campaignStart,
+            progress: ProgressState(stepIndex: 0, currentAreaID: "coast")
+        )
+        let falsePositive = AreaDetection(
+            text: "The Tidal Island",
+            areaID: "tidal-island",
+            confidence: 0.98,
+            timestamp: Date()
+        )
+
+        XCTAssertEqual(engine.currentVisitExpectedAreaIDs, ["mud-flats"])
+        XCTAssertNil(engine.consume(falsePositive))
+        XCTAssertNil(engine.consume(falsePositive))
+        XCTAssertEqual(engine.progress.stepIndex, 0)
+        XCTAssertEqual(engine.progress.currentAreaID, "coast")
+        XCTAssertTrue(engine.progress.completedStepIDs.isEmpty)
+        XCTAssertTrue(engine.progress.skippedStepIDs.isEmpty)
+    }
+
     func testIgnoresLowConfidenceAndNeverRegresses() {
         var engine = ProgressionEngine(
             route: route(),
