@@ -10,6 +10,7 @@ private final class CaptureOutput: NSObject, SCStreamOutput, @unchecked Sendable
     private var expectedAreaIDs: [String] = []
     private var crop: NormalizedRect
     private var isProcessing = false
+    private var lastProcessedAt = 0.0
     private let customWords: [String]
     private let onDetection: @MainActor @Sendable (AreaDetection) -> Void
     private let onStatus: @MainActor @Sendable (OCRStatus) -> Void
@@ -38,8 +39,10 @@ private final class CaptureOutput: NSObject, SCStreamOutput, @unchecked Sendable
         guard outputType == .screen, sampleBuffer.isValid, let pixelBuffer = sampleBuffer.imageBuffer else { return }
 
         lock.lock()
-        guard !isProcessing else { lock.unlock(); return }
+        let now = Date().timeIntervalSinceReferenceDate
+        guard !isProcessing, now - lastProcessedAt >= 0.75 else { lock.unlock(); return }
         isProcessing = true
+        lastProcessedAt = now
         let expected = expectedAreaIDs
         let captureCrop = crop
         lock.unlock()
@@ -66,6 +69,7 @@ private final class CaptureOutput: NSObject, SCStreamOutput, @unchecked Sendable
             Task { @MainActor in onStatus(.failed(message)) }
         }
     }
+
 }
 
 @MainActor
@@ -104,9 +108,12 @@ final class GeForceCaptureService {
 
         do {
             let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
-            guard let window = content.windows.first(where: {
+            let geForceWindows = content.windows.filter {
                 $0.owningApplication?.bundleIdentifier == Self.bundleIdentifier && $0.isOnScreen
-            }) else {
+            }
+            guard let window = geForceWindows.max(by: {
+                $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height
+            }), window.frame.width >= 640, window.frame.height >= 360 else {
                 onStatus(.waitingForGeForceNow)
                 return
             }

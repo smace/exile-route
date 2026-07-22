@@ -38,12 +38,13 @@ enum VisionTextRecognizer {
     private static func candidates(from request: VNRecognizeTextRequest) -> [OCRCandidate] {
         let individual = (request.results ?? []).compactMap { observation -> OCRCandidate? in
             guard let candidate = observation.topCandidates(1).first else { return nil }
-            return OCRCandidate(text: candidate.string, confidence: candidate.confidence)
+            return OCRCandidate(text: candidate.string, confidence: candidate.confidence, boundingBox: observation.boundingBox)
         }
         guard individual.count > 1 else { return individual }
         let joined = OCRCandidate(
             text: individual.map(\.text).joined(separator: " "),
-            confidence: individual.map(\.confidence).reduce(0, +) / Float(individual.count)
+            confidence: individual.map(\.confidence).reduce(0, +) / Float(individual.count),
+            boundingBox: nil
         )
         return individual + [joined]
     }

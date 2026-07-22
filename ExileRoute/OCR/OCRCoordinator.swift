@@ -12,8 +12,14 @@ final class OCRCoordinator {
         capture = GeForceCaptureService(
             areas: model.areaRecords,
             crop: model.ocrCrop,
-            onDetection: { [weak model] detection in model?.consumeDetection(detection) },
-            onStatus: { [weak model] status in model?.ocrStatus = status }
+            onDetection: { [weak model] detection in
+                Self.debugLog("detection=\(detection.text) confidence=\(detection.confidence)")
+                model?.consumeDetection(detection)
+            },
+            onStatus: { [weak model] status in
+                Self.debugLog("status=\(status)")
+                model?.ocrStatus = status
+            }
         )
         bind()
     }
@@ -42,5 +48,11 @@ final class OCRCoordinator {
 
     private func refreshContext() {
         capture.update(expectedAreaIDs: model.nearbyExpectedAreaIDs, crop: model.ocrCrop)
+    }
+
+    private static func debugLog(_ message: String) {
+        #if DEBUG
+        FileHandle.standardError.write(Data("[ExileRoute OCR] \(message)\n".utf8))
+        #endif
     }
 }

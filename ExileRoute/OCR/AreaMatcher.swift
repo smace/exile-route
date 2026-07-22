@@ -3,6 +3,13 @@ import Foundation
 struct OCRCandidate: Equatable, Sendable {
     let text: String
     let confidence: Float
+    let boundingBox: CGRect?
+
+    init(text: String, confidence: Float, boundingBox: CGRect? = nil) {
+        self.text = text
+        self.confidence = confidence
+        self.boundingBox = boundingBox
+    }
 }
 
 struct AreaMatcher: Sendable {
@@ -27,11 +34,14 @@ struct AreaMatcher: Sendable {
             guard normalizedText.count >= 3 else { continue }
             for entry in entries {
                 let similarity = Self.similarity(normalizedText, entry.normalizedName)
-                let contains = normalizedText.contains(entry.normalizedName) || entry.normalizedName.contains(normalizedText)
+                let isNearTitleLength = abs(normalizedText.count - entry.normalizedName.count) <= 5
+                let contains = isNearTitleLength && (
+                    normalizedText.contains(entry.normalizedName) || entry.normalizedName.contains(normalizedText)
+                )
                 var score = contains ? max(candidate.confidence, 0.84) : (similarity * 0.72 + candidate.confidence * 0.28)
                 let rank = expectedRanks[entry.id]
                 if rank != nil { score += 0.08 }
-                guard score >= 0.55 else { continue }
+                guard similarity >= 0.62, score >= 0.72 else { continue }
 
                 if let current = best {
                     let winsExpectedTie = abs(score - current.score) < 0.04 && (rank ?? .max) < (current.expectedRank ?? .max)

@@ -41,6 +41,12 @@ final class AreaMatcherTests: XCTestCase {
         XCTAssertEqual(result?.areaID, "coast-late")
     }
 
+    func testRejectsHUDLabelsAndQuestSentences() {
+        let matcher = AreaMatcher(areas: areas)
+        XCTAssertNil(matcher.match([OCRCandidate(text: "WAYPOINT SHOP MENU", confidence: 1)]))
+        XCTAssertNil(matcher.match([OCRCandidate(text: "Search the Mud Flats for the entrance", confidence: 1)]))
+    }
+
     func testVisionReadsSyntheticHighContrastAreaTitle() throws {
         let image = NSImage(size: NSSize(width: 1200, height: 320))
         image.lockFocus()
