@@ -20,6 +20,8 @@ jobs:
         run: xcodegen generate
       - name: Validate bundled route snapshot
         run: ./scripts/validate-snapshot.sh
+      - name: Validate shell scripts
+        run: sh -n scripts/*.sh
       - name: Build and test
         run: >-
           xcodebuild test

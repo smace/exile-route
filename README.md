@@ -76,6 +76,8 @@ xcodebuild test -project ExileRoute.xcodeproj -scheme ExileRoute -destination 'p
 
 CI regenerates the project, validates the bundled snapshot, builds without distribution signing, and runs the unit and visual snapshot tests on macOS.
 
+For repeated local installation without resetting Screen Recording permission on every build, see [durable local code signing](docs/local-signing.md). This free self-signed workflow is local-only and does not replace Developer ID or notarization.
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the post-v1 pull request workflow and [docs/QA-v1.0.0.md](docs/QA-v1.0.0.md) for release validation.
 
 ## License
