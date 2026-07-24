@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [2.0.0] - 2026-07-24
+
 ### Added
 
 - Import Path of Building codes, text files, clipboard contents, and supported HTTPS share links from the new Build settings section.
@@ -12,6 +14,11 @@
 
 - Update route snapshots atomically with their matching quest and gem catalogs while retaining compatibility with older route caches.
 - Preserve the current campaign objective and route options when importing, replacing, or removing a normalized build.
+
+### Security
+
+- Enforce compressed and expanded PoB size limits while streaming supported-host responses instead of buffering unbounded downloads.
+- Parse direct XML files with external entity resolution disabled.
 
 ## [1.4.1] - 2026-07-24
 
@@ -112,3 +119,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 [1.3.0]: https://github.com/smace/exile-route/compare/v1.2.0...v1.3.0
 [1.4.0]: https://github.com/smace/exile-route/compare/v1.3.0...v1.4.0
 [1.4.1]: https://github.com/smace/exile-route/compare/v1.4.0...v1.4.1
+[2.0.0]: https://github.com/smace/exile-route/compare/v1.4.1...v2.0.0
