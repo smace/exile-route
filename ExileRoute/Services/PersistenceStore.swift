@@ -1,7 +1,7 @@
 import Foundation
 
 struct UserSettings: Codable, Equatable, Sendable {
-    static let currentOverlayPlacementVersion = 2
+    static let currentOverlayPlacementVersion = 3
 
     var routeConfiguration = RouteConfiguration()
     var overlayOpacity = 0.94

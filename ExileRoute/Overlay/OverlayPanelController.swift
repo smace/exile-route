@@ -9,13 +9,18 @@ final class OverlayPanel: NSPanel {
 }
 
 struct OverlayPlacement {
-    static let leadingInset: CGFloat = 24
-    static let topInset: CGFloat = 72
+    static let trailingInset: CGFloat = 24
+    static let ocrGap: CGFloat = 12
 
-    static func defaultOrigin(visibleFrame: CGRect, panelSize: CGSize) -> CGPoint {
-        constrainedOrigin(
+    static func defaultOrigin(
+        visibleFrame: CGRect,
+        panelSize: CGSize,
+        ocrCrop: NormalizedRect
+    ) -> CGPoint {
+        let topInset = ocrBottomInset(visibleFrame: visibleFrame, ocrCrop: ocrCrop)
+        return constrainedOrigin(
             CGPoint(
-                x: visibleFrame.minX + leadingInset,
+                x: visibleFrame.maxX - trailingInset - panelSize.width,
                 y: visibleFrame.maxY - topInset - panelSize.height
             ),
             panelSize: panelSize,
@@ -23,8 +28,16 @@ struct OverlayPlacement {
         )
     }
 
+    static func ocrBottomInset(visibleFrame: CGRect, ocrCrop: NormalizedRect) -> CGFloat {
+        let cropBottomFromTop = 1 - min(max(CGFloat(ocrCrop.y), 0), 1)
+        return visibleFrame.height * cropBottomFromTop + ocrGap
+    }
+
     static func resizedOrigin(currentFrame: CGRect, newSize: CGSize) -> CGPoint {
-        CGPoint(x: currentFrame.minX, y: currentFrame.maxY - newSize.height)
+        CGPoint(
+            x: currentFrame.maxX - newSize.width,
+            y: currentFrame.maxY - newSize.height
+        )
     }
 
     static func shouldAnimateResize(
@@ -149,7 +162,11 @@ final class OverlayPanelController {
             panel.setFrame(NSRect(origin: origin, size: size), display: false)
         } else {
             let size = panel.frame.size
-            let origin = OverlayPlacement.defaultOrigin(visibleFrame: visible, panelSize: size)
+            let origin = OverlayPlacement.defaultOrigin(
+                visibleFrame: visible,
+                panelSize: size,
+                ocrCrop: model.ocrCrop
+            )
             let frame = NSRect(origin: origin, size: size)
             panel.setFrame(frame, display: false)
             model.saveOverlayFrame(frame, for: id)
