@@ -12,6 +12,7 @@ final class PersistenceStoreTests: XCTestCase {
         state.progress.updatedAt = Date(timeIntervalSince1970: 12_345.678)
         state.settings.overlayOpacity = 0.82
         state.settings.overlayScreenID = "display-42"
+        state.settings.updateChannel = .beta
         state.settings.hotKeys[.previous] = HotKeyDefinition(
             keyCode: UInt32(kVK_ANSI_K),
             modifiers: .controlOptionShift
@@ -50,6 +51,7 @@ final class PersistenceStoreTests: XCTestCase {
         XCTAssertEqual(settings.overlayPlacementVersion, 1)
         XCTAssertNil(settings.overlayScreenID)
         XCTAssertEqual(settings.hotKeys, HotKeyDefinition.defaults)
+        XCTAssertEqual(settings.updateChannel, .stable)
     }
 
     @MainActor
