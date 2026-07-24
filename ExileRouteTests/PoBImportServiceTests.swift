@@ -36,6 +36,16 @@ final class PoBImportServiceTests: XCTestCase {
         )
     }
 
+    func testDecodesRawPoBXMLFiles() throws {
+        let result = try service().decode(TestPoBFixtures.rawXML)
+
+        XCTAssertEqual(result.build.characterClass, "Ranger")
+        XCTAssertEqual(
+            result.build.requiredGems.map(\.gemID),
+            ["Metadata/Items/Gems/SkillGemPoisonArrow"]
+        )
+    }
+
     func testRejectsInvalidAndOversizedCodes() {
         XCTAssertThrowsError(try service().decode("not-a-pob")) { error in
             XCTAssertEqual(error as? PoBImportError, .invalidCode)
@@ -48,6 +58,11 @@ final class PoBImportServiceTests: XCTestCase {
         }
         XCTAssertThrowsError(
             try service(maximumDecompressedBytes: 20).decode(TestPoBFixtures.multiSkillSet)
+        ) { error in
+            XCTAssertEqual(error as? PoBImportError, .decompressedInputTooLarge)
+        }
+        XCTAssertThrowsError(
+            try service(maximumDecompressedBytes: 20).decode(TestPoBFixtures.rawXML)
         ) { error in
             XCTAssertEqual(error as? PoBImportError, .decompressedInputTooLarge)
         }
@@ -144,6 +159,22 @@ final class PoBImportServiceTests: XCTestCase {
                 session: self.mockSession(),
                 maximumCompressedBytes: 16
             ).import(from: "https://pobb.in/large")
+        }
+
+        MockURLProtocol.handler = { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Length": "1000"]
+            )!
+            return (response, Data(TestPoBFixtures.legacy.utf8))
+        }
+        await XCTAssertThrowsPoBError(.compressedInputTooLarge) {
+            _ = try await self.service(
+                session: self.mockSession(),
+                maximumCompressedBytes: 16
+            ).import(from: "https://pobb.in/content-length")
         }
     }
 

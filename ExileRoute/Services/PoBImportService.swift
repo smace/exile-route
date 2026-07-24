@@ -52,17 +52,28 @@ struct PoBImportService: Sendable {
         return try decode(source)
     }
 
-    func decode(_ code: String) throws -> PoBImportResult {
-        let compactCode = code.filter { !$0.isWhitespace }
-        guard !compactCode.isEmpty else { throw PoBImportError.emptyInput }
-        guard compactCode.utf8.count <= maximumCompressedBytes * 2 else {
-            throw PoBImportError.compressedInputTooLarge
+    func decode(_ source: String) throws -> PoBImportResult {
+        let trimmed = source.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { throw PoBImportError.emptyInput }
+
+        let xml: Data
+        if trimmed.hasPrefix("<") {
+            guard trimmed.utf8.count <= maximumDecompressedBytes else {
+                throw PoBImportError.decompressedInputTooLarge
+            }
+            xml = Data(trimmed.utf8)
+        } else {
+            let compactCode = trimmed.filter { !$0.isWhitespace }
+            guard compactCode.utf8.count <= maximumCompressedBytes * 2 else {
+                throw PoBImportError.compressedInputTooLarge
+            }
+            guard let compressed = decodeBase64URL(compactCode),
+                  compressed.count <= maximumCompressedBytes else {
+                throw PoBImportError.invalidCode
+            }
+            xml = try inflate(compressed)
         }
-        guard let compressed = decodeBase64URL(compactCode),
-              compressed.count <= maximumCompressedBytes else {
-            throw PoBImportError.invalidCode
-        }
-        let xml = try inflate(compressed)
+
         let parserDelegate = PoBXMLParserDelegate()
         let parser = XMLParser(data: xml)
         parser.shouldResolveExternalEntities = false
@@ -131,7 +142,8 @@ struct PoBImportService: Sendable {
         guard !trimmed.isEmpty else { throw PoBImportError.emptyInput }
         guard let candidate = URL(string: trimmed), candidate.scheme != nil else { return trimmed }
         let url = try rewrittenURL(candidate)
-        let (data, response) = try await session.data(from: url)
+        let responseLimit = maximumCompressedBytes * 2
+        let (bytes, response) = try await session.bytes(from: url)
         guard let http = response as? HTTPURLResponse,
               200..<300 ~= http.statusCode,
               http.url?.scheme?.lowercased() == "https",
@@ -139,8 +151,17 @@ struct PoBImportService: Sendable {
               Self.allowedHosts.contains(finalHost) else {
             throw PoBImportError.badResponse
         }
-        guard data.count <= maximumCompressedBytes * 2 else {
+        guard http.expectedContentLength < 0 || http.expectedContentLength <= responseLimit else {
             throw PoBImportError.compressedInputTooLarge
+        }
+
+        var data = Data()
+        data.reserveCapacity(min(max(Int(http.expectedContentLength), 0), responseLimit))
+        for try await byte in bytes {
+            guard data.count < responseLimit else {
+                throw PoBImportError.compressedInputTooLarge
+            }
+            data.append(byte)
         }
         guard let code = String(data: data, encoding: .utf8) else { throw PoBImportError.badResponse }
         return code
