@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.2.0] - 2026-07-24
+
 ### Added
 
 - Allow the overlay to be dragged freely from any point while interaction mode is active, including across displays.
@@ -61,3 +63,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 [1.0.0]: https://github.com/smace/exile-route/releases/tag/v1.0.0
 [1.1.0]: https://github.com/smace/exile-route/compare/v1.0.0...v1.1.0
+[1.2.0]: https://github.com/smace/exile-route/compare/v1.1.0...v1.2.0
