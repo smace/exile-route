@@ -10,6 +10,7 @@ final class PersistenceStoreTests: XCTestCase {
         state.progress.stepIndex = 42
         state.progress.updatedAt = Date(timeIntervalSince1970: 12_345.678)
         state.settings.overlayOpacity = 0.82
+        state.settings.overlayScreenID = "display-42"
         try store.save(state)
         XCTAssertEqual(store.load(), state)
     }
@@ -42,6 +43,7 @@ final class PersistenceStoreTests: XCTestCase {
         XCTAssertEqual(settings.ocrCrop, .defaultAreaTitle)
         XCTAssertEqual(settings.ocrCalibrationVersion, 2)
         XCTAssertEqual(settings.overlayPlacementVersion, 1)
+        XCTAssertNil(settings.overlayScreenID)
         XCTAssertEqual(settings.hotKeys, HotKeyDefinition.defaults)
     }
 
@@ -79,6 +81,7 @@ final class PersistenceStoreTests: XCTestCase {
 
         XCTAssertEqual(migrated.overlayPlacementVersion, UserSettings.currentOverlayPlacementVersion)
         XCTAssertEqual(migrated.overlayFrames, ["display-current": WindowGeometry(newFrame)])
+        XCTAssertEqual(migrated.overlayScreenID, "display-current")
     }
 
     func testLegacyProgressWithoutSkippedObjectivesDecodes() throws {

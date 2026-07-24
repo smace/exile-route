@@ -3,6 +3,27 @@ import XCTest
 @testable import ExileRoute
 
 final class OverlayPanelControllerTests: XCTestCase {
+    func testWindowDragOnlyBeginsForLeftClickInInteractionMode() {
+        XCTAssertTrue(
+            OverlayPanel.shouldBeginWindowDrag(
+                interactionEnabled: true,
+                eventType: .leftMouseDown
+            )
+        )
+        XCTAssertFalse(
+            OverlayPanel.shouldBeginWindowDrag(
+                interactionEnabled: false,
+                eventType: .leftMouseDown
+            )
+        )
+        XCTAssertFalse(
+            OverlayPanel.shouldBeginWindowDrag(
+                interactionEnabled: true,
+                eventType: .rightMouseDown
+            )
+        )
+    }
+
     func testDefaultOriginUsesTopTrailingInsetBelowOCRRegion() {
         let visibleFrame = CGRect(x: 0, y: 25, width: 1_440, height: 875)
         let panelSize = CGSize(width: 390, height: 230)
