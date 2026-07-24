@@ -20,5 +20,6 @@ if [ ! -d "$application_path" ]; then
     exit 1
 fi
 
+"$repository_root/scripts/sign-app-bundle.sh" "$application_path" -
 ditto -c -k --sequesterRsrc --keepParent "$application_path" "$archive_name"
 shasum -a 256 "$archive_name" > "$archive_name.sha256"
