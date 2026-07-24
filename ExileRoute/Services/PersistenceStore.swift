@@ -82,11 +82,7 @@ struct PersistenceStore {
 
     init(fileManager: FileManager = .default, baseURL: URL? = nil) {
         self.fileManager = fileManager
-        self.baseURL = baseURL ?? fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(
-                ApplicationDataLocation.directoryName(bundleIdentifier: Bundle.main.bundleIdentifier),
-                isDirectory: true
-            )
+        self.baseURL = baseURL ?? ApplicationDataLocation.dataDirectory(fileManager: fileManager)
     }
 
     func load() -> StoredApplicationState {

@@ -36,4 +36,36 @@ enum ApplicationDataLocation {
     static func directoryName(bundleIdentifier: String?) -> String {
         bundleIdentifier?.hasSuffix(".Dev") == true ? "Exile Route Dev" : "Exile Route"
     }
+
+    static func dataDirectory(
+        fileManager: FileManager = .default,
+        bundleIdentifier: String? = Bundle.main.bundleIdentifier
+    ) -> URL {
+        dataDirectory(
+            in: fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0],
+            bundleIdentifier: bundleIdentifier
+        )
+    }
+
+    static func dataDirectory(in applicationSupportDirectory: URL, bundleIdentifier: String?) -> URL {
+        applicationSupportDirectory.appendingPathComponent(
+            directoryName(bundleIdentifier: bundleIdentifier),
+            isDirectory: true
+        )
+    }
+
+    static func routeCacheDirectory(
+        fileManager: FileManager = .default,
+        bundleIdentifier: String? = Bundle.main.bundleIdentifier
+    ) -> URL {
+        routeCacheDirectory(
+            in: fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0],
+            bundleIdentifier: bundleIdentifier
+        )
+    }
+
+    static func routeCacheDirectory(in applicationSupportDirectory: URL, bundleIdentifier: String?) -> URL {
+        dataDirectory(in: applicationSupportDirectory, bundleIdentifier: bundleIdentifier)
+            .appendingPathComponent("RouteCache", isDirectory: true)
+    }
 }

@@ -3,6 +3,43 @@ import XCTest
 @testable import ExileRoute
 
 final class PersistenceStoreTests: XCTestCase {
+    func testDevDistributionUsesAnIsolatedRouteCache() {
+        let applicationSupport = URL(fileURLWithPath: "/tmp/Application Support", isDirectory: true)
+        let stableData = ApplicationDataLocation.dataDirectory(
+            in: applicationSupport,
+            bundleIdentifier: "com.swannmace.ExileRoute"
+        )
+        let devData = ApplicationDataLocation.dataDirectory(
+            in: applicationSupport,
+            bundleIdentifier: "com.swannmace.ExileRoute.Dev"
+        )
+
+        XCTAssertEqual(stableData.lastPathComponent, "Exile Route")
+        XCTAssertEqual(devData.lastPathComponent, "Exile Route Dev")
+        XCTAssertNotEqual(stableData, devData)
+        XCTAssertEqual(
+            stableData.appendingPathComponent("RouteCache", isDirectory: true),
+            ApplicationDataLocation.routeCacheDirectory(
+                in: applicationSupport,
+                bundleIdentifier: "com.swannmace.ExileRoute"
+            )
+        )
+        XCTAssertTrue(
+            SnapshotLoader()
+                .cachedDirectory(
+                    for: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                    bundleIdentifier: "com.swannmace.ExileRoute.Dev"
+                )
+                .pathComponents
+                .suffix(3)
+                .elementsEqual([
+                    "Exile Route Dev",
+                    "RouteCache",
+                    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                ])
+        )
+    }
+
     func testRoundTrip() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
