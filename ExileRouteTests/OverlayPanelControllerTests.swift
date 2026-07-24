@@ -3,48 +3,56 @@ import XCTest
 @testable import ExileRoute
 
 final class OverlayPanelControllerTests: XCTestCase {
-    func testDefaultOriginUsesTopLeadingInsets() {
+    func testDefaultOriginUsesTopTrailingInsetBelowOCRRegion() {
         let visibleFrame = CGRect(x: 0, y: 25, width: 1_440, height: 875)
         let panelSize = CGSize(width: 390, height: 230)
 
-        let origin = OverlayPlacement.defaultOrigin(visibleFrame: visibleFrame, panelSize: panelSize)
+        let origin = OverlayPlacement.defaultOrigin(
+            visibleFrame: visibleFrame,
+            panelSize: panelSize,
+            ocrCrop: .defaultAreaTitle
+        )
 
-        XCTAssertEqual(origin.x, 24)
-        XCTAssertEqual(origin.y, 598)
+        XCTAssertEqual(origin.x, 1_026)
+        XCTAssertEqual(origin.y, 535.5, accuracy: 0.001)
     }
 
     func testDefaultOriginSupportsASecondaryDisplayLeftOfMain() {
         let visibleFrame = CGRect(x: -1_920, y: 0, width: 1_920, height: 1_080)
         let panelSize = CGSize(width: 390, height: 230)
 
-        let origin = OverlayPlacement.defaultOrigin(visibleFrame: visibleFrame, panelSize: panelSize)
+        let origin = OverlayPlacement.defaultOrigin(
+            visibleFrame: visibleFrame,
+            panelSize: panelSize,
+            ocrCrop: .defaultAreaTitle
+        )
 
-        XCTAssertEqual(origin.x, -1_896)
-        XCTAssertEqual(origin.y, 778)
+        XCTAssertEqual(origin.x, -414)
+        XCTAssertEqual(origin.y, 686.8, accuracy: 0.001)
     }
 
-    func testResizeKeepsTopLeadingCornerStable() {
-        let currentFrame = CGRect(x: 24, y: 598, width: 390, height: 230)
+    func testResizeKeepsTopTrailingCornerStable() {
+        let currentFrame = CGRect(x: 1_026, y: 535.5, width: 390, height: 230)
 
         let origin = OverlayPlacement.resizedOrigin(
             currentFrame: currentFrame,
             newSize: CGSize(width: 460, height: 560)
         )
 
-        XCTAssertEqual(origin.x, 24)
-        XCTAssertEqual(origin.y, 268)
+        XCTAssertEqual(origin.x, 956)
+        XCTAssertEqual(origin.y, 205.5, accuracy: 0.001)
     }
 
-    func testRestoringAStoredFrameKeepsItsTopLeadingCorner() {
-        let storedFrame = CGRect(x: 24, y: 530, width: 390, height: 380)
+    func testRestoringAStoredFrameKeepsItsTopTrailingCorner() {
+        let storedFrame = CGRect(x: 1_026, y: 385.5, width: 390, height: 380)
 
         let origin = OverlayPlacement.resizedOrigin(
             currentFrame: storedFrame,
             newSize: CGSize(width: 390, height: 210)
         )
 
-        XCTAssertEqual(origin.x, 24)
-        XCTAssertEqual(origin.y, 700)
+        XCTAssertEqual(origin.x, 1_026)
+        XCTAssertEqual(origin.y, 555.5, accuracy: 0.001)
     }
 
     func testInitialResizeNeverAnimatesBeforePlacementIsStable() {
