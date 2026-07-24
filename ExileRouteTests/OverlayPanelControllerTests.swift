@@ -47,6 +47,27 @@ final class OverlayPanelControllerTests: XCTestCase {
         XCTAssertEqual(origin.y, 700)
     }
 
+    func testInitialResizeNeverAnimatesBeforePlacementIsStable() {
+        XCTAssertFalse(
+            OverlayPlacement.shouldAnimateResize(
+                hasCompletedInitialResize: false,
+                isPanelVisible: true
+            )
+        )
+        XCTAssertFalse(
+            OverlayPlacement.shouldAnimateResize(
+                hasCompletedInitialResize: true,
+                isPanelVisible: false
+            )
+        )
+        XCTAssertTrue(
+            OverlayPlacement.shouldAnimateResize(
+                hasCompletedInitialResize: true,
+                isPanelVisible: true
+            )
+        )
+    }
+
     func testOriginIsConstrainedInsideVisibleFrame() {
         let visibleFrame = CGRect(x: 0, y: 25, width: 1_440, height: 875)
         let panelSize = CGSize(width: 390, height: 230)

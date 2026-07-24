@@ -27,6 +27,13 @@ struct OverlayPlacement {
         CGPoint(x: currentFrame.minX, y: currentFrame.maxY - newSize.height)
     }
 
+    static func shouldAnimateResize(
+        hasCompletedInitialResize: Bool,
+        isPanelVisible: Bool
+    ) -> Bool {
+        hasCompletedInitialResize && isPanelVisible
+    }
+
     static func constrainedOrigin(
         _ origin: CGPoint,
         panelSize: CGSize,
@@ -46,6 +53,7 @@ final class OverlayPanelController {
     private let model: AppModel
     private let panel: OverlayPanel
     private var cancellables: Set<AnyCancellable> = []
+    private var hasCompletedInitialResize = false
 
     init(model: AppModel) {
         self.model = model
@@ -103,11 +111,16 @@ final class OverlayPanelController {
         let size = expanded ? NSSize(width: 460, height: 560) : NSSize(width: 390, height: compactHeight)
         let proposed = OverlayPlacement.resizedOrigin(currentFrame: oldFrame, newSize: size)
         let origin = constrainedOrigin(proposed, size: size, screen: panel.screen ?? NSScreen.main)
+        let shouldAnimate = OverlayPlacement.shouldAnimateResize(
+            hasCompletedInitialResize: hasCompletedInitialResize,
+            isPanelVisible: panel.isVisible
+        )
         panel.setFrame(
             NSRect(origin: origin, size: size),
             display: true,
-            animate: panel.isVisible
+            animate: shouldAnimate
         )
+        hasCompletedInitialResize = true
     }
 
     private func setVisible(_ visible: Bool) {
