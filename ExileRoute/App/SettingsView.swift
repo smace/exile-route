@@ -125,6 +125,19 @@ struct SettingsView: View {
                 ForEach(HotKeyAction.allCases, id: \.self) { action in
                     hotKeyRow(action)
                 }
+                Text("Click a shortcut, then press a key with at least two modifiers. Escape cancels.")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Theme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let message = model.hotKeyValidationMessage {
+                    Label(message, systemImage: "exclamationmark.triangle")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(Theme.ember)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                ActionButton("Restore defaults", icon: "arrow.counterclockwise") {
+                    model.resetHotKeys()
+                }
             }
         }
     }
@@ -291,30 +304,13 @@ struct SettingsView: View {
         return HStack {
             Text(action.title)
             Spacer()
-            Picker("Modifiers", selection: Binding(
-                get: { definition.modifiers },
-                set: { modifiers in
-                    var changed = model.hotKeys[action] ?? definition
-                    changed.modifiers = modifiers
-                    model.setHotKey(changed, for: action)
-                }
-            )) {
-                ForEach(HotKeyModifierPreset.allCases, id: \.self) { Text($0.display).tag($0) }
+            HotKeyRecorder(
+                definition: definition,
+                accessibilityLabel: "\(action.title) shortcut"
+            ) { candidate in
+                model.setHotKey(candidate, for: action)
             }
-            .labelsHidden()
-            .frame(width: 66)
-            Picker("Key", selection: Binding(
-                get: { definition.keyCode },
-                set: { keyCode in
-                    var changed = model.hotKeys[action] ?? definition
-                    changed.keyCode = keyCode
-                    model.setHotKey(changed, for: action)
-                }
-            )) {
-                ForEach(HotKeyDefinition.keyOptions, id: \.code) { Text($0.label).tag($0.code) }
-            }
-            .labelsHidden()
-            .frame(width: 78)
+            .frame(width: 122, height: 28)
         }
         .font(.system(size: 11, design: .rounded))
     }
