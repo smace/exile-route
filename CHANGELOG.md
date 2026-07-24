@@ -12,6 +12,7 @@
 ### Fixed
 
 - Open a populated, reusable Settings window from the menu-bar application instead of relying on an unresolved SwiftUI responder action.
+- Route the standard macOS Settings command to that same window instead of creating a duplicate.
 
 ## [1.2.0] - 2026-07-24
 

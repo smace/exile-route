@@ -10,5 +10,13 @@ struct ExileRouteApp: App {
                 .environmentObject(appDelegate.model)
                 .frame(width: 560, height: 620)
         }
+        .commands {
+            CommandGroup(replacing: .appSettings) {
+                Button("Settings…") {
+                    appDelegate.showSettings()
+                }
+                .keyboardShortcut(",", modifiers: .command)
+            }
+        }
     }
 }

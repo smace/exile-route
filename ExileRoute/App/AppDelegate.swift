@@ -17,8 +17,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.settingsWindowController = settingsWindowController
         statusBarController = StatusBarController(
             model: model,
-            openSettings: { [weak settingsWindowController] in
-                settingsWindowController?.showSettings()
+            openSettings: { [weak self] in
+                self?.showSettings()
             }
         )
         focusMonitor = GeForceFocusMonitor(model: model)
@@ -28,5 +28,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             || ProcessInfo.processInfo.arguments.contains("--settings-preview") {
             settingsWindowController.showSettings()
         }
+    }
+
+    func showSettings() {
+        settingsWindowController?.showSettings()
     }
 }
