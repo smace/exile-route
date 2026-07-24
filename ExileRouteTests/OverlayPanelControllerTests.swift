@@ -35,6 +35,18 @@ final class OverlayPanelControllerTests: XCTestCase {
         XCTAssertEqual(origin.y, 268)
     }
 
+    func testRestoringAStoredFrameKeepsItsTopLeadingCorner() {
+        let storedFrame = CGRect(x: 24, y: 530, width: 390, height: 380)
+
+        let origin = OverlayPlacement.resizedOrigin(
+            currentFrame: storedFrame,
+            newSize: CGSize(width: 390, height: 210)
+        )
+
+        XCTAssertEqual(origin.x, 24)
+        XCTAssertEqual(origin.y, 700)
+    }
+
     func testOriginIsConstrainedInsideVisibleFrame() {
         let visibleFrame = CGRect(x: 0, y: 25, width: 1_440, height: 875)
         let panelSize = CGSize(width: 390, height: 230)

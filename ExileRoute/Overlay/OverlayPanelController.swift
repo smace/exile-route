@@ -103,7 +103,11 @@ final class OverlayPanelController {
         let size = expanded ? NSSize(width: 460, height: 560) : NSSize(width: 390, height: compactHeight)
         let proposed = OverlayPlacement.resizedOrigin(currentFrame: oldFrame, newSize: size)
         let origin = constrainedOrigin(proposed, size: size, screen: panel.screen ?? NSScreen.main)
-        panel.setFrame(NSRect(origin: origin, size: size), display: true, animate: true)
+        panel.setFrame(
+            NSRect(origin: origin, size: size),
+            display: true,
+            animate: panel.isVisible
+        )
     }
 
     private func setVisible(_ visible: Bool) {
@@ -117,7 +121,8 @@ final class OverlayPanelController {
         let id = screenIdentifier(screen)
         if let stored = model.overlayFrame(for: id) {
             let size = panel.frame.size
-            let origin = constrainedOrigin(stored.origin, size: size, screen: screen)
+            let proposed = OverlayPlacement.resizedOrigin(currentFrame: stored, newSize: size)
+            let origin = constrainedOrigin(proposed, size: size, screen: screen)
             panel.setFrame(NSRect(origin: origin, size: size), display: false)
         } else {
             let size = panel.frame.size
