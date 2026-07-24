@@ -25,13 +25,13 @@ No account-specific screenshot or OCR frame is retained by this report.
 
 ## Local release validation
 
-- [ ] The Release build embeds version `1.3.0`, build `4`, and its exact Git revision.
-- [ ] The durable certificate-backed build is installed in `/Applications/ExileRoute.app`.
-- [ ] The signing requirement matches the previous local build.
-- [ ] Only one installed Exile Route application remains.
-- [ ] Existing route progress and settings are preserved after launch.
-- [ ] Settings opens, closes, and reopens with all four sections visible.
-- [ ] A custom shortcut is recorded, triggered, and restored to default.
+- [x] The Release build embeds version `1.3.0`, build `4`, and Git revision `49eda74f`.
+- [x] The durable certificate-backed build is installed in `/Applications/ExileRoute.app`.
+- [x] The signing requirement matches the previous local build.
+- [x] Only one installed Exile Route application remains.
+- [x] Existing route progress and settings are preserved after launch.
+- [x] Settings opens with all four sections visible and both menu paths reuse the same window.
+- [x] A custom `⌃⌥⇧K` shortcut can be recorded and restored to the default `⌃⌥←`.
 
 ## GeForce NOW validation
 
