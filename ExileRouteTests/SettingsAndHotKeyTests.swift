@@ -1,5 +1,6 @@
 import AppKit
 import Carbon
+import SwiftUI
 import XCTest
 @testable import ExileRoute
 
@@ -77,7 +78,8 @@ final class SettingsAndHotKeyTests: XCTestCase {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         let model = AppModel(persistence: PersistenceStore(baseURL: directory))
-        let controller = SettingsWindowController(model: model)
+        let updater = ApplicationUpdater(channel: .stable, distributionFlavor: .dev)
+        let controller = SettingsWindowController(model: model, updater: updater)
         let window = controller.window
 
         XCTAssertEqual(window?.title, "Exile Route Settings")
@@ -111,9 +113,10 @@ final class SettingsAndHotKeyTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: directory) }
         let model = AppModel(persistence: PersistenceStore(baseURL: directory))
         var openCount = 0
-        let statusBar = StatusBarController(model: model) {
-            openCount += 1
-        }
+        let statusBar = StatusBarController(
+            model: model,
+            openSettings: { openCount += 1 }
+        )
 
         let settingsItem = statusBar.menuItems.first(where: { $0.title == "Settings…" })
         XCTAssertNotNil(settingsItem)
@@ -121,5 +124,112 @@ final class SettingsAndHotKeyTests: XCTestCase {
             NSApp.sendAction(action, to: settingsItem.target, from: settingsItem)
         }
         XCTAssertEqual(openCount, 1)
+    }
+
+    @MainActor
+    func testStatusMenuAppUpdateItemInvokesExplicitUpdaterAction() {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        var updateCount = 0
+        let statusBar = StatusBarController(
+            model: model,
+            openSettings: {},
+            checkForAppUpdates: { updateCount += 1 }
+        )
+
+        let updateItem = statusBar.menuItems.first(where: { $0.title == "Check for app updates…" })
+        XCTAssertNotNil(updateItem)
+        if let updateItem, let action = updateItem.action {
+            NSApp.sendAction(action, to: updateItem.target, from: updateItem)
+        }
+        XCTAssertEqual(updateCount, 1)
+    }
+
+    @MainActor
+    func testStatusMenuHidesAppUpdateActionWhenUpdaterIsDisabled() {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        let statusBar = StatusBarController(model: model, openSettings: {})
+
+        XCTAssertNil(statusBar.menuItems.first(where: { $0.title == "Check for app updates…" }))
+    }
+
+    func testUpdateChannelsAndDevDataAreIsolated() {
+        XCTAssertEqual(UpdateChannel.stable.allowedSparkleChannels, [])
+        XCTAssertEqual(UpdateChannel.beta.allowedSparkleChannels, ["beta"])
+        XCTAssertEqual(
+            ApplicationDataLocation.directoryName(bundleIdentifier: "com.swannmace.ExileRoute"),
+            "Exile Route"
+        )
+        XCTAssertEqual(
+            ApplicationDataLocation.directoryName(bundleIdentifier: "com.swannmace.ExileRoute.Dev"),
+            "Exile Route Dev"
+        )
+    }
+
+    @MainActor
+    func testDistributionFlavorSelectsSafeUpdateBehavior() {
+        let stable = ApplicationUpdater(channel: .stable, distributionFlavor: .stable)
+        let optedInStable = ApplicationUpdater(channel: .beta, distributionFlavor: .stable)
+        let beta = ApplicationUpdater(channel: .stable, distributionFlavor: .beta)
+        let dev = ApplicationUpdater(channel: .beta, distributionFlavor: .dev)
+
+        XCTAssertEqual(stable.channel, .stable)
+        XCTAssertEqual(optedInStable.channel, .beta)
+        XCTAssertEqual(beta.channel, .beta)
+        XCTAssertFalse(dev.updatesEnabled)
+    }
+
+    @MainActor
+    func testUpdaterPreservesBundledFeedWithoutEnvironmentOverride() {
+        let bundledFeed = "https://example.com/stable-appcast.xml"
+        let updater = ApplicationUpdater(
+            channel: .stable,
+            distributionFlavor: .stable,
+            feedURLOverride: nil,
+            bundledFeedURL: bundledFeed
+        )
+        let overridden = ApplicationUpdater(
+            channel: .stable,
+            distributionFlavor: .stable,
+            feedURLOverride: "https://example.com/test-appcast.xml",
+            bundledFeedURL: bundledFeed
+        )
+
+        XCTAssertEqual(updater.resolvedFeedURLString, bundledFeed)
+        XCTAssertEqual(overridden.resolvedFeedURLString, "https://example.com/test-appcast.xml")
+    }
+
+    @MainActor
+    func testUpdatesSettingsVisualReference() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        let updater = ApplicationUpdater(channel: .beta, distributionFlavor: .stable)
+        let view = SettingsView(initialSection: .updates)
+            .environmentObject(model)
+            .environmentObject(updater)
+            .frame(width: 760, height: 560)
+        let hostingView = NSHostingView(rootView: view)
+        hostingView.frame = NSRect(x: 0, y: 0, width: 760, height: 560)
+        for _ in 0..<5 {
+            hostingView.layoutSubtreeIfNeeded()
+            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+        }
+        let representation = try XCTUnwrap(
+            hostingView.bitmapImageRepForCachingDisplay(in: hostingView.bounds)
+        )
+        hostingView.cacheDisplay(in: hostingView.bounds, to: representation)
+        let png = try XCTUnwrap(representation.representation(using: .png, properties: [:]))
+        let attachment = XCTAttachment(data: png, uniformTypeIdentifier: "public.png")
+        attachment.name = "settings-update-channels"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+
+        if let outputPath = ProcessInfo.processInfo.environment["EXILE_ROUTE_SETTINGS_REFERENCE_OUTPUT"] {
+            try png.write(to: URL(fileURLWithPath: outputPath), options: .atomic)
+        }
     }
 }

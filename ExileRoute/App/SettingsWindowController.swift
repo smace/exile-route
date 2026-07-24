@@ -6,9 +6,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     static let contentSize = CGSize(width: 560, height: 620)
     static let minimumSize = CGSize(width: 520, height: 500)
 
-    init(model: AppModel) {
+    init(model: AppModel, updater: ApplicationUpdater) {
         let rootView = SettingsView()
             .environmentObject(model)
+            .environmentObject(updater)
             .frame(
                 minWidth: Self.minimumSize.width,
                 minHeight: Self.minimumSize.height

@@ -3,6 +3,7 @@ import AppKit
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let model = AppModel()
+    lazy var updater = ApplicationUpdater(channel: model.updateChannel)
     private var overlayController: OverlayPanelController?
     private var settingsWindowController: SettingsWindowController?
     private var statusBarController: StatusBarController?
@@ -13,13 +14,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         overlayController = OverlayPanelController(model: model)
-        let settingsWindowController = SettingsWindowController(model: model)
+        updater.start()
+        let settingsWindowController = SettingsWindowController(model: model, updater: updater)
         self.settingsWindowController = settingsWindowController
         statusBarController = StatusBarController(
             model: model,
             openSettings: { [weak self] in
                 self?.showSettings()
-            }
+            },
+            checkForAppUpdates: updater.updatesEnabled
+                ? { [weak self] in self?.updater.checkForUpdates() }
+                : nil
         )
         focusMonitor = GeForceFocusMonitor(model: model)
         hotKeyManager = GlobalHotKeyManager(model: model)

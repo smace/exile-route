@@ -30,6 +30,7 @@ final class AppModel: ObservableObject {
     @Published var forceVisible = false
     @Published var routeConfiguration = RouteConfiguration()
     @Published var hotKeys = HotKeyDefinition.defaults
+    @Published var updateChannel = UpdateChannel.stable
     @Published private(set) var hotKeyValidationMessage: String?
     @Published private(set) var transitionNotice: ZoneTransitionNotice?
     @Published private(set) var compactOverlayHeight: CGFloat = 210
@@ -131,6 +132,12 @@ final class AppModel: ObservableObject {
         hotKeys = HotKeyDefinition.defaults
         hotKeyValidationMessage = nil
         statusText = "Keyboard shortcuts restored"
+        saveSettings()
+    }
+
+    func setUpdateChannel(_ channel: UpdateChannel) {
+        updateChannel = channel
+        statusText = channel == .beta ? "Beta updates enabled" : "Stable updates only"
         saveSettings()
     }
 
@@ -397,6 +404,7 @@ final class AppModel: ObservableObject {
         isOCRActive = settings.isOCRActive
         ocrCrop = settings.ocrCrop
         hotKeys = settings.hotKeys
+        updateChannel = settings.updateChannel
     }
 
     private func saveSettings() {
@@ -408,6 +416,7 @@ final class AppModel: ObservableObject {
         storedState.settings.isOCRActive = isOCRActive
         storedState.settings.ocrCrop = ocrCrop
         storedState.settings.hotKeys = hotKeys
+        storedState.settings.updateChannel = updateChannel
         try? persist()
     }
 

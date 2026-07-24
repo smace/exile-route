@@ -23,6 +23,8 @@ Published versions follow [Semantic Versioning](https://semver.org/):
 
 Each release pull request updates `MARKETING_VERSION` and increments `CURRENT_PROJECT_VERSION` in `project.yml`, regenerates the Xcode project, moves the changelog entries out of `Unreleased`, and adds release notes. The merged release commit is tagged `vMAJOR.MINOR.PATCH`; `scripts/build-release.sh` derives the archive name from that marketing version.
 
+Beta tags use `vMAJOR.MINOR.PATCH-beta.N` and must be marked as pre-releases on GitHub. Every Stable or Beta archive is added to `updates/appcast.xml` with `scripts/prepare-appcast.sh`; that appcast change follows the same pull-request and CI rules as application code.
+
 ## Visual changes
 
 Every pull request that changes the interface must include before-and-after captures. Use account-neutral content and do not commit Path of Exile or Grinding Gear Games proprietary logos, fonts, textures, maps, or icons.
@@ -36,6 +38,7 @@ Run before opening a pull request:
 ```sh
 ./scripts/generate-project.sh
 ./scripts/validate-snapshot.sh
+./scripts/validate-appcast.sh
 xcodebuild test -project ExileRoute.xcodeproj -scheme ExileRoute -destination 'platform=macOS,arch=arm64'
 ```
 

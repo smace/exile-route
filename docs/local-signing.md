@@ -47,6 +47,25 @@ security find-identity -v -p codesigning
 
 The first migration from an ad hoc signature to this identity requires Screen Recording permission once. Later builds signed with the same private key and bundle identifier should retain the same code identity.
 
+## Isolated Dev and Beta builds
+
+Build the local Dev flavor without touching the installed Stable application:
+
+```sh
+./scripts/build-local-dev.sh
+open DerivedData/LocalDev/Build/Products/Debug/ExileRoute.app
+```
+
+The Dev app presents itself as **Exile Route Dev**, uses bundle identifier `com.swannmace.ExileRoute.Dev`, stores state in `Application Support/Exile Route Dev`, and disables Sparkle. It can therefore remain open beside Stable without reading or modifying Stable progress, settings, update preferences, or screen-capture identity.
+
+Build a beta candidate with:
+
+```sh
+./scripts/build-local-beta.sh
+```
+
+Beta intentionally keeps the Stable bundle identifier because it is an upgrade candidate, but presents itself as **Exile Route Beta** and always follows the Beta update channel. Do not copy it over `/Applications/ExileRoute.app` unless replacing the installed Stable build is intentional.
+
 ## Overrides
 
 The scripts accept these optional environment variables:

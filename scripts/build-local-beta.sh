@@ -2,8 +2,8 @@
 set -eu
 
 repository_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-export EXILE_ROUTE_DERIVED_DATA="${EXILE_ROUTE_DERIVED_DATA:-$repository_root/DerivedData/LocalSigned}"
+export EXILE_ROUTE_DERIVED_DATA="${EXILE_ROUTE_DERIVED_DATA:-$repository_root/DerivedData/LocalBeta}"
 exec "$repository_root/scripts/build-local-signed.sh" \
-    Release \
+    Beta \
     com.swannmace.ExileRoute \
-    stable
+    beta

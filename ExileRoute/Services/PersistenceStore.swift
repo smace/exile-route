@@ -14,6 +14,7 @@ struct UserSettings: Codable, Equatable, Sendable {
     var overlayScreenID: String?
     var overlayPlacementVersion = currentOverlayPlacementVersion
     var hotKeys = HotKeyDefinition.defaults
+    var updateChannel = UpdateChannel.stable
     var ocrCalibrationVersion = 2
 
     init() {}
@@ -34,6 +35,7 @@ struct UserSettings: Codable, Equatable, Sendable {
             forKey: .hotKeys
         ) ?? HotKeyDefinition.defaults
         hotKeys = HotKeyDefinition.sanitized(decodedHotKeys)
+        updateChannel = try container.decodeIfPresent(UpdateChannel.self, forKey: .updateChannel) ?? .stable
         let storedCalibrationVersion = try container.decodeIfPresent(Int.self, forKey: .ocrCalibrationVersion) ?? 1
         ocrCrop = storedCalibrationVersion >= 2
             ? (try container.decodeIfPresent(NormalizedRect.self, forKey: .ocrCrop) ?? .defaultAreaTitle)
@@ -80,8 +82,7 @@ struct PersistenceStore {
 
     init(fileManager: FileManager = .default, baseURL: URL? = nil) {
         self.fileManager = fileManager
-        self.baseURL = baseURL ?? fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Exile Route", isDirectory: true)
+        self.baseURL = baseURL ?? ApplicationDataLocation.dataDirectory(fileManager: fileManager)
     }
 
     func load() -> StoredApplicationState {

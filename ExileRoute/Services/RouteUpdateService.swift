@@ -22,8 +22,7 @@ actor RouteUpdateService {
     init(session: URLSession = .shared, fileManager: FileManager = .default, cacheRoot: URL? = nil) {
         self.session = session
         self.fileManager = fileManager
-        self.cacheRoot = cacheRoot ?? fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Exile Route/RouteCache", isDirectory: true)
+        self.cacheRoot = cacheRoot ?? ApplicationDataLocation.routeCacheDirectory(fileManager: fileManager)
     }
 
     func downloadLatest() async throws -> URL {

@@ -29,6 +29,10 @@ The compact panel keeps the complete checklist for the current zone visible. The
 
 Exile Route is a menu-bar app. The overlay appears automatically while GeForce NOW is the frontmost application and hides when focus leaves it.
 
+Starting with v1.4.0, Exile Route checks a signed update feed once per day and lets you install new versions from **Settings → Updates** or **Check for app updates…** in the menu bar. Because v1.3.0 does not contain the updater, upgrading from v1.3.0 to v1.4.0 remains a one-time manual installation.
+
+The default **Stable** channel receives public releases only. Opting into **Beta** also offers pre-releases; a later Stable build supersedes its beta. Local **Dev** builds use a separate bundle identifier and `Application Support/Exile Route Dev`, disable automatic updates, and can run alongside the installed Stable app.
+
 ## Controls
 
 Default global shortcuts:
@@ -76,13 +80,14 @@ brew install xcodegen
 ./scripts/generate-project.sh
 xcodebuild test -project ExileRoute.xcodeproj -scheme ExileRoute -destination 'platform=macOS,arch=arm64'
 ./scripts/build-release.sh
+./scripts/build-local-dev.sh
 ```
 
-CI regenerates the project, validates the bundled snapshot, builds without distribution signing, and runs the unit and visual snapshot tests on macOS.
+CI regenerates the project, validates the bundled route snapshot and Sparkle appcast, builds without distribution signing, and runs the unit and visual snapshot tests on macOS.
 
 For repeated local installation without resetting Screen Recording permission on every build, see [durable local code signing](docs/local-signing.md). This free self-signed workflow is local-only and does not replace Developer ID or notarization.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the post-v1 pull request workflow and [docs/QA-v1.3.0.md](docs/QA-v1.3.0.md) for the latest release validation.
+See [update channels and publishing](docs/update-channels.md), [CONTRIBUTING.md](CONTRIBUTING.md) for the post-v1 pull request workflow, and [docs/QA-v1.3.0.md](docs/QA-v1.3.0.md) for the latest released validation.
 
 ## License
 

@@ -3,6 +3,43 @@ import XCTest
 @testable import ExileRoute
 
 final class PersistenceStoreTests: XCTestCase {
+    func testDevDistributionUsesAnIsolatedRouteCache() {
+        let applicationSupport = URL(fileURLWithPath: "/tmp/Application Support", isDirectory: true)
+        let stableData = ApplicationDataLocation.dataDirectory(
+            in: applicationSupport,
+            bundleIdentifier: "com.swannmace.ExileRoute"
+        )
+        let devData = ApplicationDataLocation.dataDirectory(
+            in: applicationSupport,
+            bundleIdentifier: "com.swannmace.ExileRoute.Dev"
+        )
+
+        XCTAssertEqual(stableData.lastPathComponent, "Exile Route")
+        XCTAssertEqual(devData.lastPathComponent, "Exile Route Dev")
+        XCTAssertNotEqual(stableData, devData)
+        XCTAssertEqual(
+            stableData.appendingPathComponent("RouteCache", isDirectory: true),
+            ApplicationDataLocation.routeCacheDirectory(
+                in: applicationSupport,
+                bundleIdentifier: "com.swannmace.ExileRoute"
+            )
+        )
+        XCTAssertTrue(
+            SnapshotLoader()
+                .cachedDirectory(
+                    for: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                    bundleIdentifier: "com.swannmace.ExileRoute.Dev"
+                )
+                .pathComponents
+                .suffix(3)
+                .elementsEqual([
+                    "Exile Route Dev",
+                    "RouteCache",
+                    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                ])
+        )
+    }
+
     func testRoundTrip() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -12,6 +49,7 @@ final class PersistenceStoreTests: XCTestCase {
         state.progress.updatedAt = Date(timeIntervalSince1970: 12_345.678)
         state.settings.overlayOpacity = 0.82
         state.settings.overlayScreenID = "display-42"
+        state.settings.updateChannel = .beta
         state.settings.hotKeys[.previous] = HotKeyDefinition(
             keyCode: UInt32(kVK_ANSI_K),
             modifiers: .controlOptionShift
@@ -50,6 +88,7 @@ final class PersistenceStoreTests: XCTestCase {
         XCTAssertEqual(settings.overlayPlacementVersion, 1)
         XCTAssertNil(settings.overlayScreenID)
         XCTAssertEqual(settings.hotKeys, HotKeyDefinition.defaults)
+        XCTAssertEqual(settings.updateChannel, .stable)
     }
 
     @MainActor

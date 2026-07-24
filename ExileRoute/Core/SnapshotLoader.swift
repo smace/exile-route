@@ -64,9 +64,15 @@ struct SnapshotLoader: Sendable {
         return try validate(LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources))
     }
 
-    func cachedDirectory(for commit: String, fileManager: FileManager = .default) -> URL {
-        fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Exile Route/RouteCache", isDirectory: true)
+    func cachedDirectory(
+        for commit: String,
+        fileManager: FileManager = .default,
+        bundleIdentifier: String? = Bundle.main.bundleIdentifier
+    ) -> URL {
+        ApplicationDataLocation.routeCacheDirectory(
+            fileManager: fileManager,
+            bundleIdentifier: bundleIdentifier
+        )
             .appendingPathComponent(commit, isDirectory: true)
     }
 

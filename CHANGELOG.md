@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## [1.4.0] - 2026-07-24
+
+### Added
+
+- Check a signed Sparkle feed automatically and expose manual update checks from Settings and the menu bar.
+- Let Stable users opt into the Beta update channel while allowing later Stable releases to supersede betas.
+- Add separately named and persisted Dev builds that coexist with Stable and never self-update.
+- Add local tooling for durable Stable, Beta, and Dev builds plus signed Stable/Beta appcast generation.
+
+### Changed
+
+- Prepare the next backward-compatible feature version as `1.4.0` build `5`.
+
 ## [1.3.0] - 2026-07-24
 
 ### Added
@@ -77,3 +90,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 [1.1.0]: https://github.com/smace/exile-route/compare/v1.0.0...v1.1.0
 [1.2.0]: https://github.com/smace/exile-route/compare/v1.1.0...v1.2.0
 [1.3.0]: https://github.com/smace/exile-route/compare/v1.2.0...v1.3.0
+[1.4.0]: https://github.com/smace/exile-route/compare/v1.3.0...v1.4.0
