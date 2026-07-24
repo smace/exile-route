@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.1.0] - 2026-07-24
+
 ### Added
 
 - Add a free, Keychain-backed local signing workflow that keeps a stable application identity across development builds.
@@ -45,3 +47,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - CI, parser and progression tests, OCR fixtures, updater rollback tests, persistence tests, and visual snapshot tests.
 
 [1.0.0]: https://github.com/smace/exile-route/releases/tag/v1.0.0
+[1.1.0]: https://github.com/smace/exile-route/compare/v1.0.0...v1.1.0

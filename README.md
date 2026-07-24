@@ -21,10 +21,10 @@ The compact panel keeps the complete checklist for the current zone visible. The
 
 ## Install
 
-1. Download `ExileRoute-1.0.0.zip` and its checksum from the [latest release](https://github.com/smace/exile-route/releases/latest).
-2. Optionally verify it with `shasum -a 256 -c ExileRoute-1.0.0.zip.sha256`.
+1. Download `ExileRoute-<version>.zip` and its checksum from the [latest release](https://github.com/smace/exile-route/releases/latest).
+2. Optionally verify it with `shasum -a 256 -c ExileRoute-<version>.zip.sha256`.
 3. Unzip the app and move `ExileRoute.app` to `/Applications`.
-4. On first launch, control-click the app and choose **Open**. This v1 is ad hoc signed and is not notarized.
+4. On first launch, control-click the app and choose **Open**. Public releases are ad hoc signed and are not notarized.
 5. Grant Screen Recording permission when macOS asks. Restart Exile Route after changing that permission.
 
 Exile Route is a menu-bar app. The overlay appears automatically while GeForce NOW is the frontmost application and hides when focus leaves it.
@@ -78,7 +78,7 @@ CI regenerates the project, validates the bundled snapshot, builds without distr
 
 For repeated local installation without resetting Screen Recording permission on every build, see [durable local code signing](docs/local-signing.md). This free self-signed workflow is local-only and does not replace Developer ID or notarization.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the post-v1 pull request workflow and [docs/QA-v1.0.0.md](docs/QA-v1.0.0.md) for release validation.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the post-v1 pull request workflow and [docs/QA-v1.1.0.md](docs/QA-v1.1.0.md) for the latest release validation.
 
 ## License
 

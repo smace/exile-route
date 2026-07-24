@@ -13,6 +13,16 @@ Exile Route uses a pull-request-only workflow after `v1.0.0`.
 
 Direct pushes, force-pushes, and deletion of `main` are blocked by repository rules.
 
+## Versioning and releases
+
+Published versions follow [Semantic Versioning](https://semver.org/):
+
+- increment `MAJOR` for incompatible application, route, or persisted-data behavior;
+- increment `MINOR` for backward-compatible features and meaningful interface or workflow changes;
+- increment `PATCH` for backward-compatible fixes only.
+
+Each release pull request updates `MARKETING_VERSION` and increments `CURRENT_PROJECT_VERSION` in `project.yml`, regenerates the Xcode project, moves the changelog entries out of `Unreleased`, and adds release notes. The merged release commit is tagged `vMAJOR.MINOR.PATCH`; `scripts/build-release.sh` derives the archive name from that marketing version.
+
 ## Visual changes
 
 Every pull request that changes the interface must include before-and-after captures. Use account-neutral content and do not commit Path of Exile or Grinding Gear Games proprietary logos, fonts, textures, maps, or icons.
