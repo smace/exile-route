@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## [1.4.1] - 2026-07-24
+
+### Security
+
+- Require a valid Ed25519 signature on the complete Sparkle appcast and verify update archives before extraction.
+- Ignore the update-feed environment override in Stable and Beta builds while retaining it for isolated Dev testing.
+- Remove `com.apple.security.get-task-allow` from Beta and Release builds and reject any distributed root or nested executable that regains it.
+- Replace structural appcast checks with end-to-end verification of feed signatures, HTTPS release URLs, archive lengths, ordering, and archive signatures.
+
 ## [1.4.0] - 2026-07-24
 
 ### Added
@@ -91,3 +100,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 [1.2.0]: https://github.com/smace/exile-route/compare/v1.1.0...v1.2.0
 [1.3.0]: https://github.com/smace/exile-route/compare/v1.2.0...v1.3.0
 [1.4.0]: https://github.com/smace/exile-route/compare/v1.3.0...v1.4.0
+[1.4.1]: https://github.com/smace/exile-route/compare/v1.4.0...v1.4.1

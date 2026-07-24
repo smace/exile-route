@@ -29,7 +29,7 @@ The compact panel keeps the complete checklist for the current zone visible. The
 
 Exile Route is a menu-bar app. The overlay appears automatically while GeForce NOW is the frontmost application and hides when focus leaves it.
 
-Starting with v1.4.0, Exile Route checks a signed update feed once per day and lets you install new versions from **Settings → Updates** or **Check for app updates…** in the menu bar. Because v1.3.0 does not contain the updater, upgrading from v1.3.0 to v1.4.0 remains a one-time manual installation.
+Starting with v1.4.0, Exile Route checks an authenticated update feed once per day and lets you install new versions from **Settings → Updates** or **Check for app updates…** in the menu bar. Starting with v1.4.1, both the feed and every archive are Ed25519-signed, and Sparkle verifies the archive before extraction. Because v1.3.0 does not contain the updater, upgrading from v1.3.0 to v1.4.0 remains a one-time manual installation.
 
 The default **Stable** channel receives public releases only. Opting into **Beta** also offers pre-releases; a later Stable build supersedes its beta. Local **Dev** builds use a separate bundle identifier and `Application Support/Exile Route Dev`, disable automatic updates, and can run alongside the installed Stable app.
 
@@ -83,7 +83,7 @@ xcodebuild test -project ExileRoute.xcodeproj -scheme ExileRoute -destination 'p
 ./scripts/build-local-dev.sh
 ```
 
-CI regenerates the project, validates the bundled route snapshot and Sparkle appcast, builds without distribution signing, and runs the unit and visual snapshot tests on macOS.
+CI regenerates the project, validates the bundled route snapshot, cryptographically verifies the signed Sparkle feed and every published archive, runs the unit and visual snapshot tests, and builds a hardened Release artifact without the debugging entitlement on macOS.
 
 For repeated local installation without resetting Screen Recording permission on every build, see [durable local code signing](docs/local-signing.md). This free self-signed workflow is local-only and does not replace Developer ID or notarization.
 
