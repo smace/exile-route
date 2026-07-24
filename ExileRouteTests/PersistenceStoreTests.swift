@@ -53,6 +53,7 @@ final class PersistenceStoreTests: XCTestCase {
         let legacyState = """
         {
           "settings" : {
+            "overlayPlacementVersion" : 2,
             "overlayFrames" : {
               "display-old" : { "x" : 1000, "y" : 600, "width" : 390, "height" : 210 }
             }

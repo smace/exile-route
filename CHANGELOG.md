@@ -12,8 +12,8 @@
 
 ### Changed
 
-- Place the overlay at the top-left of each display, below Path of Exile's persistent area label, while preserving that anchor as the checklist grows.
-- Preserve the saved top-left anchor across launches and stabilize the first effective resize before enabling animations.
+- Place the overlay at the top-right of each display, directly below the configured OCR area-title region.
+- Preserve the saved top-right anchor across launches and stabilize the first effective resize before enabling animations.
 - Make Previous and Next navigate individual objectives while OCR remains responsible only for confirmed zone changes.
 - Treat each repeated passage through an area as a distinct route visit and include its exit as the final objective.
 
