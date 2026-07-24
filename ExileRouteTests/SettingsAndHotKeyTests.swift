@@ -16,6 +16,7 @@ final class SettingsAndHotKeyTests: XCTestCase {
         XCTAssertNil(HotKeyModifierPreset(eventModifiers: [.command]))
     }
 
+    @MainActor
     func testRecorderAcceptsAnExtendedShortcut() {
         let button = HotKeyRecorderButton()
         var recorded: HotKeyDefinition?
