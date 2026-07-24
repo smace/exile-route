@@ -68,6 +68,21 @@ final class OverlayPanelControllerTests: XCTestCase {
         )
     }
 
+    func testNoOpResizeDoesNotCompleteInitialPlacement() {
+        XCTAssertFalse(
+            OverlayPlacement.completesInitialResize(
+                currentSize: CGSize(width: 390, height: 210),
+                newSize: CGSize(width: 390, height: 210)
+            )
+        )
+        XCTAssertTrue(
+            OverlayPlacement.completesInitialResize(
+                currentSize: CGSize(width: 390, height: 210),
+                newSize: CGSize(width: 390, height: 380)
+            )
+        )
+    }
+
     func testOriginIsConstrainedInsideVisibleFrame() {
         let visibleFrame = CGRect(x: 0, y: 25, width: 1_440, height: 875)
         let panelSize = CGSize(width: 390, height: 230)
