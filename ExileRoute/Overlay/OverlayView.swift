@@ -9,18 +9,23 @@ struct OverlayView: View {
             OccultPanelBackground(opacity: model.overlayOpacity)
             VStack(spacing: 0) {
                 header
-                OrnamentalDivider().padding(.vertical, 10)
+                    .reportCompactLayoutHeight(.header)
+                OrnamentalDivider()
+                    .padding(.vertical, 10)
+                    .reportCompactLayoutHeight(.divider)
                 if let visit = model.currentVisit {
                     if let notice = model.transitionNotice {
                         transitionNotice(notice)
                             .transition(.opacity)
                             .padding(.bottom, 8)
+                            .reportCompactLayoutHeight(.notice)
                     }
                     objectiveContent(currentVisit: visit)
                 } else {
                     unavailable
                 }
                 footer
+                    .reportCompactLayoutHeight(.footer)
             }
             .padding(16)
         }
@@ -32,6 +37,14 @@ struct OverlayView: View {
         .animation(.easeInOut(duration: 0.18), value: model.stepIndex)
         .animation(.easeInOut(duration: 0.18), value: model.isExpanded)
         .animation(.easeInOut(duration: 0.18), value: model.transitionNotice)
+        .onPreferenceChange(CompactLayoutHeightPreferenceKey.self) { measurements in
+            guard !model.isExpanded, !isSnapshotRendering,
+                  let objectivesHeight = measurements[.objectives] else { return }
+            let measuredHeight = CompactLayoutPart.chrome
+                .compactMap { measurements[$0] }
+                .reduce(objectivesHeight + 32, +)
+            model.setMeasuredCompactOverlayHeight(measuredHeight)
+        }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Exile Route, Act \(model.currentAct), \(model.currentAreaName)")
     }
@@ -70,10 +83,12 @@ struct OverlayView: View {
             }
         } else if isSnapshotRendering {
             compactChecklist
+                .reportCompactLayoutHeight(.objectives)
         } else {
             ScrollViewReader { proxy in
                 ScrollView {
                     compactChecklist
+                        .reportCompactLayoutHeight(.objectives)
                 }
                 .scrollIndicators(.hidden)
                 .onChange(of: model.stepIndex) { _, _ in
@@ -278,6 +293,40 @@ struct OverlayView: View {
 
     private func roman(_ value: Int) -> String {
         ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"][safe: value] ?? "\(value)"
+    }
+}
+
+private enum CompactLayoutPart: Hashable {
+    case header
+    case divider
+    case notice
+    case objectives
+    case footer
+
+    static let chrome: [CompactLayoutPart] = [.header, .divider, .notice, .footer]
+}
+
+private struct CompactLayoutHeightPreferenceKey: PreferenceKey {
+    static let defaultValue: [CompactLayoutPart: CGFloat] = [:]
+
+    static func reduce(
+        value: inout [CompactLayoutPart: CGFloat],
+        nextValue: () -> [CompactLayoutPart: CGFloat]
+    ) {
+        value.merge(nextValue(), uniquingKeysWith: max)
+    }
+}
+
+private extension View {
+    func reportCompactLayoutHeight(_ part: CompactLayoutPart) -> some View {
+        background {
+            GeometryReader { geometry in
+                Color.clear.preference(
+                    key: CompactLayoutHeightPreferenceKey.self,
+                    value: [part: geometry.size.height]
+                )
+            }
+        }
     }
 }
 
