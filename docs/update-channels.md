@@ -20,6 +20,8 @@ The public Ed25519 key is embedded in the application through `SUPublicEDKey`. I
 
 Ed25519 authenticates the update archive. It does not replace Apple Developer ID signing or notarization. Until those are available, public builds remain ad hoc signed and users must approve the application on first installation. The durable self-signed certificate documented in `local-signing.md` remains local to the maintainer's Mac.
 
+Builds without an Apple Developer ID use `Config/NonDeveloperIDSigning.entitlements` so the hardened host can load Sparkle despite both signatures lacking an Apple Team ID. Developer ID releases must not use this exception.
+
 Back up the update private key securely. Losing it means already installed updater-enabled builds cannot trust a replacement key without a manually installed migration release.
 
 ## Prepare a Stable update
