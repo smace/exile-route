@@ -17,6 +17,7 @@
 
 ### Fixed
 
+- Size the compact overlay from its measured SwiftUI content so every objective in a zone remains visible.
 - Restrict automatic OCR progression to the exit of the current zone visit so a false match cannot skip Rhoa Glyphs and jump from The Coast to The Tidal Island.
 - Preserve the source-zone context for transitions and correctly distinguish portal creation from portal use.
 - Request Screen Recording permission at most once per application launch while continuing to detect a permission granted from System Settings.

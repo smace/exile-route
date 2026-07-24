@@ -9,6 +9,16 @@ The v1 captures remain the baseline. The new captures were made from a neutral l
 | Compact | ![Compact v1](screenshots/overlay-compact-v1.png) | ![Compact checklist](screenshots/overlay-compact-zone-checklist.png) |
 | Expanded | ![Expanded v1](screenshots/overlay-expanded-v1.png) | ![Expanded checklist](screenshots/overlay-expanded-zone-checklist.png) |
 
+### Adaptive compact height
+
+The same three-objective Lioneye's Watch visit is rendered below on the previous
+commit and after the adaptive-height fix. Both previews use the neutral test
+renderer and contain no Path of Exile assets.
+
+| Before — fixed minimum height | After — measured content height |
+| --- | --- |
+| ![Three objectives clipped at the compact minimum height](screenshots/overlay-compact-three-objectives-before.png) | ![Three objectives fully visible after adaptive sizing](screenshots/overlay-compact-three-objectives-after.png) |
+
 ## Automated validation
 
 - [x] Bundled snapshot validation.
@@ -17,6 +27,7 @@ The v1 captures remain the baseline. The new captures were made from a neutral l
 - [x] Progression coverage for manual completion, skipped recovery, coherent OCR confirmation, duplicate areas, distant jumps, and no regression.
 - [x] Backward-compatible restoration without `skippedStepIDs`.
 - [x] Visual renders for short and seven-objective visits, four objective states, enlarged text, compact, expanded, interaction, OCR error, and skipped warning.
+- [x] A three-objective visit starts above the 210-point minimum and a live `NSHostingView` measurement expands an undersized panel.
 - [x] Apple Silicon Release build.
 
 ## Native preview validation

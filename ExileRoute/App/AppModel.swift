@@ -133,6 +133,12 @@ final class AppModel: ObservableObject {
         saveSettings()
     }
 
+    func setMeasuredCompactOverlayHeight(_ height: CGFloat) {
+        let adjustedHeight = min(520, max(210, ceil(height)))
+        guard abs(compactOverlayHeight - adjustedHeight) >= 1 else { return }
+        compactOverlayHeight = adjustedHeight
+    }
+
     func setOCRActive(_ active: Bool) {
         isOCRActive = active
         ocrStatus = active ? .waitingForGeForceNow : .disabled
@@ -330,12 +336,19 @@ final class AppModel: ObservableObject {
         let charactersPerLine = max(24, Int(42 / textScale))
         let rowHeight = currentZoneObjectives.reduce(CGFloat.zero) { partial, objective in
             let lines = max(1, Int(ceil(Double(objective.step.displayText.count) / Double(charactersPerLine))))
-            return partial + CGFloat(lines) * CGFloat(18) * CGFloat(textScale) + CGFloat(12)
+            let titleHeight = CGFloat(lines) * 18 * CGFloat(textScale)
+            let hints = objective.state == .active ? objective.step.hints : []
+            let hintHeight = hints.reduce(CGFloat.zero) { hintTotal, hint in
+                let hintLines = max(1, Int(ceil(Double(hint.count) / Double(charactersPerLine))))
+                return hintTotal + CGFloat(hintLines) * 16 * CGFloat(textScale) + 5
+            }
+            let contentHeight = titleHeight + hintHeight
+            return partial + max(30 * CGFloat(textScale), contentHeight + 12)
         }
-        let activeHints = currentZoneObjectives.first(where: { $0.state == .active })?.step.hints ?? []
-        let hintHeight = CGFloat(activeHints.prefix(3).count) * CGFloat(22) * CGFloat(textScale)
-        let noticeHeight: CGFloat = transitionNotice == nil ? 0 : 34
-        compactOverlayHeight = min(520, max(210, 116 + rowHeight + hintHeight + noticeHeight))
+        let rowSpacing = CGFloat(max(currentZoneObjectives.count - 1, 0)) * 6
+        let chromeHeight = 128 + max(0, CGFloat(textScale - 1) * 16)
+        let noticeHeight: CGFloat = transitionNotice == nil ? 0 : 42
+        setMeasuredCompactOverlayHeight(chromeHeight + rowHeight + rowSpacing + noticeHeight)
     }
 
     private func apply(_ settings: UserSettings) {
