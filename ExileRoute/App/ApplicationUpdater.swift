@@ -8,13 +8,19 @@ final class ApplicationUpdater: NSObject, ObservableObject, SPUUpdaterDelegate {
     private(set) var channel: UpdateChannel
     private var controller: SPUStandardUpdaterController?
     private var hasStarted = false
+    private let feedURLOverride: String?
+    private let bundledFeedURL: String?
 
     init(
         channel: UpdateChannel,
-        distributionFlavor: DistributionFlavor = .current
+        distributionFlavor: DistributionFlavor = .current,
+        feedURLOverride: String? = ProcessInfo.processInfo.environment["EXILE_ROUTE_UPDATE_FEED_URL"],
+        bundledFeedURL: String? = Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") as? String
     ) {
         self.channel = distributionFlavor == .beta ? .beta : channel
         self.distributionFlavor = distributionFlavor
+        self.feedURLOverride = feedURLOverride
+        self.bundledFeedURL = bundledFeedURL
         super.init()
         if distributionFlavor.updatesEnabled {
             controller = SPUStandardUpdaterController(
@@ -58,6 +64,8 @@ final class ApplicationUpdater: NSObject, ObservableObject, SPUUpdaterDelegate {
     }
 
     func feedURLString(for updater: SPUUpdater) -> String? {
-        ProcessInfo.processInfo.environment["EXILE_ROUTE_UPDATE_FEED_URL"]
+        resolvedFeedURLString
     }
+
+    var resolvedFeedURLString: String? { feedURLOverride ?? bundledFeedURL }
 }

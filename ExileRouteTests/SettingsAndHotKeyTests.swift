@@ -183,6 +183,26 @@ final class SettingsAndHotKeyTests: XCTestCase {
     }
 
     @MainActor
+    func testUpdaterPreservesBundledFeedWithoutEnvironmentOverride() {
+        let bundledFeed = "https://example.com/stable-appcast.xml"
+        let updater = ApplicationUpdater(
+            channel: .stable,
+            distributionFlavor: .stable,
+            feedURLOverride: nil,
+            bundledFeedURL: bundledFeed
+        )
+        let overridden = ApplicationUpdater(
+            channel: .stable,
+            distributionFlavor: .stable,
+            feedURLOverride: "https://example.com/test-appcast.xml",
+            bundledFeedURL: bundledFeed
+        )
+
+        XCTAssertEqual(updater.resolvedFeedURLString, bundledFeed)
+        XCTAssertEqual(overridden.resolvedFeedURLString, "https://example.com/test-appcast.xml")
+    }
+
+    @MainActor
     func testUpdatesSettingsVisualReference() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
