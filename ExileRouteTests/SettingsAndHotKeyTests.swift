@@ -245,4 +245,55 @@ final class SettingsAndHotKeyTests: XCTestCase {
             try png.write(to: URL(fileURLWithPath: outputPath), options: .atomic)
         }
     }
+
+    @MainActor
+    func testBuildSettingsVisualReferences() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        let updater = ApplicationUpdater(channel: .stable, distributionFlavor: .dev)
+
+        let emptyPNG = try renderSettings(section: .build, model: model, updater: updater)
+        let emptyAttachment = XCTAttachment(data: emptyPNG, uniformTypeIdentifier: "public.png")
+        emptyAttachment.name = "settings-build-empty"
+        emptyAttachment.lifetime = .keepAlways
+        add(emptyAttachment)
+        if let outputPath = ProcessInfo.processInfo.environment["EXILE_ROUTE_BUILD_EMPTY_REFERENCE_OUTPUT"] {
+            try emptyPNG.write(to: URL(fileURLWithPath: outputPath), options: .atomic)
+        }
+
+        await model.importBuild(TestPoBFixtures.multiSkillSet)
+
+        let importedPNG = try renderSettings(section: .build, model: model, updater: updater)
+        let importedAttachment = XCTAttachment(data: importedPNG, uniformTypeIdentifier: "public.png")
+        importedAttachment.name = "settings-build-imported"
+        importedAttachment.lifetime = .keepAlways
+        add(importedAttachment)
+        if let outputPath = ProcessInfo.processInfo.environment["EXILE_ROUTE_BUILD_REFERENCE_OUTPUT"] {
+            try importedPNG.write(to: URL(fileURLWithPath: outputPath), options: .atomic)
+        }
+    }
+
+    @MainActor
+    private func renderSettings(
+        section: SettingsView.Section,
+        model: AppModel,
+        updater: ApplicationUpdater
+    ) throws -> Data {
+        let view = SettingsView(initialSection: section)
+            .environmentObject(model)
+            .environmentObject(updater)
+            .frame(width: 760, height: 620)
+        let hostingView = NSHostingView(rootView: view)
+        hostingView.frame = NSRect(x: 0, y: 0, width: 760, height: 620)
+        for _ in 0..<5 {
+            hostingView.layoutSubtreeIfNeeded()
+            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+        }
+        let representation = try XCTUnwrap(
+            hostingView.bitmapImageRepForCachingDisplay(in: hostingView.bounds)
+        )
+        hostingView.cacheDisplay(in: hostingView.bounds, to: representation)
+        return try XCTUnwrap(representation.representation(using: .png, properties: [:]))
+    }
 }

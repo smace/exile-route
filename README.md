@@ -55,11 +55,21 @@ Each zone visit has its own checklist, including its exit as the final objective
 
 The menu-bar item provides manual navigation, forced visibility, OCR pause/resume, route updates, settings, and progress reset.
 
+## Path of Building imports
+
+Open **Settings → Build** to import a Path of Building code from text, the clipboard, or a text file. Exile Route also accepts HTTPS links from `pobb.in`, `poe.ninja/pob`, `maxroll.gg/poe/pob`, and Pastebin.
+
+The imported character class and every enabled skill set are normalized against the gem catalog bundled with the campaign snapshot. Exile Route then adds one eligible quest reward and the earliest class-compatible vendor purchases to the existing checklist, including the NPC, currency cost, and skill-set context. Starting gems are omitted; unknown or campaign-unavailable gems remain visible as warnings.
+
+Only the normalized class, skill sets, gem identifiers, and warnings are saved. The raw PoB code, passive trees, equipment, flasks, and calculation settings are not retained. Importing, replacing, or removing a build keeps campaign options and the current campaign objective stable.
+
+![Build import settings](docs/screenshots/settings-build-import-after.png)
+
 ## Routes
 
 The complete ten-act campaign snapshot is embedded for offline use. Exile Route can:
 
-- update from a precise upstream commit only after every route and data file validates;
+- update from a precise upstream commit only after every route, quest, and gem-catalog file validates;
 - retain the previous valid cache if download or validation fails;
 - import route text, a text file, clipboard content, an HTTPS URL, or a Pastebin URL;
 - export the active route to a text file or the clipboard;

@@ -34,6 +34,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var hotKeyValidationMessage: String?
     @Published private(set) var transitionNotice: ZoneTransitionNotice?
     @Published private(set) var compactOverlayHeight: CGFloat = 210
+    @Published private(set) var importedBuild: ImportedBuild?
+    @Published private(set) var buildWarnings: [PoBImportWarning] = []
 
     private var snapshot: LoadedSnapshot?
     private var progression: ProgressionEngine?
@@ -47,6 +49,7 @@ final class AppModel: ObservableObject {
     init(persistence: PersistenceStore = PersistenceStore()) {
         self.persistence = persistence
         self.storedState = persistence.load()
+        self.importedBuild = storedState.importedBuild
         apply(storedState.settings)
         if ProcessInfo.processInfo.environment["EXILE_ROUTE_PREVIEW"] == "1" { forceVisible = true }
         if ProcessInfo.processInfo.environment["EXILE_ROUTE_EXPANDED_PREVIEW"] == "1" { isExpanded = true }
@@ -217,6 +220,35 @@ final class AppModel: ObservableObject {
         saveSettings()
     }
 
+    func importBuild(_ input: String) async {
+        guard let snapshot else {
+            statusText = "Campaign data is not ready"
+            return
+        }
+        statusText = "Importing Path of Building…"
+        do {
+            let result = try await PoBImportService(catalog: snapshot.gemCatalog).import(from: input)
+            storedState.importedBuild = result.build
+            importedBuild = result.build
+            rebuildRoute(reset: false, preservingCurrentStep: true)
+            try persist()
+            let count = result.build.requiredGems.count
+            statusText = "Imported \(result.build.characterClass) build • \(count) gems"
+        } catch {
+            statusText = error.localizedDescription
+        }
+    }
+
+    func removeBuild() {
+        guard importedBuild != nil else { return }
+        storedState.importedBuild = nil
+        importedBuild = nil
+        buildWarnings = []
+        rebuildRoute(reset: false, preservingCurrentStep: true)
+        try? persist()
+        statusText = "Path of Building removed"
+    }
+
     func importRoute(_ input: String) async {
         do {
             let source = try await RouteImportService().source(from: input)
@@ -224,7 +256,8 @@ final class AppModel: ObservableObject {
             let parsed = try RouteParser(areas: snapshot.areas, quests: snapshot.quests)
                 .parse(sources: [("Custom Route", source)], configuration: routeConfiguration)
             storedState.customRouteSource = source
-            install(route: parsed, progress: ProgressState())
+            let route = enrichedRoute(from: parsed)
+            install(route: route, progress: ProgressState())
             try persist()
             statusText = "Custom route imported"
         } catch {
@@ -253,7 +286,7 @@ final class AppModel: ObservableObject {
             snapshotCommit = String(loaded.manifest.commit.prefix(8))
             storedState.customRouteSource = nil
             storedState.activeSnapshotCommit = loaded.manifest.commit
-            rebuildRoute(reset: false)
+            rebuildRoute(reset: false, preservingCurrentStep: true)
             try persist()
             statusText = "Route updated to \(snapshotCommit)"
         } catch {
@@ -284,15 +317,21 @@ final class AppModel: ObservableObject {
     private func loadInitialRoute() {
         do {
             let loader = SnapshotLoader()
+            let bundled = try loader.loadBundled()
             let loaded: LoadedSnapshot
             if let commit = storedState.activeSnapshotCommit {
-                do { loaded = try loader.loadDirectory(loader.cachedDirectory(for: commit)) }
+                do {
+                    loaded = try loader.loadDirectory(
+                        loader.cachedDirectory(for: commit),
+                        fallbackCatalog: bundled.gemCatalog
+                    )
+                }
                 catch {
                     storedState.activeSnapshotCommit = nil
-                    loaded = try loader.loadBundled()
+                    loaded = bundled
                 }
             } else {
-                loaded = try loader.loadBundled()
+                loaded = bundled
             }
             snapshot = loaded
             snapshotCommit = String(loaded.manifest.commit.prefix(8))
@@ -303,20 +342,63 @@ final class AppModel: ObservableObject {
         }
     }
 
-    private func rebuildRoute(reset: Bool) {
+    private func rebuildRoute(reset: Bool, preservingCurrentStep: Bool = false) {
         guard let snapshot else { return }
         do {
+            let previousStep = preservingCurrentStep ? currentStep : nil
             let parser = RouteParser(areas: snapshot.areas, quests: snapshot.quests)
-            let parsed: CampaignRoute
+            let baseRoute: CampaignRoute
             if let custom = storedState.customRouteSource {
-                parsed = try parser.parse(sources: [("Custom Route", custom)], configuration: routeConfiguration)
+                baseRoute = try parser.parse(sources: [("Custom Route", custom)], configuration: routeConfiguration)
             } else {
-                parsed = try parser.parse(sources: snapshot.routeSources, configuration: routeConfiguration)
+                baseRoute = try parser.parse(sources: snapshot.routeSources, configuration: routeConfiguration)
             }
-            install(route: parsed, progress: reset ? ProgressState() : storedState.progress)
+            let route = enrichedRoute(from: baseRoute)
+            var progress = reset ? ProgressState() : storedState.progress
+            if preservingCurrentStep, let previousStep {
+                progress = rebase(progress: progress, from: previousStep, to: route)
+            }
+            install(route: route, progress: progress)
         } catch {
             statusText = error.localizedDescription
         }
+    }
+
+    private func enrichedRoute(from baseRoute: CampaignRoute) -> CampaignRoute {
+        guard let snapshot, let importedBuild else {
+            buildWarnings = []
+            return baseRoute
+        }
+        let enrichment = GemRouteEnricher(quests: snapshot.quests, catalog: snapshot.gemCatalog)
+            .enrich(baseRoute, with: importedBuild)
+        buildWarnings = enrichment.warnings
+        return enrichment.route
+    }
+
+    private func rebase(
+        progress: ProgressState,
+        from previousStep: RouteStep,
+        to route: CampaignRoute
+    ) -> ProgressState {
+        var rebased = progress
+        let steps = route.steps
+        let exactID = previousStep.id
+        let parentID = previousStep.gemAcquisition?.parentStepID
+        if let index = steps.firstIndex(where: { $0.id == exactID }) {
+            rebased.stepIndex = index
+        } else if let parentID, let index = steps.firstIndex(where: { $0.id == parentID }) {
+            rebased.stepIndex = index
+        } else {
+            rebased.stepIndex = min(progress.stepIndex, max(steps.count - 1, 0))
+        }
+        let validIDs = Set(steps.map(\.id))
+        rebased.completedStepIDs.formIntersection(validIDs)
+        rebased.skippedStepIDs.formIntersection(validIDs)
+        if steps.indices.contains(rebased.stepIndex) {
+            rebased.currentAreaID = steps[rebased.stepIndex].contextAreaID
+        }
+        rebased.updatedAt = Date()
+        return rebased
     }
 
     private func install(route: CampaignRoute, progress: ProgressState) {

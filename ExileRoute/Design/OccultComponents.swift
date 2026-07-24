@@ -116,6 +116,9 @@ struct RouteGlyph: View {
     let step: RouteStep
 
     private var color: Color {
+        if let acquisition = step.gemAcquisition {
+            return Theme.gemColor(for: acquisition.primaryAttribute)
+        }
         if step.fragments.contains(where: { $0.kind == .kill || $0.kind == .arena }) { return Theme.ember }
         if step.fragments.contains(where: { $0.kind == .waypoint || $0.kind == .waypointGet }) { return Theme.waypointCyan }
         return Theme.brass
@@ -125,7 +128,11 @@ struct RouteGlyph: View {
         ZStack {
             Diamond()
                 .stroke(color.opacity(0.8), lineWidth: 1)
-            if step.fragments.contains(where: { $0.kind == .waypoint || $0.kind == .waypointGet }) {
+            if step.gemAcquisition != nil {
+                GemSigil()
+                    .stroke(color, style: StrokeStyle(lineWidth: 1.1, lineJoin: .round))
+                    .padding(4)
+            } else if step.fragments.contains(where: { $0.kind == .waypoint || $0.kind == .waypointGet }) {
                 WaypointSigil().stroke(color, lineWidth: 1)
                     .padding(4)
             } else if step.fragments.contains(where: { $0.kind == .kill || $0.kind == .arena }) {
@@ -136,6 +143,21 @@ struct RouteGlyph: View {
         }
         .frame(width: 22, height: 22)
         .accessibilityHidden(true)
+    }
+}
+
+private struct GemSigil: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + rect.height * 0.36))
+        path.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.18, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.18, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + rect.height * 0.36))
+        path.closeSubpath()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY + rect.height * 0.2))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.12))
+        return path
     }
 }
 

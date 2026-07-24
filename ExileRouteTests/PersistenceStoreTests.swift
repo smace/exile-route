@@ -50,6 +50,13 @@ final class PersistenceStoreTests: XCTestCase {
         state.settings.overlayOpacity = 0.82
         state.settings.overlayScreenID = "display-42"
         state.settings.updateChannel = .beta
+        state.importedBuild = ImportedBuild(
+            characterClass: "Witch",
+            skillSets: [ImportedSkillSet(id: "0", name: "Levelling", gemIDs: ["gem"])],
+            requiredGems: [RequiredGem(gemID: "gem", contexts: ["Levelling"])],
+            warnings: [],
+            importedAt: Date(timeIntervalSince1970: 123)
+        )
         state.settings.hotKeys[.previous] = HotKeyDefinition(
             keyCode: UInt32(kVK_ANSI_K),
             modifiers: .controlOptionShift

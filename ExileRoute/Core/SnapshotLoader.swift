@@ -4,6 +4,7 @@ struct LoadedSnapshot: Sendable {
     let manifest: RouteSnapshotManifest
     let areas: [String: AreaRecord]
     let quests: [String: QuestRecord]
+    let gemCatalog: GemCatalog
     let routeSources: [(name: String, contents: String)]
 }
 
@@ -32,15 +33,25 @@ struct SnapshotLoader: Sendable {
         let questsURL = try resourceURL(named: "quests", extension: "json", subdirectory: "Data", bundle: bundle)
         let areas = try decoder.decode([String: AreaRecord].self, from: Data(contentsOf: areasURL))
         let quests = try decoder.decode([String: QuestRecord].self, from: Data(contentsOf: questsURL))
+        let gemCatalog = try loadCatalog(
+            from: try resourceDirectory(bundle: bundle),
+            decoder: decoder
+        )
         var sources: [(name: String, contents: String)] = []
         for act in 1...10 {
             let url = try resourceURL(named: "act-\(act)", extension: "txt", subdirectory: "Routes", bundle: bundle)
             sources.append(("Act \(act)", try String(contentsOf: url, encoding: .utf8)))
         }
-        return try validate(LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources))
+        return try validate(LoadedSnapshot(
+            manifest: manifest,
+            areas: areas,
+            quests: quests,
+            gemCatalog: gemCatalog,
+            routeSources: sources
+        ))
     }
 
-    func loadDirectory(_ directory: URL) throws -> LoadedSnapshot {
+    func loadDirectory(_ directory: URL, fallbackCatalog: GemCatalog? = nil) throws -> LoadedSnapshot {
         let decoder = JSONDecoder()
         let manifestURL = directory.appendingPathComponent("snapshot-manifest.json")
         let manifest: RouteSnapshotManifest
@@ -58,10 +69,23 @@ struct SnapshotLoader: Sendable {
         let routesDirectory = directory.appendingPathComponent("Routes")
         let areas = try decoder.decode([String: AreaRecord].self, from: Data(contentsOf: dataDirectory.appendingPathComponent("areas.json")))
         let quests = try decoder.decode([String: QuestRecord].self, from: Data(contentsOf: dataDirectory.appendingPathComponent("quests.json")))
+        let gemCatalog: GemCatalog
+        do {
+            gemCatalog = try loadCatalog(from: dataDirectory, decoder: decoder)
+        } catch {
+            guard let fallbackCatalog else { throw error }
+            gemCatalog = fallbackCatalog
+        }
         let sources = try (1...10).map { act in
             ("Act \(act)", try String(contentsOf: routesDirectory.appendingPathComponent("act-\(act).txt"), encoding: .utf8))
         }
-        return try validate(LoadedSnapshot(manifest: manifest, areas: areas, quests: quests, routeSources: sources))
+        return try validate(LoadedSnapshot(
+            manifest: manifest,
+            areas: areas,
+            quests: quests,
+            gemCatalog: gemCatalog,
+            routeSources: sources
+        ))
     }
 
     func cachedDirectory(
@@ -82,7 +106,11 @@ struct SnapshotLoader: Sendable {
               snapshot.manifest.commit.allSatisfy(\.isHexDigit) else {
             throw SnapshotLoaderError.invalidManifest
         }
-        guard snapshot.areas.count > 100, !snapshot.quests.isEmpty, snapshot.routeSources.count == 10 else {
+        guard snapshot.areas.count > 100,
+              !snapshot.quests.isEmpty,
+              snapshot.gemCatalog.gems.count > 100,
+              snapshot.gemCatalog.characters.count == 7,
+              snapshot.routeSources.count == 10 else {
             throw SnapshotLoaderError.invalidContent("missing campaign data")
         }
         let route = try RouteParser(areas: snapshot.areas, quests: snapshot.quests)
@@ -91,6 +119,41 @@ struct SnapshotLoader: Sendable {
             throw SnapshotLoaderError.invalidContent("campaign parse is incomplete")
         }
         return snapshot
+    }
+
+    private func loadCatalog(from dataDirectory: URL, decoder: JSONDecoder) throws -> GemCatalog {
+        GemCatalog(
+            gems: try decoder.decode(
+                [String: GemRecord].self,
+                from: Data(contentsOf: dataDirectory.appendingPathComponent("gems.json"))
+            ),
+            characters: try decoder.decode(
+                [String: CharacterRecord].self,
+                from: Data(contentsOf: dataDirectory.appendingPathComponent("characters.json"))
+            ),
+            vaalGemLookup: try decoder.decode(
+                [String: String].self,
+                from: Data(contentsOf: dataDirectory.appendingPathComponent("vaal-gem-lookup.json"))
+            ),
+            awakenedGemLookup: try decoder.decode(
+                [String: String].self,
+                from: Data(contentsOf: dataDirectory.appendingPathComponent("awakened-gem-lookup.json"))
+            )
+        )
+    }
+
+    private func resourceDirectory(bundle: Bundle) throws -> URL {
+        if let resourceURL = bundle.resourceURL {
+            let data = resourceURL.appendingPathComponent("Data", isDirectory: true)
+            if FileManager.default.fileExists(atPath: data.path) { return data }
+        }
+        let gemsURL = try resourceURL(
+            named: "gems",
+            extension: "json",
+            subdirectory: "Data",
+            bundle: bundle
+        )
+        return gemsURL.deletingLastPathComponent()
     }
 
     private func resourceURL(named: String, extension ext: String, subdirectory: String?, bundle: Bundle) throws -> URL {

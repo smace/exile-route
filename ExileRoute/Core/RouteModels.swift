@@ -23,6 +23,64 @@ struct QuestRecord: Codable, Hashable, Sendable {
     let id: String
     let name: String
     let act: String
+    let rewardOffers: [String: QuestRewardOffer]
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, act
+        case rewardOffers = "reward_offers"
+    }
+}
+
+struct QuestRewardEligibility: Codable, Hashable, Sendable {
+    let classes: [String]
+}
+
+struct QuestVendorReward: Codable, Hashable, Sendable {
+    let classes: [String]
+    let npc: String
+}
+
+struct QuestRewardOffer: Codable, Hashable, Sendable {
+    let questNPC: String
+    let quest: [String: QuestRewardEligibility]
+    let vendor: [String: QuestVendorReward]
+
+    enum CodingKeys: String, CodingKey {
+        case questNPC = "quest_npc"
+        case quest, vendor
+    }
+}
+
+struct GemRecord: Codable, Hashable, Sendable {
+    let id: String
+    let name: String
+    let primaryAttribute: String
+    let requiredLevel: Int
+    let isSupport: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+        case primaryAttribute = "primary_attribute"
+        case requiredLevel = "required_level"
+        case isSupport = "is_support"
+    }
+}
+
+struct CharacterRecord: Codable, Hashable, Sendable {
+    let startGemID: String
+    let chestGemID: String
+
+    enum CodingKeys: String, CodingKey {
+        case startGemID = "start_gem_id"
+        case chestGemID = "chest_gem_id"
+    }
+}
+
+struct GemCatalog: Hashable, Sendable {
+    let gems: [String: GemRecord]
+    let characters: [String: CharacterRecord]
+    let vaalGemLookup: [String: String]
+    let awakenedGemLookup: [String: String]
 }
 
 struct RouteSnapshotManifest: Codable, Hashable, Sendable {
@@ -61,7 +119,7 @@ struct RouteConfiguration: Codable, Equatable, Sendable {
 enum RouteFragmentKind: String, Codable, Hashable, Sendable {
     case area, enter, waypoint, waypointGet, portal, logout
     case kill, arena, quest, questText, generic, trial, ascend, crafting, direction
-    case text, unknown
+    case gem, text, unknown
 }
 
 struct RouteFragment: Identifiable, Codable, Hashable, Sendable {
@@ -88,6 +146,31 @@ struct RouteStep: Identifiable, Codable, Hashable, Sendable {
     var hints: [String]
     let contextAreaID: String
     let expectedAreaID: String?
+    let gemAcquisition: GemAcquisition?
+
+    init(
+        id: String,
+        act: Int,
+        line: Int,
+        rawText: String,
+        displayText: String,
+        fragments: [RouteFragment],
+        hints: [String],
+        contextAreaID: String,
+        expectedAreaID: String?,
+        gemAcquisition: GemAcquisition? = nil
+    ) {
+        self.id = id
+        self.act = act
+        self.line = line
+        self.rawText = rawText
+        self.displayText = displayText
+        self.fragments = fragments
+        self.hints = hints
+        self.contextAreaID = contextAreaID
+        self.expectedAreaID = expectedAreaID
+        self.gemAcquisition = gemAcquisition
+    }
 }
 
 struct RouteVisit: Identifiable, Hashable, Sendable {
