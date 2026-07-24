@@ -32,3 +32,5 @@ jobs:
           -destination 'platform=macOS,arch=arm64'
           -derivedDataPath DerivedData
           CODE_SIGNING_ALLOWED=NO
+      - name: Build hardened Release artifact
+        run: ./scripts/build-release.sh

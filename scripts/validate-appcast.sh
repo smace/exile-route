@@ -3,14 +3,11 @@ set -eu
 
 repository_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 appcast="$repository_root/updates/appcast.xml"
+info_plist="$repository_root/ExileRoute/Info.plist"
+module_cache="$(mktemp -d "${TMPDIR:-/tmp}/exile-route-swift-cache.XXXXXX")"
+trap 'rm -rf "$module_cache"' EXIT HUP INT TERM
 
 xmllint --noout "$appcast"
-
-enclosure_count="$(xmllint --xpath 'count(/*[local-name()="rss"]/*[local-name()="channel"]/*[local-name()="item"]/*[local-name()="enclosure"])' "$appcast")"
-signature_count="$(xmllint --xpath 'count(/*[local-name()="rss"]/*[local-name()="channel"]/*[local-name()="item"]/*[local-name()="enclosure"]/@*[local-name()="edSignature"])' "$appcast")"
-if [ "$enclosure_count" != "$signature_count" ]; then
-    printf 'Every appcast enclosure must have an EdDSA signature (%s/%s).\n' "$signature_count" "$enclosure_count" >&2
-    exit 1
-fi
-
-printf 'Validated appcast: %s signed update enclosure(s)\n' "$signature_count"
+CLANG_MODULE_CACHE_PATH="$module_cache" \
+SWIFT_MODULE_CACHE_PATH="$module_cache" \
+    xcrun swift "$repository_root/scripts/validate-appcast.swift" "$appcast" "$info_plist"

@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+--><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
     <channel>
         <title>Exile Route Updates</title>
         <link>https://github.com/smace/exile-route/releases</link>
@@ -31,7 +32,10 @@ The application targets Apple Silicon and requires macOS 15 or newer. The public
 
 The application includes no proprietary Path of Exile visual assets. Route content is attributed to HeartofPhos and bundled under its MIT license.
 ]]></description>
-            <enclosure url="https://github.com/smace/exile-route/releases/download/v1.4.0/ExileRoute-1.4.0.zip" length="2528324" type="application/octet-stream" sparkle:edSignature="2AMpkYVTFGpnIOqEXp0ppaNrGlEKWAHXA3V20hxa5TfI45TZzfANICZY5bvudwFI3MQQkHDopO6ngwUFIRtFAA=="/>
+            <enclosure url="https://github.com/smace/exile-route/releases/download/v1.4.0/ExileRoute-1.4.0.zip" length="2528324" type="application/octet-stream" sparkle:edSignature="2AMpkYVTFGpnIOqEXp0ppaNrGlEKWAHXA3V20hxa5TfI45TZzfANICZY5bvudwFI3MQQkHDopO6ngwUFIRtFAA=="></enclosure>
         </item>
     </channel>
-</rss>
+</rss><!-- sparkle-signatures:
+edSignature: AoxKA4QSK9n/4Yi3THnKaIhZAby+rW2KuKdoZWPvdVjL0KK99XHmCYgAwFTPzzdrU45mbd9JTFmUrKoao/wLBg==
+length: 2751
+-->
