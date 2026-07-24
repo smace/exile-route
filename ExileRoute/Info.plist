@@ -44,7 +44,11 @@
 	<string>https://raw.githubusercontent.com/smace/exile-route/main/updates/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>zeQBTTL6OJh3AFvHY0AdNLeNhoH2kKjcyLMtEhI7BEU=</string>
+	<key>SURequireSignedFeed</key>
+	<true/>
 	<key>SUScheduledCheckInterval</key>
 	<integer>86400</integer>
+	<key>SUVerifyUpdateBeforeExtraction</key>
+	<true/>
 </dict>
 </plist>

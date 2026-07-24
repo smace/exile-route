@@ -14,12 +14,14 @@ final class ApplicationUpdater: NSObject, ObservableObject, SPUUpdaterDelegate {
     init(
         channel: UpdateChannel,
         distributionFlavor: DistributionFlavor = .current,
-        feedURLOverride: String? = ProcessInfo.processInfo.environment["EXILE_ROUTE_UPDATE_FEED_URL"],
+        environment: [String: String] = ProcessInfo.processInfo.environment,
         bundledFeedURL: String? = Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") as? String
     ) {
         self.channel = distributionFlavor == .beta ? .beta : channel
         self.distributionFlavor = distributionFlavor
-        self.feedURLOverride = feedURLOverride
+        self.feedURLOverride = distributionFlavor == .dev
+            ? environment["EXILE_ROUTE_UPDATE_FEED_URL"]
+            : nil
         self.bundledFeedURL = bundledFeedURL
         super.init()
         if distributionFlavor.updatesEnabled {
