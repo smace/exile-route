@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+
+- Record custom global shortcuts directly from Settings with letters, numbers, arrows, function keys, and two-to-four modifier combinations.
+- Reject duplicate shortcut assignments and provide one-click restoration of the default controls.
+
+### Fixed
+
+- Open a populated, reusable Settings window from the menu-bar application instead of relying on an unresolved SwiftUI responder action.
+
 ## [1.2.0] - 2026-07-24
 
 ### Added
