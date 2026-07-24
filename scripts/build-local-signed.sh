@@ -13,6 +13,12 @@ repository_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 identity_name="${EXILE_ROUTE_SIGNING_IDENTITY:-Exile Route Local Signing}"
 keychain_path="${EXILE_ROUTE_KEYCHAIN:-$HOME/Library/Keychains/login.keychain-db}"
 derived_data="${EXILE_ROUTE_DERIVED_DATA:-$repository_root/DerivedData/LocalSigned-$configuration}"
+allow_debug_entitlement=false
+inject_base_entitlements=NO
+if [ "$configuration" = Debug ]; then
+    allow_debug_entitlement=true
+    inject_base_entitlements=YES
+fi
 
 cd "$repository_root"
 
@@ -36,6 +42,7 @@ xcodebuild \
     CODE_SIGN_STYLE=Manual \
     CODE_SIGNING_ALLOWED=YES \
     CODE_SIGNING_REQUIRED=YES \
+    CODE_SIGN_INJECT_BASE_ENTITLEMENTS="$inject_base_entitlements" \
     CODE_SIGN_IDENTITY="$identity_hash" \
     CODE_SIGN_ENTITLEMENTS="$repository_root/Config/NonDeveloperIDSigning.entitlements" \
     DEVELOPMENT_TEAM= \
@@ -43,7 +50,10 @@ xcodebuild \
     build
 
 application_path="$derived_data/Build/Products/$configuration/ExileRoute.app"
-"$repository_root/scripts/sign-app-bundle.sh" "$application_path" "$identity_hash"
+"$repository_root/scripts/sign-app-bundle.sh" \
+    "$application_path" \
+    "$identity_hash" \
+    "$allow_debug_entitlement"
 
 bundle_id="$(plutil -extract CFBundleIdentifier raw "$application_path/Contents/Info.plist")"
 flavor="$(plutil -extract ExileRouteDistributionFlavor raw "$application_path/Contents/Info.plist")"

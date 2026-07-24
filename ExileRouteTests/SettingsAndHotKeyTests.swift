@@ -183,23 +183,36 @@ final class SettingsAndHotKeyTests: XCTestCase {
     }
 
     @MainActor
-    func testUpdaterPreservesBundledFeedWithoutEnvironmentOverride() {
+    func testProductionUpdaterIgnoresEnvironmentFeedOverride() {
         let bundledFeed = "https://example.com/stable-appcast.xml"
-        let updater = ApplicationUpdater(
+        let environment = ["EXILE_ROUTE_UPDATE_FEED_URL": "https://example.com/test-appcast.xml"]
+        let stable = ApplicationUpdater(
             channel: .stable,
             distributionFlavor: .stable,
-            feedURLOverride: nil,
+            environment: environment,
             bundledFeedURL: bundledFeed
         )
-        let overridden = ApplicationUpdater(
+        let beta = ApplicationUpdater(
             channel: .stable,
-            distributionFlavor: .stable,
-            feedURLOverride: "https://example.com/test-appcast.xml",
+            distributionFlavor: .beta,
+            environment: environment,
             bundledFeedURL: bundledFeed
         )
 
-        XCTAssertEqual(updater.resolvedFeedURLString, bundledFeed)
-        XCTAssertEqual(overridden.resolvedFeedURLString, "https://example.com/test-appcast.xml")
+        XCTAssertEqual(stable.resolvedFeedURLString, bundledFeed)
+        XCTAssertEqual(beta.resolvedFeedURLString, bundledFeed)
+    }
+
+    @MainActor
+    func testDevUpdaterMayUseEnvironmentFeedOverride() {
+        let updater = ApplicationUpdater(
+            channel: .stable,
+            distributionFlavor: .dev,
+            environment: ["EXILE_ROUTE_UPDATE_FEED_URL": "https://example.com/test-appcast.xml"],
+            bundledFeedURL: "https://example.com/stable-appcast.xml"
+        )
+
+        XCTAssertEqual(updater.resolvedFeedURLString, "https://example.com/test-appcast.xml")
     }
 
     @MainActor
