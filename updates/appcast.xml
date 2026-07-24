@@ -1,11 +1,37 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><!-- sparkle-sign-warning:
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- sparkle-sign-warning:
 IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
---><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+-->
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
     <channel>
         <title>Exile Route Updates</title>
         <link>https://github.com/smace/exile-route/releases</link>
         <description>Signed Stable and Beta updates for Exile Route.</description>
         <language>en</language>
+        <item>
+            <title>1.4.1</title>
+            <pubDate>Fri, 24 Jul 2026 21:02:42 +0200</pubDate>
+            <link>https://github.com/smace/exile-route/releases/tag/v1.4.1</link>
+            <sparkle:version>6</sparkle:version>
+            <sparkle:shortVersionString>1.4.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description sparkle:format="markdown"><![CDATA[# Exile Route 1.4.1
+
+Exile Route 1.4.1 hardens the automatic update path introduced in v1.4.0.
+
+- The complete update feed is now Ed25519-signed and rejected if modified.
+- Every update archive is authenticated before Sparkle extracts it.
+- Stable and Beta builds can no longer redirect their update feed through an environment variable.
+- Distributed Beta and Release builds no longer include the debugging entitlement.
+- CI verifies the feed, every published archive, release ordering, and the final application entitlements.
+
+No Apple Team ID or signing-certificate rotation is included in this patch. Screen Recording permission continuity remains subject to the existing local/ad hoc signing limitation.
+
+The application targets Apple Silicon and requires macOS 15 or newer. Public archives remain ad hoc signed and are not notarized.
+]]></description>
+            <enclosure url="https://github.com/smace/exile-route/releases/download/v1.4.1/ExileRoute-1.4.1.zip" length="2528350" type="application/octet-stream" sparkle:edSignature="lL+Jjreac6FPCQT136Sv7r3inK7pr8sOfmnTd8QGlKocUCRdagp9eHY4axEL0wx2zW7E9GsteaFRoDmP/0FVDw=="/>
+        </item>
         <item>
             <title>1.4.0</title>
             <pubDate>Fri, 24 Jul 2026 17:24:36 +0200</pubDate>
@@ -32,10 +58,11 @@ The application targets Apple Silicon and requires macOS 15 or newer. The public
 
 The application includes no proprietary Path of Exile visual assets. Route content is attributed to HeartofPhos and bundled under its MIT license.
 ]]></description>
-            <enclosure url="https://github.com/smace/exile-route/releases/download/v1.4.0/ExileRoute-1.4.0.zip" length="2528324" type="application/octet-stream" sparkle:edSignature="2AMpkYVTFGpnIOqEXp0ppaNrGlEKWAHXA3V20hxa5TfI45TZzfANICZY5bvudwFI3MQQkHDopO6ngwUFIRtFAA=="></enclosure>
+            <enclosure url="https://github.com/smace/exile-route/releases/download/v1.4.0/ExileRoute-1.4.0.zip" length="2528324" type="application/octet-stream" sparkle:edSignature="2AMpkYVTFGpnIOqEXp0ppaNrGlEKWAHXA3V20hxa5TfI45TZzfANICZY5bvudwFI3MQQkHDopO6ngwUFIRtFAA=="/>
         </item>
     </channel>
-</rss><!-- sparkle-signatures:
-edSignature: AoxKA4QSK9n/4Yi3THnKaIhZAby+rW2KuKdoZWPvdVjL0KK99XHmCYgAwFTPzzdrU45mbd9JTFmUrKoao/wLBg==
-length: 2751
+</rss>
+<!-- sparkle-signatures:
+edSignature: Dxm1lyeQ8l4m20ffxXFimr7DqXVQ0WdB5MCqVVXKSOY8CnqciRsxqNrnFHgSeaIGI/zW2gTiAu6u+B4m6lLPAA==
+length: 4425
 -->
