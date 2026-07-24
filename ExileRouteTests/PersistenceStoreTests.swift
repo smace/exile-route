@@ -41,7 +41,43 @@ final class PersistenceStoreTests: XCTestCase {
 
         XCTAssertEqual(settings.ocrCrop, .defaultAreaTitle)
         XCTAssertEqual(settings.ocrCalibrationVersion, 2)
+        XCTAssertEqual(settings.overlayPlacementVersion, 1)
         XCTAssertEqual(settings.hotKeys, HotKeyDefinition.defaults)
+    }
+
+    @MainActor
+    func testSavingFrameMigratesLegacyOverlayPlacement() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let legacyState = """
+        {
+          "settings" : {
+            "overlayFrames" : {
+              "display-old" : { "x" : 1000, "y" : 600, "width" : 390, "height" : 210 }
+            }
+          },
+          "progress" : {
+            "stepIndex" : 0,
+            "currentAreaID" : null,
+            "completedStepIDs" : [],
+            "skippedStepIDs" : [],
+            "updatedAt" : 0
+          }
+        }
+        """
+        try Data(legacyState.utf8).write(to: directory.appendingPathComponent("state.json"))
+        let store = PersistenceStore(baseURL: directory)
+        let model = AppModel(persistence: store)
+
+        XCTAssertNil(model.overlayFrame(for: "display-old"))
+
+        let newFrame = CGRect(x: 24, y: 598, width: 390, height: 230)
+        model.saveOverlayFrame(newFrame, for: "display-current")
+        let migrated = store.load().settings
+
+        XCTAssertEqual(migrated.overlayPlacementVersion, UserSettings.currentOverlayPlacementVersion)
+        XCTAssertEqual(migrated.overlayFrames, ["display-current": WindowGeometry(newFrame)])
     }
 
     func testLegacyProgressWithoutSkippedObjectivesDecodes() throws {

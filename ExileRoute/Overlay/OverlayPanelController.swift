@@ -8,6 +8,39 @@ final class OverlayPanel: NSPanel {
     override var canBecomeMain: Bool { false }
 }
 
+struct OverlayPlacement {
+    static let leadingInset: CGFloat = 24
+    static let topInset: CGFloat = 72
+
+    static func defaultOrigin(visibleFrame: CGRect, panelSize: CGSize) -> CGPoint {
+        constrainedOrigin(
+            CGPoint(
+                x: visibleFrame.minX + leadingInset,
+                y: visibleFrame.maxY - topInset - panelSize.height
+            ),
+            panelSize: panelSize,
+            visibleFrame: visibleFrame
+        )
+    }
+
+    static func resizedOrigin(currentFrame: CGRect, newSize: CGSize) -> CGPoint {
+        CGPoint(x: currentFrame.minX, y: currentFrame.maxY - newSize.height)
+    }
+
+    static func constrainedOrigin(
+        _ origin: CGPoint,
+        panelSize: CGSize,
+        visibleFrame: CGRect
+    ) -> CGPoint {
+        let maximumX = max(visibleFrame.minX, visibleFrame.maxX - panelSize.width)
+        let maximumY = max(visibleFrame.minY, visibleFrame.maxY - panelSize.height)
+        return CGPoint(
+            x: min(max(origin.x, visibleFrame.minX), maximumX),
+            y: min(max(origin.y, visibleFrame.minY), maximumY)
+        )
+    }
+}
+
 @MainActor
 final class OverlayPanelController {
     private let model: AppModel
@@ -68,7 +101,7 @@ final class OverlayPanelController {
     private func resize(expanded: Bool, compactHeight: CGFloat) {
         let oldFrame = panel.frame
         let size = expanded ? NSSize(width: 460, height: 560) : NSSize(width: 390, height: compactHeight)
-        let proposed = NSPoint(x: oldFrame.maxX - size.width, y: oldFrame.maxY - size.height)
+        let proposed = OverlayPlacement.resizedOrigin(currentFrame: oldFrame, newSize: size)
         let origin = constrainedOrigin(proposed, size: size, screen: panel.screen ?? NSScreen.main)
         panel.setFrame(NSRect(origin: origin, size: size), display: true, animate: true)
     }
@@ -87,7 +120,11 @@ final class OverlayPanelController {
             let origin = constrainedOrigin(stored.origin, size: size, screen: screen)
             panel.setFrame(NSRect(origin: origin, size: size), display: false)
         } else {
-            panel.setFrameOrigin(NSPoint(x: visible.maxX - 410, y: visible.maxY - 240))
+            let size = panel.frame.size
+            let origin = OverlayPlacement.defaultOrigin(visibleFrame: visible, panelSize: size)
+            let frame = NSRect(origin: origin, size: size)
+            panel.setFrame(frame, display: false)
+            model.saveOverlayFrame(frame, for: id)
         }
     }
 
@@ -98,10 +135,7 @@ final class OverlayPanelController {
 
     private func constrainedOrigin(_ origin: NSPoint, size: NSSize, screen: NSScreen?) -> NSPoint {
         guard let visible = screen?.visibleFrame else { return origin }
-        return NSPoint(
-            x: min(max(origin.x, visible.minX), visible.maxX - size.width),
-            y: min(max(origin.y, visible.minY), visible.maxY - size.height)
-        )
+        return OverlayPlacement.constrainedOrigin(origin, panelSize: size, visibleFrame: visible)
     }
 
     private func screenIdentifier(_ screen: NSScreen) -> String {

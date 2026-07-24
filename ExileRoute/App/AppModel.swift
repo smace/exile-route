@@ -114,10 +114,17 @@ final class AppModel: ObservableObject {
     }
 
     func overlayFrame(for screenID: String) -> CGRect? {
-        storedState.settings.overlayFrames[screenID]?.rect
+        guard storedState.settings.overlayPlacementVersion >= UserSettings.currentOverlayPlacementVersion else {
+            return nil
+        }
+        return storedState.settings.overlayFrames[screenID]?.rect
     }
 
     func saveOverlayFrame(_ frame: CGRect, for screenID: String) {
+        if storedState.settings.overlayPlacementVersion < UserSettings.currentOverlayPlacementVersion {
+            storedState.settings.overlayFrames.removeAll()
+            storedState.settings.overlayPlacementVersion = UserSettings.currentOverlayPlacementVersion
+        }
         storedState.settings.overlayFrames[screenID] = WindowGeometry(frame)
         try? persist()
     }
