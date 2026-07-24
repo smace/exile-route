@@ -8,6 +8,7 @@ struct ExileRouteApp: App {
         Settings {
             SettingsView()
                 .environmentObject(appDelegate.model)
+                .environmentObject(appDelegate.updater)
                 .frame(width: 560, height: 620)
         }
         .commands {

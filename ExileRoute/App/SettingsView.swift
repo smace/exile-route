@@ -4,14 +4,20 @@ import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var updater: ApplicationUpdater
     @State private var selectedSection: Section = .overlay
     @State private var customRouteInput = ""
     private let buildIdentity = BuildIdentity()
+
+    init(initialSection: Section = .overlay) {
+        _selectedSection = State(initialValue: initialSection)
+    }
 
     enum Section: String, CaseIterable, Identifiable {
         case overlay = "Overlay"
         case route = "Route"
         case recognition = "Recognition"
+        case updates = "Updates"
         case about = "About"
         var id: String { rawValue }
         var icon: String {
@@ -19,6 +25,7 @@ struct SettingsView: View {
             case .overlay: "rectangle.on.rectangle"
             case .route: "point.topleft.down.to.point.bottomright.curvepath"
             case .recognition: "viewfinder"
+            case .updates: "arrow.triangle.2.circlepath"
             case .about: "seal"
             }
         }
@@ -93,6 +100,7 @@ struct SettingsView: View {
         case .overlay: overlaySettings
         case .route: routeSettings
         case .recognition: recognitionSettings
+        case .updates: updateSettings
         case .about: about
         }
     }
@@ -264,12 +272,97 @@ struct SettingsView: View {
         }
     }
 
+    private var updateSettings: some View {
+        VStack(spacing: 14) {
+            SettingsCard(title: updater.updatesEnabled ? "Application updates" : "Dev build") {
+                if updater.updatesEnabled {
+                    if updater.distributionFlavor == .beta {
+                        LabeledContent("Channel", value: "Beta")
+                        Text("This pre-release build always follows the Beta channel. A later Stable release can supersede it.")
+                            .font(.system(size: 10))
+                            .foregroundStyle(Theme.ember)
+                            .fixedSize(horizontal: false, vertical: true)
+                    } else {
+                        HStack {
+                            Text("Channel")
+                            Spacer()
+                            HStack(spacing: 4) {
+                                ForEach(UpdateChannel.allCases, id: \.self) { channel in
+                                    Button {
+                                        model.setUpdateChannel(channel)
+                                        updater.selectChannel(channel)
+                                    } label: {
+                                        Text(channel.title)
+                                            .font(.system(size: 11, weight: .semibold))
+                                            .foregroundStyle(updater.channel == channel ? Theme.ivory : Theme.muted)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(
+                                                updater.channel == channel
+                                                    ? Theme.brass.opacity(0.28)
+                                                    : Theme.obsidian.opacity(0.5)
+                                            )
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityAddTraits(
+                                        updater.channel == channel ? .isSelected : []
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    Toggle("Automatically check for updates", isOn: Binding(
+                        get: { updater.automaticallyChecksForUpdates },
+                        set: { updater.automaticallyChecksForUpdates = $0 }
+                    ))
+                    if updater.distributionFlavor != .beta {
+                        Text(updateChannelDescription)
+                            .font(.system(size: 10))
+                            .foregroundStyle(updater.channel == .beta ? Theme.ember : Theme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    ActionButton("Check now", icon: "arrow.triangle.2.circlepath") {
+                        updater.checkForUpdates()
+                    }
+                } else {
+                    Label("Automatic updates are disabled for local Dev builds.", systemImage: "hammer")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Theme.agedGold)
+                    Text("Dev uses a separate application identity and Application Support directory, so it can coexist with Stable without changing user data or update preferences.")
+                        .font(.system(size: 10))
+                        .foregroundStyle(Theme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            SettingsCard(title: "Build identity") {
+                Text(buildIdentity.compactDescription)
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(Theme.ivory)
+                    .textSelection(.enabled)
+                Text("Distribution: \(updater.distributionFlavor.rawValue.uppercased())")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(Theme.muted)
+            }
+        }
+    }
+
     private var sectionSubtitle: String {
         switch selectedSection {
         case .overlay: "A quiet guide above the stream."
         case .route: "Shape the road through Wraeclast."
         case .recognition: "Private, on-device zone detection."
+        case .updates: "Choose how close to the edge you travel."
         case .about: "Open source, original, and built for macOS."
+        }
+    }
+
+    private var updateChannelDescription: String {
+        switch updater.channel {
+        case .stable:
+            "Stable receives tested public releases only."
+        case .beta:
+            "Beta also receives pre-release builds. A later Stable release will always supersede its beta."
         }
     }
 

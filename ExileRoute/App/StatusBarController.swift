@@ -6,13 +6,19 @@ final class StatusBarController: NSObject {
     private let model: AppModel
     private let item: NSStatusItem
     private let openSettingsAction: () -> Void
+    private let checkForAppUpdatesAction: (() -> Void)?
     private let buildIdentity = BuildIdentity()
     private var cancellables: Set<AnyCancellable> = []
     var menuItems: [NSMenuItem] { item.menu?.items ?? [] }
 
-    init(model: AppModel, openSettings: @escaping () -> Void) {
+    init(
+        model: AppModel,
+        openSettings: @escaping () -> Void,
+        checkForAppUpdates: (() -> Void)? = nil
+    ) {
         self.model = model
         self.openSettingsAction = openSettings
+        self.checkForAppUpdatesAction = checkForAppUpdates
         self.item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         super.init()
         item.button?.title = "◇"
@@ -43,6 +49,9 @@ final class StatusBarController: NSObject {
         add(model.isOCRActive ? "Pause area recognition" : "Resume area recognition", action: #selector(toggleOCR), shortcut: "", to: menu)
         menu.addItem(.separator())
         add("Settings…", action: #selector(openSettings), shortcut: "", to: menu)
+        if checkForAppUpdatesAction != nil {
+            add("Check for app updates…", action: #selector(checkForAppUpdates), shortcut: "", to: menu)
+        }
         add("Check route updates", action: #selector(updateRoutes), shortcut: "", to: menu)
         add("Reset progress", action: #selector(reset), shortcut: "", to: menu)
         menu.addItem(.separator())
@@ -75,6 +84,9 @@ final class StatusBarController: NSObject {
     @objc private func updateRoutes() { Task { await model.updateRoutes() } }
     @objc private func openSettings() {
         openSettingsAction()
+    }
+    @objc private func checkForAppUpdates() {
+        checkForAppUpdatesAction?()
     }
     @objc private func quit() { NSApp.terminate(nil) }
 }

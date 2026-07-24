@@ -9,7 +9,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Exile Route</string>
+	<string>$(EXILE_ROUTE_DISPLAY_NAME)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -17,13 +17,15 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Exile Route</string>
+	<string>$(EXILE_ROUTE_DISPLAY_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ExileRouteDistributionFlavor</key>
+	<string>$(EXILE_ROUTE_DISTRIBUTION_FLAVOR)</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
@@ -36,5 +38,13 @@
 	<string>Copyright © 2026 Swann Mace. MIT License.</string>
 	<key>NSScreenCaptureUsageDescription</key>
 	<string>Exile Route lit localement le nom de la zone dans la fenêtre GeForce NOW afin d’avancer le guide de campagne. Aucune image n’est enregistrée ni transmise.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/smace/exile-route/main/updates/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>zeQBTTL6OJh3AFvHY0AdNLeNhoH2kKjcyLMtEhI7BEU=</string>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 </dict>
 </plist>
