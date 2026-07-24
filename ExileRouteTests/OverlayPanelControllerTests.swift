@@ -3,6 +3,7 @@ import XCTest
 @testable import ExileRoute
 
 final class OverlayPanelControllerTests: XCTestCase {
+    @MainActor
     func testWindowDragOnlyBeginsForLeftClickInInteractionMode() {
         XCTAssertTrue(
             OverlayPanel.shouldBeginWindowDrag(
