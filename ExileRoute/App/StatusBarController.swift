@@ -31,7 +31,12 @@ final class StatusBarController: NSObject {
         add("Next step", action: #selector(next), shortcut: shortcut(.next), to: menu)
         add(model.isExpanded ? "Compact overlay" : "Expand route", action: #selector(expand), shortcut: shortcut(.expand), to: menu)
         add(model.forceVisible ? "Use automatic visibility" : "Show overlay preview", action: #selector(toggleOverlay), shortcut: shortcut(.overlay), to: menu)
-        add(model.isInteractionEnabled ? "Enable click-through" : "Interaction mode", action: #selector(interact), shortcut: shortcut(.interact), to: menu)
+        add(
+            model.isInteractionEnabled ? "Lock overlay position" : "Move overlay",
+            action: #selector(interact),
+            shortcut: shortcut(.interact),
+            to: menu
+        )
         add(model.isOCRActive ? "Pause area recognition" : "Resume area recognition", action: #selector(toggleOCR), shortcut: "", to: menu)
         menu.addItem(.separator())
         add("Settings…", action: #selector(openSettings), shortcut: "", to: menu)

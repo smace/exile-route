@@ -6,6 +6,27 @@ final class OverlayPanel: NSPanel {
     var interactionEnabled = false
     override var canBecomeKey: Bool { interactionEnabled }
     override var canBecomeMain: Bool { false }
+
+    static func shouldBeginWindowDrag(
+        interactionEnabled: Bool,
+        eventType: NSEvent.EventType
+    ) -> Bool {
+        interactionEnabled && eventType == .leftMouseDown
+    }
+
+    override func sendEvent(_ event: NSEvent) {
+        guard Self.shouldBeginWindowDrag(
+            interactionEnabled: interactionEnabled,
+            eventType: event.type
+        ) else {
+            super.sendEvent(event)
+            return
+        }
+
+        NSCursor.closedHand.push()
+        performDrag(with: event)
+        NSCursor.pop()
+    }
 }
 
 struct OverlayPlacement {
@@ -118,7 +139,20 @@ final class OverlayPanelController {
                 guard let self else { return }
                 panel.interactionEnabled = enabled
                 panel.ignoresMouseEvents = !enabled
-                if enabled { panel.orderFrontRegardless() } else { savePosition() }
+                if enabled {
+                    panel.makeKeyAndOrderFront(nil)
+                } else {
+                    savePosition()
+                    panel.resignKey()
+                }
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: NSWindow.didMoveNotification, object: panel)
+            .debounce(for: .milliseconds(180), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self, model.isInteractionEnabled else { return }
+                savePosition()
             }
             .store(in: &cancellables)
     }
@@ -152,7 +186,7 @@ final class OverlayPanelController {
     }
 
     private func restorePosition() {
-        guard let screen = NSScreen.main else { return }
+        guard let screen = preferredScreen() ?? NSScreen.main else { return }
         let visible = screen.visibleFrame
         let id = screenIdentifier(screen)
         if let stored = model.overlayFrame(for: id) {
@@ -186,5 +220,10 @@ final class OverlayPanelController {
     private func screenIdentifier(_ screen: NSScreen) -> String {
         let number = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber
         return "display-\(number?.uint32Value ?? 0)"
+    }
+
+    private func preferredScreen() -> NSScreen? {
+        guard let preferredID = model.preferredOverlayScreenID else { return nil }
+        return NSScreen.screens.first { screenIdentifier($0) == preferredID }
     }
 }

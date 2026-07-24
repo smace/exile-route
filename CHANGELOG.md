@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+
+- Allow the overlay to be dragged freely from any point while interaction mode is active, including across displays.
+- Restore the last display used for the overlay and persist its position automatically after movement.
+
+### Changed
+
+- Make the interaction-mode footer and settings explain how to move and relock the overlay.
+
 ### Fixed
 
 - Package the built Release application directly so repeated archive builds cannot retain files from an older version.

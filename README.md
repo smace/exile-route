@@ -43,6 +43,8 @@ Default global shortcuts:
 
 Shortcuts are configurable in Settings. Interaction mode allows the panel to be moved; Settings also controls opacity, text size, route options, and OCR calibration.
 
+To reposition the overlay, press `⌃⌥I` or choose **Move overlay** from the menu bar, then drag anywhere on the panel. Press the shortcut again to lock the position and restore click-through. The position and last display are saved automatically.
+
 Each zone visit has its own checklist, including its exit as the final objective. Completed objectives are checked, the current objective is highlighted, and upcoming objectives remain visible. If OCR confirms a new zone before every objective is checked, Exile Route marks the unfinished objectives as skipped and displays a four-second warning. Press Previous once to return to the first skipped objective; OCR will not immediately bounce the checklist back to the newer zone.
 
 The menu-bar item provides manual navigation, forced visibility, OCR pause/resume, route updates, settings, and progress reset.

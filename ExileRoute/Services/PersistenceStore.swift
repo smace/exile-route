@@ -11,6 +11,7 @@ struct UserSettings: Codable, Equatable, Sendable {
     var isOCRActive = true
     var ocrCrop = NormalizedRect.defaultAreaTitle
     var overlayFrames: [String: WindowGeometry] = [:]
+    var overlayScreenID: String?
     var overlayPlacementVersion = currentOverlayPlacementVersion
     var hotKeys = HotKeyDefinition.defaults
     var ocrCalibrationVersion = 2
@@ -26,6 +27,7 @@ struct UserSettings: Codable, Equatable, Sendable {
         isInteractionEnabled = try container.decodeIfPresent(Bool.self, forKey: .isInteractionEnabled) ?? false
         isOCRActive = try container.decodeIfPresent(Bool.self, forKey: .isOCRActive) ?? true
         overlayFrames = try container.decodeIfPresent([String: WindowGeometry].self, forKey: .overlayFrames) ?? [:]
+        overlayScreenID = try container.decodeIfPresent(String.self, forKey: .overlayScreenID)
         overlayPlacementVersion = try container.decodeIfPresent(Int.self, forKey: .overlayPlacementVersion) ?? 1
         hotKeys = try container.decodeIfPresent([HotKeyAction: HotKeyDefinition].self, forKey: .hotKeys) ?? HotKeyDefinition.defaults
         let storedCalibrationVersion = try container.decodeIfPresent(Int.self, forKey: .ocrCalibrationVersion) ?? 1

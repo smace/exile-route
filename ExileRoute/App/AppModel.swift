@@ -102,7 +102,7 @@ final class AppModel: ObservableObject {
 
     func toggleInteraction() {
         isInteractionEnabled.toggle()
-        statusText = isInteractionEnabled ? "Interaction mode" : "Click-through mode"
+        statusText = isInteractionEnabled ? "Drag the overlay anywhere" : "Overlay locked • click-through"
         saveSettings()
     }
 
@@ -120,12 +120,21 @@ final class AppModel: ObservableObject {
         return storedState.settings.overlayFrames[screenID]?.rect
     }
 
+    var preferredOverlayScreenID: String? {
+        guard storedState.settings.overlayPlacementVersion >= UserSettings.currentOverlayPlacementVersion else {
+            return nil
+        }
+        return storedState.settings.overlayScreenID
+    }
+
     func saveOverlayFrame(_ frame: CGRect, for screenID: String) {
         if storedState.settings.overlayPlacementVersion < UserSettings.currentOverlayPlacementVersion {
             storedState.settings.overlayFrames.removeAll()
+            storedState.settings.overlayScreenID = nil
             storedState.settings.overlayPlacementVersion = UserSettings.currentOverlayPlacementVersion
         }
         storedState.settings.overlayFrames[screenID] = WindowGeometry(frame)
+        storedState.settings.overlayScreenID = screenID
         try? persist()
     }
 
