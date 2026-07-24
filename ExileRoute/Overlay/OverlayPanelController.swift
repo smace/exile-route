@@ -34,6 +34,10 @@ struct OverlayPlacement {
         hasCompletedInitialResize && isPanelVisible
     }
 
+    static func completesInitialResize(currentSize: CGSize, newSize: CGSize) -> Bool {
+        currentSize != newSize
+    }
+
     static func constrainedOrigin(
         _ origin: CGPoint,
         panelSize: CGSize,
@@ -115,12 +119,18 @@ final class OverlayPanelController {
             hasCompletedInitialResize: hasCompletedInitialResize,
             isPanelVisible: panel.isVisible
         )
+        let completesInitialResize = OverlayPlacement.completesInitialResize(
+            currentSize: oldFrame.size,
+            newSize: size
+        )
         panel.setFrame(
             NSRect(origin: origin, size: size),
             display: true,
             animate: shouldAnimate
         )
-        hasCompletedInitialResize = true
+        if completesInitialResize {
+            hasCompletedInitialResize = true
+        }
     }
 
     private func setVisible(_ visible: Bool) {
