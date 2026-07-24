@@ -7,6 +7,7 @@ struct SettingsView: View {
     @EnvironmentObject private var updater: ApplicationUpdater
     @State private var selectedSection: Section = .overlay
     @State private var customRouteInput = ""
+    @State private var pobInput = ""
     private let buildIdentity = BuildIdentity()
 
     init(initialSection: Section = .overlay) {
@@ -16,6 +17,7 @@ struct SettingsView: View {
     enum Section: String, CaseIterable, Identifiable {
         case overlay = "Overlay"
         case route = "Route"
+        case build = "Build"
         case recognition = "Recognition"
         case updates = "Updates"
         case about = "About"
@@ -24,6 +26,7 @@ struct SettingsView: View {
             switch self {
             case .overlay: "rectangle.on.rectangle"
             case .route: "point.topleft.down.to.point.bottomright.curvepath"
+            case .build: "wand.and.stars"
             case .recognition: "viewfinder"
             case .updates: "arrow.triangle.2.circlepath"
             case .about: "seal"
@@ -99,9 +102,78 @@ struct SettingsView: View {
         switch selectedSection {
         case .overlay: overlaySettings
         case .route: routeSettings
+        case .build: buildSettings
         case .recognition: recognitionSettings
         case .updates: updateSettings
         case .about: about
+        }
+    }
+
+    private var buildSettings: some View {
+        VStack(spacing: 14) {
+            SettingsCard(title: "Path of Building") {
+                TextEditor(text: $pobInput)
+                    .font(.system(size: 11, design: .monospaced))
+                    .scrollContentBackground(.hidden)
+                    .frame(minHeight: 78)
+                    .padding(7)
+                    .background(Theme.obsidian.opacity(0.58))
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Theme.brass.opacity(0.22)))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                Text("Paste a PoB code or a supported pobb.in, poe.ninja, Maxroll, or Pastebin HTTPS URL.")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Theme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack {
+                    ActionButton("Import code / URL", icon: "wand.and.stars") {
+                        guard !pobInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                            model.statusText = "Enter a Path of Building code or URL"
+                            return
+                        }
+                        Task { await model.importBuild(pobInput) }
+                    }
+                    ActionButton("Import file", icon: "doc.badge.plus", action: importPoBFile)
+                }
+                ActionButton("Import clipboard", icon: "clipboard", action: importPoBClipboard)
+            }
+
+            if let build = model.importedBuild {
+                SettingsCard(title: "Active build") {
+                    LabeledContent("Class", value: build.characterClass)
+                    LabeledContent("Skill sets", value: "\(build.skillSets.count)")
+                    LabeledContent("Campaign gems", value: "\(build.requiredGems.count)")
+                    Divider().overlay(Theme.brass.opacity(0.3))
+                    ForEach(build.skillSets) { skillSet in
+                        HStack {
+                            Text(skillSet.name)
+                                .foregroundStyle(Theme.ivory)
+                                .lineLimit(1)
+                            Spacer()
+                            Text("\(skillSet.gemIDs.count) \(skillSet.gemIDs.count == 1 ? "gem" : "gems")")
+                                .font(.system(size: 10, design: .monospaced))
+                                .foregroundStyle(Theme.muted)
+                        }
+                        .font(.system(size: 11))
+                    }
+                    if !model.buildWarnings.isEmpty {
+                        Divider().overlay(Theme.brass.opacity(0.3))
+                        ForEach(model.buildWarnings) { warning in
+                            Label(warning.message, systemImage: "exclamationmark.triangle")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Theme.ember)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    ActionButton("Remove build", icon: "trash") { model.removeBuild() }
+                }
+            } else {
+                SettingsCard(title: "No active build") {
+                    Text("Importing a build adds its quest rewards and vendor purchases directly to the campaign checklist. Campaign options and current progress remain unchanged.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
     }
 
@@ -351,6 +423,7 @@ struct SettingsView: View {
         switch selectedSection {
         case .overlay: "A quiet guide above the stream."
         case .route: "Shape the road through Wraeclast."
+        case .build: "Carry the right gems into exile."
         case .recognition: "Private, on-device zone detection."
         case .updates: "Choose how close to the edge you travel."
         case .about: "Open source, original, and built for macOS."
@@ -423,6 +496,25 @@ struct SettingsView: View {
         guard panel.runModal() == .OK, let url = panel.url,
               let source = try? String(contentsOf: url, encoding: .utf8) else { return }
         Task { await model.importRoute(source) }
+    }
+
+    private func importPoBClipboard() {
+        guard let source = NSPasteboard.general.string(forType: .string), !source.isEmpty else {
+            model.statusText = "Clipboard does not contain a Path of Building code"
+            return
+        }
+        pobInput = source
+        Task { await model.importBuild(source) }
+    }
+
+    private func importPoBFile() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.plainText, .xml]
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url,
+              let source = try? String(contentsOf: url, encoding: .utf8) else { return }
+        pobInput = source
+        Task { await model.importBuild(source) }
     }
 
     private func exportRoute() {

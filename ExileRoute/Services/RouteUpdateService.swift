@@ -46,10 +46,17 @@ actor RouteUpdateService {
                 }
                 try contents.write(to: routes.appendingPathComponent("act-\(act).txt"), options: .atomic)
             }
-            for filename in ["areas", "quests"] {
-                let contents = try await download(rawURL(sha: sha, path: "common/data/json/\(filename).json"))
+            for filename in [
+                "areas.json",
+                "quests.json",
+                "gems.json",
+                "characters.json",
+                "vaal-gem-lookup.json",
+                "awakened-gem-lookup.json"
+            ] {
+                let contents = try await download(rawURL(sha: sha, path: "common/data/json/\(filename)"))
                 _ = try JSONSerialization.jsonObject(with: contents)
-                try contents.write(to: data.appendingPathComponent("\(filename).json"), options: .atomic)
+                try contents.write(to: data.appendingPathComponent(filename), options: .atomic)
             }
 
             let manifest = RouteSnapshotManifest(

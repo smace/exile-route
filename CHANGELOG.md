@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Added
+
+- Import Path of Building codes, text files, clipboard contents, and supported HTTPS share links from the new Build settings section.
+- Insert class-compatible quest rewards and vendor purchases into compact and expanded campaign checklists with original attribute-colored gem glyphs.
+- Bundle gem and character catalogs from the same pinned `exile-leveling` snapshot as the campaign routes.
+
+### Changed
+
+- Update route snapshots atomically with their matching quest and gem catalogs while retaining compatibility with older route caches.
+- Preserve the current campaign objective and route options when importing, replacing, or removing a normalized build.
+
 ## [1.4.1] - 2026-07-24
 
 ### Security

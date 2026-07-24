@@ -151,4 +151,58 @@ final class RouteParserTests: XCTestCase {
         XCTAssertGreaterThan(route.visits.count, 200)
         XCTAssertTrue(route.visits.allSatisfy { !$0.stepRange.isEmpty })
     }
+
+    func testLegacyCachedSnapshotFallsBackToBundledGemCatalog() throws {
+        let projectRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let resourceRoot = projectRoot.appendingPathComponent("ExileRoute/Resources")
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent(String(repeating: "c", count: 40))
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(
+            at: directory.appendingPathComponent("Data"),
+            withIntermediateDirectories: true
+        )
+        try FileManager.default.createDirectory(
+            at: directory.appendingPathComponent("Routes"),
+            withIntermediateDirectories: true
+        )
+        for filename in ["areas.json", "quests.json"] {
+            try FileManager.default.copyItem(
+                at: resourceRoot.appendingPathComponent("Data/\(filename)"),
+                to: directory.appendingPathComponent("Data/\(filename)")
+            )
+        }
+        for act in 1...10 {
+            try FileManager.default.copyItem(
+                at: resourceRoot.appendingPathComponent("Routes/act-\(act).txt"),
+                to: directory.appendingPathComponent("Routes/act-\(act).txt")
+            )
+        }
+        let decoder = JSONDecoder()
+        let fallback = GemCatalog(
+            gems: try decoder.decode(
+                [String: GemRecord].self,
+                from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/gems.json"))
+            ),
+            characters: try decoder.decode(
+                [String: CharacterRecord].self,
+                from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/characters.json"))
+            ),
+            vaalGemLookup: try decoder.decode(
+                [String: String].self,
+                from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/vaal-gem-lookup.json"))
+            ),
+            awakenedGemLookup: try decoder.decode(
+                [String: String].self,
+                from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/awakened-gem-lookup.json"))
+            )
+        )
+
+        let snapshot = try SnapshotLoader().loadDirectory(directory, fallbackCatalog: fallback)
+
+        XCTAssertEqual(snapshot.gemCatalog, fallback)
+        XCTAssertEqual(snapshot.routeSources.count, 10)
+    }
 }

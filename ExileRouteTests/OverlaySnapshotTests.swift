@@ -5,7 +5,7 @@ import XCTest
 
 @MainActor
 final class OverlaySnapshotTests: XCTestCase {
-    func testReferenceVisualStatesRenderAtExpectedSizes() throws {
+    func testReferenceVisualStatesRenderAtExpectedSizes() async throws {
         let states: [(String, (AppModel) -> Void)] = [
             ("compact-short-visit", { _ in }),
             ("compact-three-objectives", { Self.moveToVisit(objectiveCount: 3, model: $0) }),
@@ -18,13 +18,18 @@ final class OverlaySnapshotTests: XCTestCase {
             }),
             ("seven-objectives", { Self.moveToLongestVisit($0) }),
             ("completed-active-pending-skipped", { Self.configureSkippedObjectives($0, returnToSkippedVisit: true) }),
-            ("skipped-transition-notice", { Self.configureSkippedObjectives($0, returnToSkippedVisit: false) })
+            ("skipped-transition-notice", { Self.configureSkippedObjectives($0, returnToSkippedVisit: false) }),
+            ("gem-objective", { _ in })
         ]
 
         for (name, configure) in states {
             let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
             defer { try? FileManager.default.removeItem(at: directory) }
             let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+            if name == "gem-objective" {
+                await model.importBuild(TestPoBFixtures.multiSkillSet)
+                Self.moveToGemObjective(model)
+            }
             configure(model)
             let size = model.isExpanded
                 ? CGSize(width: 460, height: 560)
@@ -42,6 +47,13 @@ final class OverlaySnapshotTests: XCTestCase {
             attachment.name = "overlay-\(name)"
             attachment.lifetime = .keepAlways
             add(attachment)
+            if name == "gem-objective",
+               let outputPath = ProcessInfo.processInfo.environment["EXILE_ROUTE_GEM_REFERENCE_OUTPUT"],
+               let tiff = image.tiffRepresentation,
+               let representation = NSBitmapImageRep(data: tiff),
+               let png = representation.representation(using: .png, properties: [:]) {
+                try png.write(to: URL(fileURLWithPath: outputPath), options: .atomic)
+            }
         }
     }
 
@@ -101,6 +113,11 @@ final class OverlaySnapshotTests: XCTestCase {
         guard let route = model.route,
               let visit = route.visits.first(where: { $0.stepRange.count == objectiveCount }) else { return }
         while model.stepIndex < visit.stepRange.lowerBound { model.moveNext() }
+    }
+
+    private static func moveToGemObjective(_ model: AppModel) {
+        guard let index = model.route?.steps.firstIndex(where: { $0.gemAcquisition != nil }) else { return }
+        while model.stepIndex < index { model.moveNext() }
     }
 
     private static func configureSkippedObjectives(_ model: AppModel, returnToSkippedVisit: Bool) {

@@ -74,6 +74,7 @@ struct StoredApplicationState: Codable, Equatable, Sendable {
     var progress = ProgressState()
     var customRouteSource: String?
     var activeSnapshotCommit: String?
+    var importedBuild: ImportedBuild?
 }
 
 struct PersistenceStore {
