@@ -11,9 +11,14 @@ if [ -z "$version" ]; then
 fi
 
 archive_name="ExileRoute-$version.zip"
+application_path="DerivedData/Build/Products/Release/ExileRoute.app"
 
 xcodegen generate
 xcodebuild -project ExileRoute.xcodeproj -scheme ExileRoute -configuration Release -derivedDataPath DerivedData CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO build
-cp -R DerivedData/Build/Products/Release/ExileRoute.app ./ExileRoute.app
-ditto -c -k --sequesterRsrc --keepParent ExileRoute.app "$archive_name"
+if [ ! -d "$application_path" ]; then
+    printf 'Release application not found: %s\n' "$application_path" >&2
+    exit 1
+fi
+
+ditto -c -k --sequesterRsrc --keepParent "$application_path" "$archive_name"
 shasum -a 256 "$archive_name" > "$archive_name.sha256"

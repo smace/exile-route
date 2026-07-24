@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- Package the built Release application directly so repeated archive builds cannot retain files from an older version.
+
 ## [1.1.0] - 2026-07-24
 
 ### Added
