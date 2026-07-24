@@ -1,11 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"
-    xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
-    xmlns:dc="http://purl.org/dc/elements/1.1/">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
     <channel>
         <title>Exile Route Updates</title>
         <link>https://github.com/smace/exile-route/releases</link>
         <description>Signed Stable and Beta updates for Exile Route.</description>
         <language>en</language>
+        <item>
+            <title>1.4.0</title>
+            <pubDate>Fri, 24 Jul 2026 17:24:36 +0200</pubDate>
+            <link>https://github.com/smace/exile-route/releases/tag/v1.4.0</link>
+            <sparkle:version>5</sparkle:version>
+            <sparkle:shortVersionString>1.4.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <description sparkle:format="markdown"><![CDATA[# Exile Route 1.4.0
+
+Exile Route 1.4.0 adds authenticated automatic updates and separate Stable, Beta, and Dev channels.
+
+Highlights:
+
+- check a signed update feed automatically once per day or manually from Settings and the menu bar;
+- keep Stable as the default while allowing an explicit opt-in to Beta releases;
+- let a later Stable release supersede an installed beta automatically;
+- run isolated Dev builds alongside Stable with a separate bundle identifier and Application Support directory;
+- authenticate every update archive with an Ed25519 signature whose private key remains in the maintainer's Keychain;
+- expose the active update channel and automatic-check controls in Settings;
+- preserve the existing application identity, campaign progress, shortcuts, overlay position, and Screen Recording permission during the one-time manual upgrade from v1.3.0.
+
+The application targets Apple Silicon and requires macOS 15 or newer. The public archive is ad hoc signed and is not notarized, so its first launch must be approved with Finder's **Open** command.
+
+The application includes no proprietary Path of Exile visual assets. Route content is attributed to HeartofPhos and bundled under its MIT license.
+]]></description>
+            <enclosure url="https://github.com/smace/exile-route/releases/download/v1.4.0/ExileRoute-1.4.0.zip" length="2528324" type="application/octet-stream" sparkle:edSignature="2AMpkYVTFGpnIOqEXp0ppaNrGlEKWAHXA3V20hxa5TfI45TZzfANICZY5bvudwFI3MQQkHDopO6ngwUFIRtFAA=="/>
+        </item>
     </channel>
 </rss>
