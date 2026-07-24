@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import XCTest
 @testable import ExileRoute
@@ -7,6 +8,7 @@ final class OverlaySnapshotTests: XCTestCase {
     func testReferenceVisualStatesRenderAtExpectedSizes() throws {
         let states: [(String, (AppModel) -> Void)] = [
             ("compact-short-visit", { _ in }),
+            ("compact-three-objectives", { Self.moveToVisit(objectiveCount: 3, model: $0) }),
             ("expanded", { $0.toggleExpanded() }),
             ("interaction", { $0.toggleInteraction() }),
             ("ocr-error", { $0.ocrStatus = .failed("Permission required") }),
@@ -43,9 +45,61 @@ final class OverlaySnapshotTests: XCTestCase {
         }
     }
 
+    func testCompactHeightExpandsForMultiObjectiveVisits() {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+
+        Self.moveToVisit(objectiveCount: 3, model: model)
+
+        XCTAssertEqual(model.currentZoneObjectives.count, 3)
+        XCTAssertGreaterThanOrEqual(model.compactOverlayHeight, 230)
+        XCTAssertLessThanOrEqual(model.compactOverlayHeight, 520)
+    }
+
+    func testMeasuredCompactHeightIsClampedAndCanShrink() {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+
+        model.setMeasuredCompactOverlayHeight(700)
+        XCTAssertEqual(model.compactOverlayHeight, 520)
+
+        model.setMeasuredCompactOverlayHeight(287.2)
+        XCTAssertEqual(model.compactOverlayHeight, 288)
+
+        model.setMeasuredCompactOverlayHeight(100)
+        XCTAssertEqual(model.compactOverlayHeight, 210)
+    }
+
+    func testLiveCompactViewMeasuresAndExpandsItsPanelHeight() {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        Self.moveToVisit(objectiveCount: 3, model: model)
+        model.setMeasuredCompactOverlayHeight(210)
+
+        let hostingView = NSHostingView(rootView: OverlayView().environmentObject(model))
+        hostingView.frame = NSRect(x: 0, y: 0, width: 390, height: 210)
+
+        for _ in 0..<5 {
+            hostingView.layoutSubtreeIfNeeded()
+            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+        }
+
+        XCTAssertGreaterThan(model.compactOverlayHeight, 210)
+        XCTAssertLessThanOrEqual(model.compactOverlayHeight, 520)
+    }
+
     private static func moveToLongestVisit(_ model: AppModel) {
         guard let route = model.route,
               let visit = route.visits.max(by: { $0.stepRange.count < $1.stepRange.count }) else { return }
+        while model.stepIndex < visit.stepRange.lowerBound { model.moveNext() }
+    }
+
+    private static func moveToVisit(objectiveCount: Int, model: AppModel) {
+        guard let route = model.route,
+              let visit = route.visits.first(where: { $0.stepRange.count == objectiveCount }) else { return }
         while model.stepIndex < visit.stepRange.lowerBound { model.moveNext() }
     }
 
