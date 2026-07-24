@@ -1,3 +1,4 @@
+import Carbon
 import XCTest
 @testable import ExileRoute
 
@@ -11,6 +12,10 @@ final class PersistenceStoreTests: XCTestCase {
         state.progress.updatedAt = Date(timeIntervalSince1970: 12_345.678)
         state.settings.overlayOpacity = 0.82
         state.settings.overlayScreenID = "display-42"
+        state.settings.hotKeys[.previous] = HotKeyDefinition(
+            keyCode: UInt32(kVK_ANSI_K),
+            modifiers: .controlOptionShift
+        )
         try store.save(state)
         XCTAssertEqual(store.load(), state)
     }
@@ -100,5 +105,15 @@ final class PersistenceStoreTests: XCTestCase {
         XCTAssertEqual(progress.currentAreaID, "1_1_2")
         XCTAssertEqual(progress.completedStepIDs, ["one", "two"])
         XCTAssertEqual(progress.skippedStepIDs, [])
+    }
+
+    func testDuplicatePersistedShortcutsAreSanitized() throws {
+        var settings = UserSettings()
+        settings.hotKeys[.previous] = HotKeyDefinition.defaults[.next]
+        let data = try JSONEncoder().encode(settings)
+
+        let decoded = try JSONDecoder().decode(UserSettings.self, from: data)
+
+        XCTAssertEqual(decoded.hotKeys, HotKeyDefinition.defaults)
     }
 }

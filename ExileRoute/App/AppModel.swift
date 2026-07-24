@@ -30,6 +30,7 @@ final class AppModel: ObservableObject {
     @Published var forceVisible = false
     @Published var routeConfiguration = RouteConfiguration()
     @Published var hotKeys = HotKeyDefinition.defaults
+    @Published private(set) var hotKeyValidationMessage: String?
     @Published private(set) var transitionNotice: ZoneTransitionNotice?
     @Published private(set) var compactOverlayHeight: CGFloat = 210
 
@@ -108,8 +109,28 @@ final class AppModel: ObservableObject {
 
     func toggleOverlay() { forceVisible.toggle() }
 
-    func setHotKey(_ definition: HotKeyDefinition, for action: HotKeyAction) {
+    @discardableResult
+    func setHotKey(_ definition: HotKeyDefinition, for action: HotKeyAction) -> Bool {
+        guard HotKeyDefinition.supports(keyCode: definition.keyCode) else {
+            hotKeyValidationMessage = "That key is not supported."
+            return false
+        }
+        if let conflict = hotKeys.first(where: { $0.key != action && $0.value == definition })?.key {
+            hotKeyValidationMessage = "\(definition.display) is already assigned to \(conflict.title)."
+            statusText = "Shortcut conflict • \(definition.display)"
+            return false
+        }
         hotKeys[action] = definition
+        hotKeyValidationMessage = nil
+        statusText = "\(action.title) • \(definition.display)"
+        saveSettings()
+        return true
+    }
+
+    func resetHotKeys() {
+        hotKeys = HotKeyDefinition.defaults
+        hotKeyValidationMessage = nil
+        statusText = "Keyboard shortcuts restored"
         saveSettings()
     }
 

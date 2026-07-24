@@ -29,7 +29,11 @@ struct UserSettings: Codable, Equatable, Sendable {
         overlayFrames = try container.decodeIfPresent([String: WindowGeometry].self, forKey: .overlayFrames) ?? [:]
         overlayScreenID = try container.decodeIfPresent(String.self, forKey: .overlayScreenID)
         overlayPlacementVersion = try container.decodeIfPresent(Int.self, forKey: .overlayPlacementVersion) ?? 1
-        hotKeys = try container.decodeIfPresent([HotKeyAction: HotKeyDefinition].self, forKey: .hotKeys) ?? HotKeyDefinition.defaults
+        let decodedHotKeys = try container.decodeIfPresent(
+            [HotKeyAction: HotKeyDefinition].self,
+            forKey: .hotKeys
+        ) ?? HotKeyDefinition.defaults
+        hotKeys = HotKeyDefinition.sanitized(decodedHotKeys)
         let storedCalibrationVersion = try container.decodeIfPresent(Int.self, forKey: .ocrCalibrationVersion) ?? 1
         ocrCrop = storedCalibrationVersion >= 2
             ? (try container.decodeIfPresent(NormalizedRect.self, forKey: .ocrCrop) ?? .defaultAreaTitle)

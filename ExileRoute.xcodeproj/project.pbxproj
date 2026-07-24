@@ -25,6 +25,7 @@
 		64CAD7084FC2B2D08166C348 /* snapshot-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 61CB359F2248E1E03747BF57 /* snapshot-manifest.json */; };
 		674297E862D03D071F58E358 /* RouteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ADA137C8C7694C7EB2268C /* RouteParser.swift */; };
 		749F518BDA5EC6D02F2D857E /* act-10.txt in Resources */ = {isa = PBXBuildFile; fileRef = 25C9889B5BE7391EF121191E /* act-10.txt */; };
+		762F13B228D9E8C33803055F /* SettingsAndHotKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D443250C69E231207B9CEBB /* SettingsAndHotKeyTests.swift */; };
 		781544046908BAED56B330BF /* BootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */; };
 		79509EE0D2D3F8DDA2B6C334 /* act-3.txt in Resources */ = {isa = PBXBuildFile; fileRef = 71F35C1923493C1995C9E8C4 /* act-3.txt */; };
 		7ACD4E9701271CCF3C6BEC88 /* act-7.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0EE617D75BCAFA60DAD3DA4E /* act-7.txt */; };
@@ -44,7 +45,9 @@
 		B3B50685D7B826CB5123FF5F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BA1CE4FBC3ACB0D6886059B /* Assets.xcassets */; };
 		B533E9F42B0865C3B8D42F52 /* AreaMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */; };
 		B8334A3D879296846677FE78 /* act-9.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */; };
+		BDA279CC48F5BDAE24151E42 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92CB9FB4A234ED3FD044E643 /* SettingsWindowController.swift */; };
 		BF6DA72A844BE1D7D1C88C0A /* AreaMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A5AC59DB8EF7DCB9320598 /* AreaMatcherTests.swift */; };
+		C034867D2B42B93F515580B3 /* HotKeyRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBA67B513EF9A50377BE890 /* HotKeyRecorder.swift */; };
 		C3473E8DF3C32A9E60F64B87 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F1BFF692552AC8E88C6303 /* Theme.swift */; };
 		DF2071E2BF4F9F06FB8EA495 /* RouteUpdateServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AF4F695CF433FB2FA055E0 /* RouteUpdateServiceTests.swift */; };
 		DF792B7E954F605E6868D229 /* act-5.txt in Resources */ = {isa = PBXBuildFile; fileRef = 03B4E9D31656F27AFAE97558 /* act-5.txt */; };
@@ -73,6 +76,7 @@
 		00AF4F695CF433FB2FA055E0 /* RouteUpdateServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteUpdateServiceTests.swift; sourceTree = "<group>"; };
 		03B4E9D31656F27AFAE97558 /* act-5.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-5.txt"; sourceTree = "<group>"; };
 		0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cinzel-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		0D443250C69E231207B9CEBB /* SettingsAndHotKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAndHotKeyTests.swift; sourceTree = "<group>"; };
 		0D6597EDCF5E65784A4EE407 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
 		0EE617D75BCAFA60DAD3DA4E /* act-7.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-7.txt"; sourceTree = "<group>"; };
 		14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExileRouteApp.swift; sourceTree = "<group>"; };
@@ -84,6 +88,7 @@
 		2BA1CE4FBC3ACB0D6886059B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		340C9AF6D81CEFCA69C1441D /* OverlayPanelControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayPanelControllerTests.swift; sourceTree = "<group>"; };
 		37674D32B38E2A9A44980E7A /* SnapshotLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotLoader.swift; sourceTree = "<group>"; };
+		3BBA67B513EF9A50377BE890 /* HotKeyRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyRecorder.swift; sourceTree = "<group>"; };
 		3BDA7262B910217C8212674C /* ProgressionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngineTests.swift; sourceTree = "<group>"; };
 		4636E50F0E4570C0A330AE4C /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		4794166D318020F38266DAF1 /* BuildIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildIdentityTests.swift; sourceTree = "<group>"; };
@@ -104,6 +109,7 @@
 		88FBA05AE396FA4D9397C21A /* PersistenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceStore.swift; sourceTree = "<group>"; };
 		8E63C95995BC4D225BA4823E /* BuildIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildIdentity.swift; sourceTree = "<group>"; };
 		8F018473E49E8C0B9EB7E302 /* GlobalHotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotKeyManager.swift; sourceTree = "<group>"; };
+		92CB9FB4A234ED3FD044E643 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaMatcher.swift; sourceTree = "<group>"; };
 		9A375E3BD9165529105C6148 /* ProgressionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngine.swift; sourceTree = "<group>"; };
 		A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapTests.swift; sourceTree = "<group>"; };
@@ -183,7 +189,9 @@
 				14F399B0CCFD4B5033D4C2DD /* ExileRouteApp.swift */,
 				DE1ECF0D84F94BFE670C032B /* GeForceFocusMonitor.swift */,
 				8F018473E49E8C0B9EB7E302 /* GlobalHotKeyManager.swift */,
+				3BBA67B513EF9A50377BE890 /* HotKeyRecorder.swift */,
 				B4DFFE2E166145DD0A5A6103 /* SettingsView.swift */,
+				92CB9FB4A234ED3FD044E643 /* SettingsWindowController.swift */,
 				1C4C6F22A96D7E43AB94F4D0 /* StatusBarController.swift */,
 			);
 			path = App;
@@ -243,6 +251,7 @@
 				E11C1B2BB9C6CCA274A1CD0E /* RouteImportServiceTests.swift */,
 				18FB073B03C05C7A451BB266 /* RouteParserTests.swift */,
 				00AF4F695CF433FB2FA055E0 /* RouteUpdateServiceTests.swift */,
+				0D443250C69E231207B9CEBB /* SettingsAndHotKeyTests.swift */,
 				70096872A79A922AD486F6F0 /* Fixtures */,
 			);
 			path = ExileRouteTests;
@@ -446,6 +455,7 @@
 				AE5EC64DF352041DF09511C3 /* GeForceFocusMonitor.swift in Sources */,
 				978266701530084BE6B655A2 /* GlobalHotKeyManager.swift in Sources */,
 				B0B176FF20FD9119A1A3E898 /* HotKeyModels.swift in Sources */,
+				C034867D2B42B93F515580B3 /* HotKeyRecorder.swift in Sources */,
 				F6DBE02ED14A156F9633E95E /* OCRCoordinator.swift in Sources */,
 				E5E76C0FE7C522A698A5FAB2 /* OccultComponents.swift in Sources */,
 				7F1B1D8AC646ADC3A29AFC93 /* OverlayPanelController.swift in Sources */,
@@ -457,6 +467,7 @@
 				674297E862D03D071F58E358 /* RouteParser.swift in Sources */,
 				8A261A0872CCD3B857A61B04 /* RouteUpdateService.swift in Sources */,
 				4089DA0F91132DDCF0A069E6 /* SettingsView.swift in Sources */,
+				BDA279CC48F5BDAE24151E42 /* SettingsWindowController.swift in Sources */,
 				FF2BFE1E01A6129F2317EF90 /* SnapshotLoader.swift in Sources */,
 				02178CD92903D0F2545B0571 /* StatusBarController.swift in Sources */,
 				C3473E8DF3C32A9E60F64B87 /* Theme.swift in Sources */,
@@ -478,6 +489,7 @@
 				1BEF2A479CA08BF96390C8CB /* RouteImportServiceTests.swift in Sources */,
 				8B0260AFD54251D986F57C6C /* RouteParserTests.swift in Sources */,
 				DF2071E2BF4F9F06FB8EA495 /* RouteUpdateServiceTests.swift in Sources */,
+				762F13B228D9E8C33803055F /* SettingsAndHotKeyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

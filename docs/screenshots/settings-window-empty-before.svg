@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1240" viewBox="0 0 1120 1240">
+  <rect width="1120" height="1240" fill="#0B0D0F"/>
+  <rect x="48" y="48" width="1024" height="1144" rx="22" fill="#15181B" stroke="#B79258" stroke-opacity=".55" stroke-width="2"/>
+  <path d="M48 112h1024" stroke="#B79258" stroke-opacity=".25"/>
+  <circle cx="84" cy="80" r="8" fill="#A9463D"/>
+  <circle cx="112" cy="80" r="8" fill="#B79258" fill-opacity=".7"/>
+  <circle cx="140" cy="80" r="8" fill="#6FA9A6" fill-opacity=".7"/>
+  <text x="560" y="88" text-anchor="middle" fill="#E7DDC7" font-family="system-ui, sans-serif" font-size="24">Exile Route Settings — v1.2.0</text>
+  <g transform="translate(560 570)">
+    <path d="M-42 0h84M0-42v84" stroke="#B79258" stroke-opacity=".35" stroke-width="2"/>
+    <circle r="62" fill="none" stroke="#B79258" stroke-opacity=".25" stroke-width="2"/>
+    <text y="125" text-anchor="middle" fill="#E7DDC7" fill-opacity=".58" font-family="system-ui, sans-serif" font-size="28">NO USABLE SETTINGS CONTENT</text>
+    <text y="170" text-anchor="middle" fill="#B79258" fill-opacity=".7" font-family="ui-monospace, monospace" font-size="20">showSettingsWindow: unresolved</text>
+  </g>
+</svg>

@@ -41,7 +41,9 @@ Default global shortcuts:
 | Show / hide preview | `⌃⌥O` |
 | Interaction / click-through | `⌃⌥I` |
 
-Shortcuts are configurable in Settings. Interaction mode allows the panel to be moved; Settings also controls opacity, text size, route options, and OCR calibration.
+Shortcuts are configurable in **Settings → Overlay → Global shortcuts**. Click a shortcut, press a key with at least two modifiers, and the new combination is saved and registered immediately. Duplicate combinations are rejected, `Escape` cancels recording, and **Restore defaults** restores the original controls.
+
+Settings also controls interaction mode, opacity, text size, route options, and OCR calibration.
 
 To reposition the overlay, press `⌃⌥I` or choose **Move overlay** from the menu bar, then drag anywhere on the panel. Press the shortcut again to lock the position and restore click-through. The position and last display are saved automatically.
 

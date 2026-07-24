@@ -5,11 +5,14 @@ import Combine
 final class StatusBarController: NSObject {
     private let model: AppModel
     private let item: NSStatusItem
+    private let openSettingsAction: () -> Void
     private let buildIdentity = BuildIdentity()
     private var cancellables: Set<AnyCancellable> = []
+    var menuItems: [NSMenuItem] { item.menu?.items ?? [] }
 
-    init(model: AppModel) {
+    init(model: AppModel, openSettings: @escaping () -> Void) {
         self.model = model
+        self.openSettingsAction = openSettings
         self.item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         super.init()
         item.button?.title = "◇"
@@ -71,8 +74,7 @@ final class StatusBarController: NSObject {
     @objc private func reset() { model.resetProgress() }
     @objc private func updateRoutes() { Task { await model.updateRoutes() } }
     @objc private func openSettings() {
-        NSApp.activate(ignoringOtherApps: true)
-        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        openSettingsAction()
     }
     @objc private func quit() { NSApp.terminate(nil) }
 }
