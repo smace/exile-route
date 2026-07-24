@@ -106,9 +106,12 @@ struct SettingsView: View {
                 Toggle("Expanded route", isOn: Binding(
                     get: { model.isExpanded }, set: { _ in model.toggleExpanded() }
                 ))
-                Toggle("Interaction mode", isOn: Binding(
+                Toggle("Move overlay freely", isOn: Binding(
                     get: { model.isInteractionEnabled }, set: { _ in model.toggleInteraction() }
                 ))
+                Text("Enable, then drag anywhere on the overlay. Disable again to lock its position and restore click-through.")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Theme.muted)
             }
             SettingsCard(title: "Appearance") {
                 LabeledSlider(title: "Opacity", value: Binding(

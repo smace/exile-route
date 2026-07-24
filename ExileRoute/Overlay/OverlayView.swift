@@ -262,7 +262,11 @@ struct OverlayView: View {
                 Text("\(model.stepIndex + 1) / \(max(model.totalSteps, 1)) ROUTE")
                 Spacer(minLength: 4)
                 if model.isInteractionEnabled {
-                    Label("INTERACT", systemImage: "hand.point.up.left")
+                    Label(
+                        "DRAG ANYWHERE • \(model.hotKeys[.interact]?.display ?? "") TO LOCK",
+                        systemImage: "arrow.up.and.down.and.arrow.left.and.right"
+                    )
+                    .foregroundStyle(Theme.agedGold.opacity(0.9))
                 } else {
                     Text("\(model.hotKeys[.previous]?.display ?? "")  \(model.hotKeys[.next]?.display ?? "")")
                 }
