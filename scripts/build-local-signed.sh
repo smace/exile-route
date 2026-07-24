@@ -37,6 +37,7 @@ xcodebuild \
     CODE_SIGNING_ALLOWED=YES \
     CODE_SIGNING_REQUIRED=YES \
     CODE_SIGN_IDENTITY="$identity_hash" \
+    CODE_SIGN_ENTITLEMENTS="$repository_root/Config/LocalSigning.entitlements" \
     DEVELOPMENT_TEAM= \
     OTHER_CODE_SIGN_FLAGS=--timestamp=none \
     build
