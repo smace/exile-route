@@ -2,25 +2,49 @@ import Combine
 import Foundation
 
 @MainActor
+private final class CaptureEventRelay {
+    var handler: ((CaptureServiceEvent) -> Void)?
+
+    func send(_ event: CaptureServiceEvent) {
+        handler?(event)
+    }
+}
+
+@MainActor
 final class OCRCoordinator {
     private let model: AppModel
-    private let capture: GeForceCaptureService
+    private let relay: CaptureEventRelay
+    private let supervisor: CaptureSupervisor
     private var cancellables: Set<AnyCancellable> = []
 
     init(model: AppModel) {
         self.model = model
-        capture = GeForceCaptureService(
+        let relay = CaptureEventRelay()
+        self.relay = relay
+        let capture = GeForceCaptureService(
             areas: model.areaRecords,
             crop: model.ocrCrop,
+            onEvent: { event in relay.send(event) }
+        )
+        supervisor = CaptureSupervisor(
+            service: capture,
             onDetection: { [weak model] detection in
-                Self.debugLog("detection=\(detection.text) confidence=\(detection.confidence)")
                 model?.consumeDetection(detection)
             },
             onStatus: { [weak model] status in
-                Self.debugLog("status=\(status)")
                 model?.ocrStatus = status
+                model?.recordTrackingDiagnostic("state=\(status.diagnosticName)")
+            },
+            onHealth: { [weak model] lastFrameAt, restartCount in
+                model?.updateTrackingHealth(lastFrameAt: lastFrameAt, restartCount: restartCount)
+            },
+            onDiagnostic: { [weak model] message in
+                model?.recordTrackingDiagnostic(message)
             }
         )
+        relay.handler = { [weak self] event in
+            self?.supervisor.receive(event)
+        }
         bind()
     }
 
@@ -30,12 +54,12 @@ final class OCRCoordinator {
             .receive(on: RunLoop.main)
             .sink { [weak self] active, enabled in
                 guard let self else { return }
-                if active && enabled {
-                    refreshContext()
-                    Task { await capture.start() }
-                } else {
-                    Task { await capture.stop() }
-                    model.ocrStatus = enabled ? .waitingForGeForceNow : .disabled
+                refreshContext()
+                Task {
+                    await supervisor.setActive(
+                        active && enabled,
+                        inactiveStatus: enabled ? .waitingForGeForceNow : .disabled
+                    )
                 }
             }
             .store(in: &cancellables)
@@ -47,12 +71,6 @@ final class OCRCoordinator {
     }
 
     private func refreshContext() {
-        capture.update(expectedAreaIDs: model.nearbyExpectedAreaIDs, crop: model.ocrCrop)
-    }
-
-    private static func debugLog(_ message: String) {
-        #if DEBUG
-        FileHandle.standardError.write(Data("[ExileRoute OCR] \(message)\n".utf8))
-        #endif
+        supervisor.update(context: model.trackingContext, crop: model.ocrCrop)
     }
 }

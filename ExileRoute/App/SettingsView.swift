@@ -293,6 +293,15 @@ struct SettingsView: View {
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(Theme.ivory)
                 }
+                LabeledContent("Last frame", value: trackingFrameDescription)
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(Theme.muted)
+                LabeledContent("Capture restarts", value: "\(model.trackingRestartCount)")
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(Theme.muted)
+                ActionButton("Copy tracking diagnostics", icon: "doc.on.clipboard") {
+                    model.copyTrackingDiagnostics()
+                }
                 if let suggestion = model.suggestedAreaDetection {
                     Divider().overlay(Theme.brass.opacity(0.3))
                     Text("A distant area was recognized: \(suggestion.text). Exile Route will never jump there automatically.")
@@ -539,6 +548,9 @@ struct SettingsView: View {
         case .waitingForGeForceNow: "Waiting for GeForce NOW"
         case .permissionRequired: "Screen Recording permission required"
         case .scanning: "Scanning for an area title"
+        case .returningToTown: "Waiting for the expected town after logout"
+        case .recovering: "Restarting the GeForce NOW capture"
+        case .noFrames: "No frames received — recovery started"
         case .recognized(let name): "Recognized \(name)"
         case .lowConfidence: "Area title confidence is too low"
         case .failed(let message): message
@@ -548,10 +560,16 @@ struct SettingsView: View {
     private var ocrColor: Color {
         switch model.ocrStatus {
         case .recognized, .scanning: Theme.waypointCyan
-        case .permissionRequired, .failed: Theme.danger
-        case .lowConfidence: Theme.ember
+        case .permissionRequired, .failed, .noFrames: Theme.danger
+        case .lowConfidence, .returningToTown, .recovering: Theme.ember
         default: Theme.muted
         }
+    }
+
+    private var trackingFrameDescription: String {
+        guard let date = model.lastTrackingFrameAt else { return "None" }
+        let age = max(0, Int(Date().timeIntervalSince(date)))
+        return age == 0 ? "Now" : "\(age)s ago"
     }
 }
 

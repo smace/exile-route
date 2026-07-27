@@ -63,4 +63,93 @@ final class AppModelBuildTests: XCTestCase {
         XCTAssertEqual(model.route, route)
         XCTAssertEqual(model.currentStep?.id, currentStepID)
     }
+
+    func testLogoutContextWaitsForOneExactTownDetection() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        let logoutIndex = try XCTUnwrap(model.route?.steps.firstIndex(where: {
+            $0.fragments.contains(where: { $0.kind == .logout })
+        }))
+        while model.stepIndex < logoutIndex { model.moveNext() }
+        guard case .logout(let expectedTownID) = model.trackingContext.transition else {
+            return XCTFail("Expected an armed logout transition")
+        }
+        let initialStep = model.stepIndex
+        let detection = AreaDetection(
+            text: model.areaName(for: expectedTownID),
+            areaID: expectedTownID,
+            confidence: 0.95,
+            timestamp: Date()
+        )
+
+        model.consumeDetection(detection)
+
+        XCTAssertGreaterThan(model.stepIndex, initialStep)
+        XCTAssertEqual(model.trackingContext.currentAreaID, expectedTownID)
+    }
+
+    func testNumberedSiblingTransitionRequiresThreeDetections() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        let transitionIndex = try XCTUnwrap(model.route?.steps.firstIndex(where: {
+            $0.contextAreaID == "1_2_6_1" && $0.expectedAreaID == "1_2_6_2"
+        }))
+        while model.stepIndex < transitionIndex { model.moveNext() }
+        let initialStep = model.stepIndex
+        let detection = AreaDetection(
+            text: "The Chamber of Sins Level 2",
+            areaID: "1_2_6_2",
+            confidence: 0.99,
+            timestamp: Date()
+        )
+
+        model.consumeDetection(detection)
+        model.consumeDetection(detection)
+        XCTAssertEqual(model.stepIndex, initialStep)
+
+        model.consumeDetection(detection)
+        XCTAssertGreaterThan(model.stepIndex, initialStep)
+    }
+
+    func testTrackingDiagnosticsAreBoundedAndContainNoRawOCRText() {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        for index in 0..<300 {
+            model.recordTrackingDiagnostic("event=\(index)", at: Date(timeIntervalSince1970: TimeInterval(index)))
+        }
+        model.ocrStatus = .recognized("A raw area title")
+
+        model.copyTrackingDiagnostics()
+
+        let exported = NSPasteboard.general.string(forType: .string) ?? ""
+        XCTAssertFalse(exported.contains("event=0"))
+        XCTAssertTrue(exported.contains("event=299"))
+        XCTAssertFalse(exported.contains("A raw area title"))
+        XCTAssertLessThanOrEqual(exported.split(separator: "\n").count, 257)
+    }
+
+    func testCaptureRecoveryDoesNotMutateBuildProgressOrShortcuts() async {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        await model.importBuild(TestPoBFixtures.multiSkillSet)
+        for _ in 0..<20 { model.moveNext() }
+        let build = model.importedBuild
+        let stepID = model.currentStep?.id
+        let objectiveStates = model.currentZoneObjectives.map(\.state)
+        let hotKeys = model.hotKeys
+
+        model.ocrStatus = .noFrames
+        model.updateTrackingHealth(lastFrameAt: Date(), restartCount: 1)
+        model.ocrStatus = .recovering
+        model.updateTrackingHealth(lastFrameAt: Date(), restartCount: 2)
+
+        XCTAssertEqual(model.importedBuild, build)
+        XCTAssertEqual(model.currentStep?.id, stepID)
+        XCTAssertEqual(model.currentZoneObjectives.map(\.state), objectiveStates)
+        XCTAssertEqual(model.hotKeys, hotKeys)
+    }
 }

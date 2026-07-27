@@ -275,6 +275,25 @@ final class SettingsAndHotKeyTests: XCTestCase {
     }
 
     @MainActor
+    func testRecognitionRecoverySettingsVisualReference() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let model = AppModel(persistence: PersistenceStore(baseURL: directory))
+        let updater = ApplicationUpdater(channel: .stable, distributionFlavor: .dev)
+        model.ocrStatus = .recovering
+        model.updateTrackingHealth(lastFrameAt: Date().addingTimeInterval(-6), restartCount: 2)
+
+        let png = try renderSettings(section: .recognition, model: model, updater: updater)
+        let attachment = XCTAttachment(data: png, uniformTypeIdentifier: "public.png")
+        attachment.name = "settings-recognition-recovering"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        if let outputPath = ProcessInfo.processInfo.environment["EXILE_ROUTE_RECOGNITION_REFERENCE_OUTPUT"] {
+            try png.write(to: URL(fileURLWithPath: outputPath), options: .atomic)
+        }
+    }
+
+    @MainActor
     private func renderSettings(
         section: SettingsView.Section,
         model: AppModel,

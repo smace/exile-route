@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Fixed
+
+- Resume OCR progression after Path of Exile logout and character selection by keeping the GeForce NOW capture alive and recognizing the expected town during loading.
+- Prevent fuzzy OCR from confusing sibling `Level 1` and `Level 2` areas, and keep manual navigation aligned with the active objective.
+- Recover automatically when the captured GeForce NOW window disappears, stops, or stops producing frames.
+
+### Added
+
+- Show capture recovery health and provide a privacy-safe, in-memory tracking diagnostics export.
+
 ## [2.0.0] - 2026-07-24
 
 ### Added

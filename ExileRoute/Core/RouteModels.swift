@@ -193,6 +193,36 @@ struct RouteObjective: Identifiable, Hashable, Sendable {
     let state: RouteObjectiveState
 }
 
+enum TrackingTransition: Equatable, Sendable {
+    case none
+    case area(expectedAreaID: String)
+    case logout(expectedTownID: String)
+
+    var expectedAreaID: String? {
+        switch self {
+        case .none: nil
+        case .area(let areaID), .logout(let areaID): areaID
+        }
+    }
+
+    var isLogout: Bool {
+        if case .logout = self { return true }
+        return false
+    }
+}
+
+struct TrackingContext: Equatable, Sendable {
+    let stepID: String?
+    let currentAreaID: String?
+    let transition: TrackingTransition
+
+    static let empty = TrackingContext(stepID: nil, currentAreaID: nil, transition: .none)
+
+    var automaticAreaIDs: Set<String> {
+        Set([currentAreaID, transition.expectedAreaID].compactMap { $0 })
+    }
+}
+
 struct RouteSection: Identifiable, Codable, Hashable, Sendable {
     var id: String { name }
     let name: String
@@ -287,6 +317,9 @@ enum OCRStatus: Equatable, Sendable {
     case waitingForGeForceNow
     case permissionRequired
     case scanning
+    case returningToTown
+    case recovering
+    case noFrames
     case recognized(String)
     case lowConfidence
     case failed(String)

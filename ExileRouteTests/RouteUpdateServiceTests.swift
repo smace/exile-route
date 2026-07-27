@@ -28,9 +28,7 @@ final class RouteUpdateServiceTests: XCTestCase {
 
     override func setUpWithError() throws {
         temporaryDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        resourceRoot = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent().deletingLastPathComponent()
-            .appendingPathComponent("ExileRoute/Resources")
+        resourceRoot = try XCTUnwrap(Bundle.main.resourceURL)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
     }
 
@@ -101,9 +99,7 @@ final class RouteUpdateServiceTests: XCTestCase {
                 return (Self.response(for: request), Data("{\"sha\":\"\(commit)\"}".utf8))
             }
             let filename = url.lastPathComponent
-            let source: URL
-            if filename.hasPrefix("act-") { source = root.appendingPathComponent("Routes/\(filename)") }
-            else { source = root.appendingPathComponent("Data/\(filename)") }
+            let source = root.appendingPathComponent(filename)
             return (Self.response(for: request), try Data(contentsOf: source))
         }
     }

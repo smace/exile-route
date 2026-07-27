@@ -123,22 +123,19 @@ final class RouteParserTests: XCTestCase {
     }
 
     func testBundledSnapshotParsesAllTenActs() throws {
-        let projectRoot = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-        let resourceRoot = projectRoot.appendingPathComponent("ExileRoute/Resources")
+        let resourceRoot = try XCTUnwrap(Bundle.main.resourceURL)
         let decoder = JSONDecoder()
         let bundledAreas = try decoder.decode(
             [String: AreaRecord].self,
-            from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/areas.json"))
+            from: Data(contentsOf: resourceRoot.appendingPathComponent("areas.json"))
         )
         let bundledQuests = try decoder.decode(
             [String: QuestRecord].self,
-            from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/quests.json"))
+            from: Data(contentsOf: resourceRoot.appendingPathComponent("quests.json"))
         )
         let sources = try (1...10).map { act in
             let contents = try String(
-                contentsOf: resourceRoot.appendingPathComponent("Routes/act-\(act).txt"),
+                contentsOf: resourceRoot.appendingPathComponent("act-\(act).txt"),
                 encoding: .utf8
             )
             return ("Act \(act)", contents)
@@ -153,10 +150,7 @@ final class RouteParserTests: XCTestCase {
     }
 
     func testLegacyCachedSnapshotFallsBackToBundledGemCatalog() throws {
-        let projectRoot = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-        let resourceRoot = projectRoot.appendingPathComponent("ExileRoute/Resources")
+        let resourceRoot = try XCTUnwrap(Bundle.main.resourceURL)
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent(String(repeating: "c", count: 40))
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -170,13 +164,13 @@ final class RouteParserTests: XCTestCase {
         )
         for filename in ["areas.json", "quests.json"] {
             try FileManager.default.copyItem(
-                at: resourceRoot.appendingPathComponent("Data/\(filename)"),
+                at: resourceRoot.appendingPathComponent(filename),
                 to: directory.appendingPathComponent("Data/\(filename)")
             )
         }
         for act in 1...10 {
             try FileManager.default.copyItem(
-                at: resourceRoot.appendingPathComponent("Routes/act-\(act).txt"),
+                at: resourceRoot.appendingPathComponent("act-\(act).txt"),
                 to: directory.appendingPathComponent("Routes/act-\(act).txt")
             )
         }
@@ -184,19 +178,19 @@ final class RouteParserTests: XCTestCase {
         let fallback = GemCatalog(
             gems: try decoder.decode(
                 [String: GemRecord].self,
-                from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/gems.json"))
+                from: Data(contentsOf: resourceRoot.appendingPathComponent("gems.json"))
             ),
             characters: try decoder.decode(
                 [String: CharacterRecord].self,
-                from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/characters.json"))
+                from: Data(contentsOf: resourceRoot.appendingPathComponent("characters.json"))
             ),
             vaalGemLookup: try decoder.decode(
                 [String: String].self,
-                from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/vaal-gem-lookup.json"))
+                from: Data(contentsOf: resourceRoot.appendingPathComponent("vaal-gem-lookup.json"))
             ),
             awakenedGemLookup: try decoder.decode(
                 [String: String].self,
-                from: Data(contentsOf: resourceRoot.appendingPathComponent("Data/awakened-gem-lookup.json"))
+                from: Data(contentsOf: resourceRoot.appendingPathComponent("awakened-gem-lookup.json"))
             )
         )
 

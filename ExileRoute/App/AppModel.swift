@@ -36,6 +36,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var compactOverlayHeight: CGFloat = 210
     @Published private(set) var importedBuild: ImportedBuild?
     @Published private(set) var buildWarnings: [PoBImportWarning] = []
+    @Published private(set) var lastTrackingFrameAt: Date?
+    @Published private(set) var trackingRestartCount = 0
 
     private var snapshot: LoadedSnapshot?
     private var progression: ProgressionEngine?
@@ -45,6 +47,7 @@ final class AppModel: ObservableObject {
     private var remoteDetectionID: String?
     private var remoteDetectionCount = 0
     private var noticeTask: Task<Void, Never>?
+    private var trackingDiagnosticEvents: [String] = []
 
     init(persistence: PersistenceStore = PersistenceStore()) {
         self.persistence = persistence
@@ -58,7 +61,26 @@ final class AppModel: ObservableObject {
 
     var shouldShowOverlay: Bool { forceVisible || isGeForceNowActive }
     var areaRecords: [String: AreaRecord] { snapshot?.areas ?? [:] }
-    var nearbyExpectedAreaIDs: [String] { progression?.currentVisitExpectedAreaIDs ?? [] }
+    var nearbyExpectedAreaIDs: [String] { progression?.immediateExpectedAreaID.map { [$0] } ?? [] }
+    var trackingContext: TrackingContext {
+        guard let progression else { return .empty }
+        let expectedAreaID = progression.immediateExpectedAreaID
+        let transition: TrackingTransition
+        if let expectedAreaID,
+           currentStep?.expectedAreaID == expectedAreaID,
+           currentStep?.fragments.contains(where: { $0.kind == .logout }) == true {
+            transition = .logout(expectedTownID: expectedAreaID)
+        } else if let expectedAreaID {
+            transition = .area(expectedAreaID: expectedAreaID)
+        } else {
+            transition = .none
+        }
+        return TrackingContext(
+            stepID: currentStep?.id,
+            currentAreaID: progression.progress.currentAreaID,
+            transition: transition
+        )
+    }
     var currentAct: Int { currentStep?.act ?? 1 }
     var currentVisit: RouteVisit? { progression?.currentVisit }
     var currentZoneObjectives: [RouteObjective] { progression?.currentObjectives ?? [] }
@@ -200,6 +222,35 @@ final class AppModel: ObservableObject {
 
     func resetOCRCrop() { setOCRCrop(.defaultAreaTitle) }
 
+    func updateTrackingHealth(lastFrameAt: Date?, restartCount: Int) {
+        self.lastTrackingFrameAt = lastFrameAt
+        trackingRestartCount = restartCount
+    }
+
+    func recordTrackingDiagnostic(_ message: String, at date: Date = Date()) {
+        let timestamp = Self.diagnosticTimestamp.string(from: date)
+        let sanitized = message.replacingOccurrences(of: "\n", with: " ").prefix(320)
+        trackingDiagnosticEvents.append("\(timestamp) \(sanitized)")
+        if trackingDiagnosticEvents.count > 250 {
+            trackingDiagnosticEvents.removeFirst(trackingDiagnosticEvents.count - 250)
+        }
+    }
+
+    func copyTrackingDiagnostics() {
+        let header = [
+            "Exile Route tracking diagnostics",
+            "build=\(BuildIdentity().compactDescription)",
+            "ocr=\(ocrStatus.diagnosticName)",
+            "step=\(currentStep?.id ?? "none")",
+            "current=\(trackingContext.currentAreaID ?? "none")",
+            "expected=\(trackingContext.transition.expectedAreaID ?? "none")",
+            "restarts=\(trackingRestartCount)"
+        ]
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString((header + trackingDiagnosticEvents).joined(separator: "\n"), forType: .string)
+        statusText = "Tracking diagnostics copied"
+    }
+
     func acceptSuggestedAreaJump() {
         guard let areaID = suggestedAreaDetection?.areaID,
               let result = progression?.jumpForward(toAreaID: areaID) else { return }
@@ -295,8 +346,16 @@ final class AppModel: ObservableObject {
     }
 
     func consumeDetection(_ detection: AreaDetection) {
-        ocrStatus = detection.confidence >= 0.55 ? .recognized(detection.text) : .lowConfidence
-        if let result = progression?.consume(detection) {
+        let context = trackingContext
+        let confirmationCount: Int
+        if context.transition.isLogout {
+            confirmationCount = 1
+        } else if isNumberedSiblingTransition(context) {
+            confirmationCount = 3
+        } else {
+            confirmationCount = 2
+        }
+        if let result = progression?.consume(detection, confirmationCount: confirmationCount) {
             suggestedAreaDetection = nil
             remoteDetectionID = nil
             remoteDetectionCount = 0
@@ -503,6 +562,45 @@ final class AppModel: ObservableObject {
     }
 
     private func persist() throws { try persistence.save(storedState) }
+
+    private func isNumberedSiblingTransition(_ context: TrackingContext) -> Bool {
+        guard let currentID = context.currentAreaID,
+              let expectedID = context.transition.expectedAreaID,
+              let current = snapshot?.areas[currentID]?.name,
+              let expected = snapshot?.areas[expectedID]?.name,
+              let currentLevel = Self.levelSuffix(in: current),
+              let expectedLevel = Self.levelSuffix(in: expected) else { return false }
+        return currentLevel.prefix == expectedLevel.prefix && currentLevel.number != expectedLevel.number
+    }
+
+    private static func levelSuffix(in value: String) -> (prefix: String, number: Int)? {
+        guard let range = value.range(of: #" Level ([0-9]+)$"#, options: .regularExpression),
+              let number = Int(value[range].split(separator: " ").last ?? "") else { return nil }
+        return (String(value[..<range.lowerBound]), number)
+    }
+
+    private static let diagnosticTimestamp: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+}
+
+extension OCRStatus {
+    var diagnosticName: String {
+        switch self {
+        case .disabled: "disabled"
+        case .waitingForGeForceNow: "waiting"
+        case .permissionRequired: "permission-required"
+        case .scanning: "scanning"
+        case .returningToTown: "returning-to-town"
+        case .recovering: "recovering"
+        case .noFrames: "no-frames"
+        case .recognized: "recognized"
+        case .lowConfidence: "low-confidence"
+        case .failed: "failed"
+        }
+    }
 }
 
 private extension NormalizedRect {

@@ -77,9 +77,11 @@ The complete ten-act campaign snapshot is embedded for offline use. Exile Route 
 
 ## OCR privacy and safety
 
-ScreenCaptureKit filters capture to the largest on-screen window owned by `com.nvidia.gfnpc.mall`. Vision reads only the calibrated upper-right region and uses the bundled area names as custom vocabulary.
+ScreenCaptureKit filters capture to the largest on-screen window owned by `com.nvidia.gfnpc.mall`. Vision normally reads only the calibrated upper-right region and uses the bundled area names as custom vocabulary. While a logout objective is active, it also reads a central loading-title band so the expected town can be confirmed after character selection.
 
-Frames are processed in memory on the Mac. They are never saved or uploaded. Automatic progression requires two coherent detections, only selects a nearby expected zone visit, and never regresses. OCR does not attempt to recognize quest items, bosses, or NPC interactions; those objectives remain manual. A distant match is presented as a manual suggestion. Previous and next shortcuts remain available at all times.
+Frames are processed in memory on the Mac. They are never saved or uploaded. Automatic progression is limited to the immediate expected transition and never regresses. Numbered sibling areas require an explicit matching level number and three coherent detections; a logout return requires one exact, high-confidence match for the expected town. A five-second frame watchdog recreates silent captures. OCR does not attempt to recognize quest items, bosses, or NPC interactions; those objectives remain manual. A distant match is presented as a manual suggestion. Previous and next shortcuts remain available at all times.
+
+**Settings → Recognition → Copy tracking diagnostics** exports a 250-event in-memory health log containing timestamps, route identifiers, capture dimensions, restart counts, and errors. It contains no image or raw OCR text and is discarded when the app quits.
 
 ## Build and test
 
