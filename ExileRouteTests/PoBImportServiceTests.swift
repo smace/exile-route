@@ -207,10 +207,9 @@ final class PoBImportServiceTests: XCTestCase {
     }
 
     private func loadCatalog() -> GemCatalog {
-        let root = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .appendingPathComponent("ExileRoute/Resources/Data")
+        guard let root = Bundle.main.resourceURL else {
+            fatalError("Missing bundled application resources")
+        }
         let decoder = JSONDecoder()
         return GemCatalog(
             gems: try! decoder.decode(

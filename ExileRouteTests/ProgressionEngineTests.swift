@@ -102,6 +102,33 @@ final class ProgressionEngineTests: XCTestCase {
         XCTAssertTrue(engine.progress.skippedStepIDs.isEmpty)
     }
 
+    func testOnlyTheImmediateTransitionCanAdvanceAutomatically() {
+        let multipleTransitions = CampaignRoute(source: "fixture", sections: [
+            RouteSection(name: "Act 1", act: 1, steps: [
+                step("0", context: "a", expected: "b"),
+                step("1", context: "a", expected: "c"),
+                step("2", context: "c")
+            ])
+        ])
+        var engine = ProgressionEngine(route: multipleTransitions)
+        let future = AreaDetection(text: "C", areaID: "c", confidence: 0.99, timestamp: Date())
+
+        XCTAssertEqual(engine.currentVisitExpectedAreaIDs, ["b", "c"])
+        XCTAssertEqual(engine.immediateExpectedAreaID, "b")
+        XCTAssertNil(engine.consume(future))
+        XCTAssertNil(engine.consume(future))
+        XCTAssertEqual(engine.progress.stepIndex, 0)
+    }
+
+    func testNumberedTransitionCanRequireThreeConfirmations() {
+        var engine = ProgressionEngine(route: route())
+        let detection = AreaDetection(text: "B Level 2", areaID: "b", confidence: 0.99, timestamp: Date())
+
+        XCTAssertNil(engine.consume(detection, confirmationCount: 3))
+        XCTAssertNil(engine.consume(detection, confirmationCount: 3))
+        XCTAssertEqual(engine.consume(detection, confirmationCount: 3)?.areaID, "b")
+    }
+
     func testIgnoresLowConfidenceAndNeverRegresses() {
         var engine = ProgressionEngine(
             route: route(),
@@ -120,6 +147,7 @@ final class ProgressionEngineTests: XCTestCase {
 
         engine.moveNext()
         XCTAssertEqual(engine.progress.stepIndex, 1)
+        XCTAssertEqual(engine.progress.currentAreaID, "a")
         XCTAssertTrue(engine.progress.completedStepIDs.contains("0"))
 
         engine.moveNext()

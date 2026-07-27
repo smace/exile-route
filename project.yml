@@ -94,6 +94,8 @@ targets:
     platform: macOS
     sources:
       - path: ExileRouteTests
+    resources:
+      - path: ExileRouteTests/Fixtures
     dependencies:
       - target: ExileRoute
     settings:

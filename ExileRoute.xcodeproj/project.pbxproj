@@ -33,6 +33,7 @@
 		6815D8254464D3BD3E3B0FB9 /* ApplicationUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD3FD4461C0B46ADA9AF0BF /* ApplicationUpdater.swift */; };
 		6CDA8E19D585B2CAB1D807AC /* BuildModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E089B7130571303721C52E /* BuildModels.swift */; };
 		749F518BDA5EC6D02F2D857E /* act-10.txt in Resources */ = {isa = PBXBuildFile; fileRef = 25C9889B5BE7391EF121191E /* act-10.txt */; };
+		751B6BF74C4AC4F16F749638 /* CaptureSupervisorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015146875CE7C8C9C16F7CFF /* CaptureSupervisorTests.swift */; };
 		762F13B228D9E8C33803055F /* SettingsAndHotKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D443250C69E231207B9CEBB /* SettingsAndHotKeyTests.swift */; };
 		781544046908BAED56B330BF /* BootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */; };
 		79509EE0D2D3F8DDA2B6C334 /* act-3.txt in Resources */ = {isa = PBXBuildFile; fileRef = 71F35C1923493C1995C9E8C4 /* act-3.txt */; };
@@ -57,6 +58,7 @@
 		B533E9F42B0865C3B8D42F52 /* AreaMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */; };
 		B8334A3D879296846677FE78 /* act-9.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4A2FAA60FFE5AE1DEB1122C1 /* act-9.txt */; };
 		BA7005CEE76ABFE6D6FCCB9D /* AppModelBuildTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA82ADF3FDCEC5702F55FE4 /* AppModelBuildTests.swift */; };
+		BA87466EFBF2D162CA1C72F0 /* CaptureSupervisor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01D3A368C5265D9E74C766F /* CaptureSupervisor.swift */; };
 		BDA279CC48F5BDAE24151E42 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92CB9FB4A234ED3FD044E643 /* SettingsWindowController.swift */; };
 		BF6DA72A844BE1D7D1C88C0A /* AreaMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A5AC59DB8EF7DCB9320598 /* AreaMatcherTests.swift */; };
 		C034867D2B42B93F515580B3 /* HotKeyRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBA67B513EF9A50377BE890 /* HotKeyRecorder.swift */; };
@@ -89,6 +91,7 @@
 /* Begin PBXFileReference section */
 		009040974AB9ED622E857F78 /* awakened-gem-lookup.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "awakened-gem-lookup.json"; sourceTree = "<group>"; };
 		00AF4F695CF433FB2FA055E0 /* RouteUpdateServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteUpdateServiceTests.swift; sourceTree = "<group>"; };
+		015146875CE7C8C9C16F7CFF /* CaptureSupervisorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSupervisorTests.swift; sourceTree = "<group>"; };
 		03B4E9D31656F27AFAE97558 /* act-5.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "act-5.txt"; sourceTree = "<group>"; };
 		0B0F90EF961C72CFAB9CD0FE /* Cinzel-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Cinzel-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		0D443250C69E231207B9CEBB /* SettingsAndHotKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAndHotKeyTests.swift; sourceTree = "<group>"; };
@@ -132,6 +135,7 @@
 		92CB9FB4A234ED3FD044E643 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaMatcher.swift; sourceTree = "<group>"; };
 		9A375E3BD9165529105C6148 /* ProgressionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionEngine.swift; sourceTree = "<group>"; };
+		A01D3A368C5265D9E74C766F /* CaptureSupervisor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSupervisor.swift; sourceTree = "<group>"; };
 		A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BootstrapTests.swift; sourceTree = "<group>"; };
 		AA32EA53128F2C0B376F371B /* ExileRoute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExileRoute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AECFDAC36928DF67FA358AA2 /* OCRCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRCoordinator.swift; sourceTree = "<group>"; };
@@ -291,6 +295,7 @@
 				D7A5AC59DB8EF7DCB9320598 /* AreaMatcherTests.swift */,
 				A88FE1B7A9F3DCFC9E5C598E /* BootstrapTests.swift */,
 				4794166D318020F38266DAF1 /* BuildIdentityTests.swift */,
+				015146875CE7C8C9C16F7CFF /* CaptureSupervisorTests.swift */,
 				554280133742F3B0399495AB /* GemRouteEnricherTests.swift */,
 				340C9AF6D81CEFCA69C1441D /* OverlayPanelControllerTests.swift */,
 				B471C018B222BDC89EE721BB /* OverlaySnapshotTests.swift */,
@@ -342,6 +347,7 @@
 			isa = PBXGroup;
 			children = (
 				983C8C0F51C1D1E2F5A35E0E /* AreaMatcher.swift */,
+				A01D3A368C5265D9E74C766F /* CaptureSupervisor.swift */,
 				287582EAA32640B393F8014F /* GeForceCaptureService.swift */,
 				AECFDAC36928DF67FA358AA2 /* OCRCoordinator.swift */,
 				B7A271BBAC4401F041113890 /* VisionTextRecognizer.swift */,
@@ -512,6 +518,7 @@
 				B533E9F42B0865C3B8D42F52 /* AreaMatcher.swift in Sources */,
 				1A90E1807DC0554CFA1F23D3 /* BuildIdentity.swift in Sources */,
 				6CDA8E19D585B2CAB1D807AC /* BuildModels.swift in Sources */,
+				BA87466EFBF2D162CA1C72F0 /* CaptureSupervisor.swift in Sources */,
 				FD0F35F97A876BF8DD0E5D41 /* ExileRouteApp.swift in Sources */,
 				94E292B0F4B274DC2F41BF04 /* GeForceCaptureService.swift in Sources */,
 				AE5EC64DF352041DF09511C3 /* GeForceFocusMonitor.swift in Sources */,
@@ -548,6 +555,7 @@
 				BF6DA72A844BE1D7D1C88C0A /* AreaMatcherTests.swift in Sources */,
 				781544046908BAED56B330BF /* BootstrapTests.swift in Sources */,
 				4FC464C707F81DCCFDC53CF1 /* BuildIdentityTests.swift in Sources */,
+				751B6BF74C4AC4F16F749638 /* CaptureSupervisorTests.swift in Sources */,
 				3CD33FD91C3B2CFA0D2503D4 /* GemRouteEnricherTests.swift in Sources */,
 				E4F0A929C04A1E384C6204A3 /* OverlayPanelControllerTests.swift in Sources */,
 				A929F477D6177130D3DBB85C /* OverlaySnapshotTests.swift in Sources */,

@@ -21,7 +21,5 @@ final class GeForceFocusMonitor {
 
     private func update(_ application: NSRunningApplication?) {
         model.isGeForceNowActive = application?.bundleIdentifier == Self.bundleIdentifier
-        if model.isGeForceNowActive, model.isOCRActive { model.ocrStatus = .scanning }
-        else if model.isOCRActive { model.ocrStatus = .waitingForGeForceNow }
     }
 }

@@ -12,6 +12,9 @@ final class OverlaySnapshotTests: XCTestCase {
             ("expanded", { $0.toggleExpanded() }),
             ("interaction", { $0.toggleInteraction() }),
             ("ocr-error", { $0.ocrStatus = .failed("Permission required") }),
+            ("ocr-returning", { $0.ocrStatus = .returningToTown }),
+            ("ocr-recovering", { $0.ocrStatus = .recovering }),
+            ("ocr-no-frames", { $0.ocrStatus = .noFrames }),
             ("large-text", {
                 Self.moveToLongestVisit($0)
                 $0.setTextScale(1.35)

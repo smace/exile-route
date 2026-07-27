@@ -4,6 +4,29 @@ import CoreVideo
 import Foundation
 @preconcurrency import ScreenCaptureKit
 
+enum CaptureStartResult: Equatable, Sendable {
+    case started(width: Int, height: Int)
+    case alreadyRunning
+    case waitingForWindow
+    case permissionRequired
+    case failed(String)
+}
+
+enum CaptureServiceEvent: Equatable, Sendable {
+    case frame(Date)
+    case detection(AreaDetection)
+    case lowConfidence
+    case recognitionFailed(String)
+    case streamStopped(String)
+}
+
+@MainActor
+protocol GeForceCaptureServicing: AnyObject {
+    func update(context: TrackingContext, crop: NormalizedRect)
+    func start() async -> CaptureStartResult
+    func stop() async
+}
+
 @MainActor
 final class ScreenCapturePermissionGate {
     private let preflight: () -> Bool
@@ -33,43 +56,49 @@ final class ScreenCapturePermissionGate {
 private final class CaptureOutput: NSObject, SCStreamOutput, @unchecked Sendable {
     private let lock = NSLock()
     private var matcher: AreaMatcher
-    private var expectedAreaIDs: [String] = []
+    private var context = TrackingContext.empty
     private var crop: NormalizedRect
     private var isProcessing = false
     private var lastProcessedAt = 0.0
     private let customWords: [String]
-    private let onDetection: @MainActor @Sendable (AreaDetection) -> Void
-    private let onStatus: @MainActor @Sendable (OCRStatus) -> Void
+    private let onEvent: @MainActor @Sendable (CaptureServiceEvent) -> Void
 
     init(
         areas: [String: AreaRecord],
         crop: NormalizedRect,
-        onDetection: @escaping @MainActor @Sendable (AreaDetection) -> Void,
-        onStatus: @escaping @MainActor @Sendable (OCRStatus) -> Void
+        onEvent: @escaping @MainActor @Sendable (CaptureServiceEvent) -> Void
     ) {
         matcher = AreaMatcher(areas: areas)
         customWords = Array(Set(areas.values.map(\.name))).sorted()
         self.crop = crop
-        self.onDetection = onDetection
-        self.onStatus = onStatus
+        self.onEvent = onEvent
     }
 
-    func update(expectedAreaIDs: [String], crop: NormalizedRect) {
+    func update(context: TrackingContext, crop: NormalizedRect) {
         lock.lock()
-        self.expectedAreaIDs = expectedAreaIDs
+        self.context = context
         self.crop = crop
         lock.unlock()
     }
 
-    func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of outputType: SCStreamOutputType) {
+    func stream(
+        _ stream: SCStream,
+        didOutputSampleBuffer sampleBuffer: CMSampleBuffer,
+        of outputType: SCStreamOutputType
+    ) {
         guard outputType == .screen, sampleBuffer.isValid, let pixelBuffer = sampleBuffer.imageBuffer else { return }
+        let timestamp = Date()
+        Task { @MainActor in onEvent(.frame(timestamp)) }
 
         lock.lock()
-        let now = Date().timeIntervalSinceReferenceDate
-        guard !isProcessing, now - lastProcessedAt >= 0.75 else { lock.unlock(); return }
+        let now = timestamp.timeIntervalSinceReferenceDate
+        guard !isProcessing, now - lastProcessedAt >= 0.75 else {
+            lock.unlock()
+            return
+        }
         isProcessing = true
         lastProcessedAt = now
-        let expected = expectedAreaIDs
+        let trackingContext = context
         let captureCrop = crop
         lock.unlock()
 
@@ -80,30 +109,70 @@ private final class CaptureOutput: NSObject, SCStreamOutput, @unchecked Sendable
         }
 
         do {
-            let candidates = try VisionTextRecognizer.recognize(
+            var candidates = try VisionTextRecognizer.recognize(
                 pixelBuffer: pixelBuffer,
                 regionOfInterest: captureCrop.cgRect,
                 customWords: customWords
             )
-            if let detection = matcher.match(candidates, expectedAreaIDs: expected) {
-                Task { @MainActor in onDetection(detection) }
+            if trackingContext.transition.isLogout {
+                candidates += try VisionTextRecognizer.recognize(
+                    pixelBuffer: pixelBuffer,
+                    regionOfInterest: NormalizedRect.loadingTitle.cgRect,
+                    customWords: customWords
+                )
+            }
+
+            let detection: AreaDetection?
+            if case .logout(let expectedTownID) = trackingContext.transition {
+                detection = matcher.match(
+                    candidates,
+                    expectedAreaIDs: [expectedTownID],
+                    allowedAreaIDs: [expectedTownID],
+                    exactAreaID: expectedTownID,
+                    minimumCandidateConfidence: 0.80,
+                    timestamp: timestamp
+                )
+            } else {
+                let expected = trackingContext.transition.expectedAreaID.map { [$0] } ?? []
+                detection = matcher.match(
+                    candidates,
+                    expectedAreaIDs: expected,
+                    allowedAreaIDs: trackingContext.automaticAreaIDs,
+                    timestamp: timestamp
+                ) ?? matcher.match(candidates, expectedAreaIDs: expected, timestamp: timestamp)
+            }
+
+            if let detection {
+                Task { @MainActor in onEvent(.detection(detection)) }
             } else if !candidates.isEmpty {
-                Task { @MainActor in onStatus(.lowConfidence) }
+                Task { @MainActor in onEvent(.lowConfidence) }
             }
         } catch {
             let message = error.localizedDescription
-            Task { @MainActor in onStatus(.failed(message)) }
+            Task { @MainActor in onEvent(.recognitionFailed(message)) }
         }
     }
+}
 
+private final class CaptureStreamDelegate: NSObject, SCStreamDelegate, @unchecked Sendable {
+    private let onStopped: @MainActor @Sendable (String) -> Void
+
+    init(onStopped: @escaping @MainActor @Sendable (String) -> Void) {
+        self.onStopped = onStopped
+    }
+
+    func stream(_ stream: SCStream, didStopWithError error: any Error) {
+        let message = error.localizedDescription
+        Task { @MainActor in onStopped(message) }
+    }
 }
 
 @MainActor
-final class GeForceCaptureService {
+final class GeForceCaptureService: GeForceCaptureServicing {
     static let bundleIdentifier = "com.nvidia.gfnpc.mall"
 
     private let output: CaptureOutput
-    private let onStatus: @MainActor @Sendable (OCRStatus) -> Void
+    private let streamDelegate: CaptureStreamDelegate
     private let permissionGate: ScreenCapturePermissionGate
     private let sampleQueue = DispatchQueue(label: "com.swannmace.ExileRoute.ocr", qos: .userInitiated)
     private var stream: SCStream?
@@ -112,27 +181,28 @@ final class GeForceCaptureService {
     init(
         areas: [String: AreaRecord],
         crop: NormalizedRect,
-        onDetection: @escaping @MainActor @Sendable (AreaDetection) -> Void,
-        onStatus: @escaping @MainActor @Sendable (OCRStatus) -> Void,
+        onEvent: @escaping @MainActor @Sendable (CaptureServiceEvent) -> Void,
         permissionGate: ScreenCapturePermissionGate = ScreenCapturePermissionGate()
     ) {
-        self.onStatus = onStatus
         self.permissionGate = permissionGate
-        output = CaptureOutput(areas: areas, crop: crop, onDetection: onDetection, onStatus: onStatus)
+        output = CaptureOutput(areas: areas, crop: crop, onEvent: onEvent)
+        streamDelegate = CaptureStreamDelegate { message in
+            onEvent(.streamStopped(message))
+        }
     }
 
-    func update(expectedAreaIDs: [String], crop: NormalizedRect) {
-        output.update(expectedAreaIDs: expectedAreaIDs, crop: crop)
+    func update(context: TrackingContext, crop: NormalizedRect) {
+        output.update(context: context, crop: crop)
     }
 
-    func start() async {
-        guard stream == nil, !isStarting else { return }
+    func start() async -> CaptureStartResult {
+        guard stream == nil else { return .alreadyRunning }
+        guard !isStarting else { return .alreadyRunning }
         isStarting = true
         defer { isStarting = false }
 
         guard permissionGate.ensureAccess() else {
-            onStatus(.permissionRequired)
-            return
+            return .permissionRequired
         }
 
         do {
@@ -143,8 +213,7 @@ final class GeForceCaptureService {
             guard let window = geForceWindows.max(by: {
                 $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height
             }), window.frame.width >= 640, window.frame.height >= 360 else {
-                onStatus(.waitingForGeForceNow)
-                return
+                return .waitingForWindow
             }
 
             let configuration = SCStreamConfiguration()
@@ -159,14 +228,14 @@ final class GeForceCaptureService {
             let capture = SCStream(
                 filter: SCContentFilter(desktopIndependentWindow: window),
                 configuration: configuration,
-                delegate: nil
+                delegate: streamDelegate
             )
             try capture.addStreamOutput(output, type: .screen, sampleHandlerQueue: sampleQueue)
             try await capture.startCapture()
             stream = capture
-            onStatus(.scanning)
+            return .started(width: Int(window.frame.width), height: Int(window.frame.height))
         } catch {
-            onStatus(.failed(error.localizedDescription))
+            return .failed(error.localizedDescription)
         }
     }
 
@@ -177,12 +246,14 @@ final class GeForceCaptureService {
             try await capture.stopCapture()
             try capture.removeStreamOutput(output, type: .screen)
         } catch {
-            onStatus(.failed(error.localizedDescription))
+            // A stopped or replaced stream is already unusable; the supervisor will recreate it.
         }
     }
 }
 
 private extension NormalizedRect {
+    static let loadingTitle = NormalizedRect(x: 0.15, y: 0.30, width: 0.70, height: 0.40)
+
     var cgRect: CGRect {
         CGRect(
             x: min(max(x, 0), 1),

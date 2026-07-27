@@ -25,17 +25,29 @@ struct AreaMatcher: Sendable {
         entries = areas.values.map { Entry(id: $0.id, name: $0.name, normalizedName: Self.normalize($0.name)) }
     }
 
-    func match(_ candidates: [OCRCandidate], expectedAreaIDs: [String] = [], timestamp: Date = Date()) -> AreaDetection? {
+    func match(
+        _ candidates: [OCRCandidate],
+        expectedAreaIDs: [String] = [],
+        allowedAreaIDs: Set<String>? = nil,
+        exactAreaID: String? = nil,
+        minimumCandidateConfidence: Float = 0,
+        timestamp: Date = Date()
+    ) -> AreaDetection? {
         var expectedRanks: [String: Int] = [:]
         for (offset, areaID) in expectedAreaIDs.enumerated() where expectedRanks[areaID] == nil {
             expectedRanks[areaID] = offset
         }
         var best: (entry: Entry, text: String, score: Float, expectedRank: Int?)?
 
-        for candidate in candidates where !candidate.text.isEmpty {
+        for candidate in candidates where !candidate.text.isEmpty && candidate.confidence >= minimumCandidateConfidence {
             let normalizedText = Self.normalize(candidate.text)
             guard normalizedText.count >= 3 else { continue }
-            for entry in entries {
+            for entry in entries where allowedAreaIDs?.contains(entry.id) ?? true {
+                if let exactAreaID, entry.id != exactAreaID { continue }
+                if exactAreaID != nil, normalizedText != entry.normalizedName { continue }
+                guard Self.numericTokens(in: normalizedText) == Self.numericTokens(in: entry.normalizedName) else {
+                    continue
+                }
                 let similarity = Self.similarity(normalizedText, entry.normalizedName)
                 let isNearTitleLength = abs(normalizedText.count - entry.normalizedName.count) <= 5
                 let contains = isNearTitleLength && (
@@ -67,6 +79,12 @@ struct AreaMatcher: Sendable {
                 result.append(character)
             }
             .trimmingCharacters(in: .whitespaces)
+    }
+
+    private static func numericTokens(in value: String) -> [String] {
+        value.split(separator: " ").compactMap { token in
+            token.allSatisfy(\.isNumber) ? String(token) : nil
+        }
     }
 
     private static func similarity(_ lhs: String, _ rhs: String) -> Float {

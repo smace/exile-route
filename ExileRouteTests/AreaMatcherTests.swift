@@ -18,9 +18,9 @@ final class AreaMatcherTests: XCTestCase {
             let confidence: Float
             let expectedAreaID: String
         }
-        let url = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .appendingPathComponent("Fixtures/ocr-cases.json")
+        let url = try XCTUnwrap(
+            Bundle(for: Self.self).url(forResource: "ocr-cases", withExtension: "json")
+        )
         let fixtures = try JSONDecoder().decode([Fixture].self, from: Data(contentsOf: url))
         let matcher = AreaMatcher(areas: areas)
 
@@ -53,6 +53,90 @@ final class AreaMatcherTests: XCTestCase {
         let matcher = AreaMatcher(areas: areas)
         XCTAssertNil(matcher.match([OCRCandidate(text: "WAYPOINT SHOP MENU", confidence: 1)]))
         XCTAssertNil(matcher.match([OCRCandidate(text: "Search the Mud Flats for the entrance", confidence: 1)]))
+    }
+
+    func testNumberedSiblingAreasRequireTheExplicitExpectedLevel() {
+        let pairs = [
+            "The Chamber of Sins",
+            "The Crypt",
+            "The Solaris Temple",
+            "The Lunaris Temple",
+            "The Mines",
+            "The Belly of the Beast"
+        ]
+
+        for (index, prefix) in pairs.enumerated() {
+            let level1ID = "level-1-\(index)"
+            let level2ID = "level-2-\(index)"
+            let matcher = AreaMatcher(areas: [
+                level1ID: AreaRecord(
+                    id: level1ID,
+                    name: "\(prefix) Level 1",
+                    mapName: nil,
+                    act: 1,
+                    level: 1,
+                    hasWaypoint: false,
+                    isTownArea: false,
+                    parentTownAreaID: "town"
+                ),
+                level2ID: AreaRecord(
+                    id: level2ID,
+                    name: "\(prefix) Level 2",
+                    mapName: nil,
+                    act: 1,
+                    level: 2,
+                    hasWaypoint: false,
+                    isTownArea: false,
+                    parentTownAreaID: "town"
+                )
+            ])
+
+            XCTAssertNil(matcher.match(
+                [OCRCandidate(text: "\(prefix) Level", confidence: 0.99)],
+                expectedAreaIDs: [level2ID],
+                allowedAreaIDs: [level2ID]
+            ), prefix)
+            XCTAssertNil(matcher.match(
+                [OCRCandidate(text: "\(prefix) Level 1", confidence: 0.99)],
+                expectedAreaIDs: [level2ID],
+                allowedAreaIDs: [level2ID]
+            ), prefix)
+            XCTAssertNil(matcher.match(
+                [OCRCandidate(text: "\(prefix) Level Z", confidence: 0.99)],
+                expectedAreaIDs: [level2ID],
+                allowedAreaIDs: [level2ID]
+            ), prefix)
+            XCTAssertEqual(matcher.match(
+                [OCRCandidate(text: "\(prefix) Level 2", confidence: 0.99)],
+                expectedAreaIDs: [level2ID],
+                allowedAreaIDs: [level2ID]
+            )?.areaID, level2ID, prefix)
+        }
+    }
+
+    func testExactTownMatchRejectsPartialAndLowConfidenceCandidates() {
+        let matcher = AreaMatcher(areas: areas)
+        XCTAssertNil(matcher.match(
+            [OCRCandidate(text: "Lioneye Watch", confidence: 0.99)],
+            expectedAreaIDs: ["town"],
+            allowedAreaIDs: ["town"],
+            exactAreaID: "town",
+            minimumCandidateConfidence: 0.80
+        ))
+        XCTAssertNil(matcher.match(
+            [OCRCandidate(text: "Lioneye's Watch", confidence: 0.79)],
+            expectedAreaIDs: ["town"],
+            allowedAreaIDs: ["town"],
+            exactAreaID: "town",
+            minimumCandidateConfidence: 0.80
+        ))
+        XCTAssertEqual(matcher.match(
+            [OCRCandidate(text: "Lioneye's Watch", confidence: 0.95)],
+            expectedAreaIDs: ["town"],
+            allowedAreaIDs: ["town"],
+            exactAreaID: "town",
+            minimumCandidateConfidence: 0.80
+        )?.areaID, "town")
     }
 
     func testVisionReadsSyntheticHighContrastAreaTitle() throws {
